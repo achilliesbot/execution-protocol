@@ -1,0 +1,29 @@
+{
+  "name": "execution-protocol-v2",
+  "version": "6.0.0",
+  "description": "Deterministic execution protocol for autonomous agents",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && node scripts/fix-esm-imports.cjs",
+    "build:tsc": "tsc",
+    "build:fix-esm": "node scripts/fix-esm-imports.cjs",
+    "test": "node --loader=ts-node/esm tests/deterministic-stress-test.ts",
+    "test:determinism": "node --loader=ts-node/esm tests/deterministic-stress-test.ts",
+    "test:dist": "node dist/index.js"
+  },
+  "keywords": [
+    "execution",
+    "protocol",
+    "determinism",
+    "agents",
+    "blockchain"
+  ],
+  "author": "Achilles",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
