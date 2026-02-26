@@ -5,6 +5,8 @@
  * Entry Point: Run simulated session with full determinism
  */
 import { DeterministicSession } from './session/DeterministicSession.js';
+// Phase 7 exports
+export * from './ledger';
 console.log(`
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║

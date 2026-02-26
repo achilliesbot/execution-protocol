@@ -7,6 +7,9 @@
 
 import { DeterministicSession, SessionConfig } from './session/DeterministicSession';
 
+// Phase 7 exports
+export * from './ledger';
+
 console.log(`
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
