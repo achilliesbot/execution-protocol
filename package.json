@@ -10,7 +10,8 @@
     "build:fix-esm": "node scripts/fix-esm-imports.cjs",
     "test": "node --loader=ts-node/esm tests/deterministic-stress-test.ts",
     "test:determinism": "node --loader=ts-node/esm tests/deterministic-stress-test.ts",
-    "test:dist": "node dist/index.js"
+    "test:dist": "node dist/index.js",
+    "test:phase2-policy": "node scripts/phase2-policy-adversarial.mjs"
   },
   "keywords": [
     "execution",

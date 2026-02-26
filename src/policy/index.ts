@@ -19,6 +19,7 @@ export type {
 
 export {
   createPhase1PolicySet,
+  createPhase2PolicySet,
   computePolicySetHash,
   validateAgainstPolicySet
 } from './PolicyEngine';

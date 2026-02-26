@@ -87,9 +87,15 @@ export interface ConstraintViolation {
 /**
  * Default Phase 1 Policy Set
  *
- * Conservative constraints for initial $200 deployment
+ * Conservative constraints for initial $200 deployment (SIMULATED)
  */
 export declare function createPhase1PolicySet(): PolicySet;
+/**
+ * Phase 2 Policy Set — Real Capital ($200)
+ *
+ * Commander-approved constraints for LIVE capital deployment.
+ */
+export declare function createPhase2PolicySet(): PolicySet;
 /**
  * Compute Policy Set Hash
  *

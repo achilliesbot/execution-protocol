@@ -117,7 +117,7 @@ export interface ConstraintViolation {
 /**
  * Default Phase 1 Policy Set
  * 
- * Conservative constraints for initial $200 deployment
+ * Conservative constraints for initial $200 deployment (SIMULATED)
  */
 export function createPhase1PolicySet(): PolicySet {
   const now = new Date().toISOString();
@@ -303,6 +303,191 @@ export function createPhase1PolicySet(): PolicySet {
 }
 
 /**
+ * Phase 2 Policy Set — Real Capital ($200)
+ * 
+ * Commander-approved constraints for LIVE capital deployment.
+ */
+export function createPhase2PolicySet(): PolicySet {
+  const now = new Date().toISOString();
+
+  const version = '2.0.0';
+  const name = 'Phase 2: Real Capital Constraints ($200)';
+  const description = 'Commander-approved safety constraints for $200 real capital deployment';
+
+  const policies: Policy[] = [
+    {
+      id: 'capital_allocation_policy',
+      version: '2.0.0',
+      type: 'capital_allocation',
+      description: 'Caps on position size, open positions, and daily loss',
+      constraints: [
+        {
+          id: 'max_position_usd',
+          type: 'max_position_size',
+          target: 'intent.amount.value',
+          operator: 'lte',
+          value: 40,
+          action: 'block',
+          message: 'Max single position is $40 (20% of $200)'
+        },
+        {
+          id: 'max_total_capital_usd',
+          type: 'max_position_size',
+          target: 'portfolio.allocated_capital_usd',
+          operator: 'lte',
+          value: 200,
+          action: 'block',
+          message: 'Total capital cap is $200'
+        },
+        {
+          id: 'max_daily_loss_usd',
+          type: 'max_position_size',
+          target: 'portfolio.daily_loss_usd',
+          operator: 'lte',
+          value: 20,
+          action: 'block',
+          message: 'Max daily loss is $20 (10% of $200)'
+        },
+        {
+          id: 'max_open_positions',
+          type: 'max_daily_trades',
+          target: 'portfolio.open_positions_count',
+          operator: 'lte',
+          value: 3,
+          action: 'block',
+          message: 'Max open positions is 3'
+        }
+      ],
+      createdAt: now,
+      updatedAt: now,
+      active: true
+    },
+    {
+      id: 'asset_eligibility_policy',
+      version: '2.0.0',
+      type: 'asset_eligibility',
+      description: 'Allowed assets whitelist (Phase 2)',
+      constraints: [
+        {
+          id: 'allowed_assets_only',
+          type: 'allowed_assets',
+          target: 'intent.asset_out.symbol',
+          operator: 'in',
+          value: ['BNKR', 'CLAWD', 'BNKRW', '$BNKR', '$CLAWD', '$BNKRW'],
+          action: 'block',
+          message: 'Asset not allowed for Phase 2 (BNKR/CLAWD/BNKRW only)'
+        }
+      ],
+      createdAt: now,
+      updatedAt: now,
+      active: true
+    },
+    {
+      id: 'risk_management_policy',
+      version: '2.0.0',
+      type: 'risk_management',
+      description: 'Stop-loss and take-profit required; leverage and slippage caps',
+      constraints: [
+        {
+          id: 'requires_stop_loss',
+          type: 'requires_stop_loss',
+          target: 'constraints.stop_loss',
+          operator: 'neq',
+          value: null,
+          action: 'block',
+          message: 'Stop loss is required on every trade (no exceptions)'
+        },
+        {
+          id: 'requires_take_profit',
+          type: 'requires_take_profit',
+          target: 'constraints.take_profit',
+          operator: 'neq',
+          value: null,
+          action: 'block',
+          message: 'Take profit is required on every trade (no exceptions)'
+        },
+        {
+          id: 'max_leverage',
+          type: 'max_drawdown',
+          target: 'constraints.leverage',
+          operator: 'lte',
+          value: 2,
+          action: 'block',
+          message: 'Max leverage is 2x'
+        },
+        {
+          id: 'max_slippage_percent',
+          type: 'max_slippage',
+          target: 'constraints.slippage_percent',
+          operator: 'lte',
+          value: 1,
+          action: 'block',
+          message: 'Slippage cap is 1%'
+        }
+      ],
+      createdAt: now,
+      updatedAt: now,
+      active: true
+    },
+    {
+      id: 'autonomy_bounds_policy',
+      version: '2.0.0',
+      type: 'autonomy_bounds',
+      description: 'Autonomy threshold for auto-execution vs Commander approval',
+      constraints: [
+        {
+          id: 'commander_approval_threshold',
+          type: 'autonomy_threshold',
+          target: 'intent.amount.value',
+          // PolicyEngine raises violations when a constraint FAILS.
+          // To require approval for amounts >= 20, we assert amount must be < 20.
+          // When amount is 20 or higher, this constraint fails → action=escalate.
+          operator: 'lt',
+          value: 20,
+          action: 'escalate',
+          message: 'Trades >= $20 require Commander APPROVE; trades < $20 may auto-execute'
+        }
+      ],
+      createdAt: now,
+      updatedAt: now,
+      active: true
+    }
+  ];
+
+  const contentHash = computeHash({
+    version,
+    name,
+    description,
+    policies: policies.map(p => ({
+      id: p.id,
+      version: p.version,
+      type: p.type,
+      constraints: p.constraints.map(c => ({
+        id: c.id,
+        type: c.type,
+        target: c.target,
+        operator: c.operator,
+        value: c.value,
+        action: c.action
+      }))
+    }))
+  });
+
+  const policySetId = `policy_set_phase2_${contentHash.substring(0, 16)}`;
+
+  return {
+    id: policySetId,
+    version,
+    name,
+    description,
+    policies,
+    createdAt: now,
+    updatedAt: now,
+    active: true
+  };
+}
+
+/**
  * Compute Policy Set Hash
  * 
  * GOVERNANCE.md §2.2: Execution without explicit policy binding is invalid
@@ -346,8 +531,12 @@ export function validateAgainstPolicySet(
     if (!policy.active) continue;
     
     for (const constraint of policy.constraints) {
-      const value = getNestedValue(proposal, constraint.target) 
-        ?? getNestedValue(stateSnapshot, constraint.target);
+      // Important: treat `null` as an explicit value (do NOT fall back to stateSnapshot).
+      // Only fall back when the proposal field is truly missing (undefined).
+      let value = getNestedValue(proposal, constraint.target);
+      if (value === undefined) {
+        value = getNestedValue(stateSnapshot, constraint.target);
+      }
       
       const passes = evaluateConstraint(value, constraint.operator, constraint.value);
       
