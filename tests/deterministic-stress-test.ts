@@ -22,20 +22,21 @@ import {
   computeHash, 
   computeProposalHash,
   validateDeterminism 
-} from '../src/canonicalization/index.js';
+} from '../dist/canonicalization/index.js';
 import { 
   createPhase1PolicySet, 
   validateAgainstPolicySet,
   computePolicySetHash 
-} from '../src/policy/index.js';
+} from '../dist/policy/index.js';
 import { 
   OpportunityProposal 
-} from '../src/schema/index.js';
+} from '../dist/schema/index.js';
 import { 
   generateExecutionPlan,
   StateSnapshot 
-} from '../src/execution/index.js';
-import { TranscriptLogger } from '../src/transcript/index.js';
+} from '../dist/execution/index.js';
+import { TranscriptLogger } from '../dist/transcript/index.js';
+import { pathToFileURL } from 'url';
 
 // Test Results
 interface TestResult {
@@ -46,6 +47,9 @@ interface TestResult {
 }
 
 const results: TestResult[] = [];
+
+// Determinism suite iteration count (Phase 7 requires 1000)
+const ITERATIONS = Number.parseInt(process.env.EP_DETERMINISM_ITERS || '1000', 10);
 
 // FIXED test fixture to eliminate harness randomness
 const FIXED_PROPOSAL = ({
@@ -85,7 +89,7 @@ function testCanonicalizationStability(): TestResult {
   const proposal = createProposalTemplate('test-agent', 'test-session');
   const hashes: string[] = [];
   
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < ITERATIONS; i++) {
     hashes.push(computeProposalHash(proposal as unknown as Record<string, unknown>));
   }
   
@@ -100,7 +104,7 @@ function testCanonicalizationStability(): TestResult {
   
   const passed = allIdentical && canonicalIdentical;
   
-  console.log(`  Iterations: 100`);
+  console.log(`  Iterations: ${ITERATIONS}`);
   console.log(`  Unique hashes: ${uniqueHashes.size}`);
   console.log(`  Canonical identical: ${canonicalIdentical}`);
   console.log(`  Sample hash: ${hashes[0].substring(0, 32)}...`);
@@ -200,7 +204,7 @@ function testExecutionPlanDeterminism(): TestResult {
   // Remove timestamp-dependent fields for comparison
   const plans: any[] = [];
   
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < ITERATIONS; i++) {
     const result = generateExecutionPlan(proposal, policySet, stateSnapshot);
     if (result.plan) {
       // Remove non-deterministic fields for comparison
@@ -212,9 +216,9 @@ function testExecutionPlanDeterminism(): TestResult {
   // Compare all plans
   const planHashes = plans.map(p => computeHash(p));
   const uniquePlans = new Set(planHashes);
-  const deterministic = uniquePlans.size === 1 && plans.length === 100;
+  const deterministic = uniquePlans.size === 1 && plans.length === ITERATIONS;
   
-  console.log(`  Iterations: 100`);
+  console.log(`  Iterations: ${ITERATIONS}`);
   console.log(`  Successful plans: ${plans.length}`);
   console.log(`  Unique plan hashes: ${uniquePlans.size}`);
   console.log(`  Deterministic: ${deterministic}`);
@@ -223,7 +227,7 @@ function testExecutionPlanDeterminism(): TestResult {
   return {
     test: 'ExecutionPlan Determinism',
     passed: deterministic,
-    details: `100 iterations, ${plans.length} plans, ${uniquePlans.size} unique`,
+    details: `${ITERATIONS} iterations, ${plans.length} plans, ${uniquePlans.size} unique`,
     critical: true
   };
 }
@@ -404,11 +408,12 @@ function testUndefinedNullNormalization(): TestResult {
 }
 
 /**
- * TEST A: Cross-Session Divergence
- * Two identical entry sequences across different session_ids must produce different transcript head hashes
+ * TEST A: Cross-Session Stability
+ * Two identical entry sequences across different session_ids must produce identical entry hashes.
+ * Determinism boundary: session_id is metadata and must NOT affect hashing.
  */
 function testCrossSessionDivergence(): TestResult {
-  console.log('\n🧪 TEST A: Cross-Session Divergence');
+  console.log('\n🧪 TEST A: Cross-Session Stability');
   console.log('----------------------------------------');
 
   const logger = new TranscriptLogger();
@@ -433,20 +438,20 @@ function testCrossSessionDivergence(): TestResult {
     'Swap USDC to ETH', 0.8, 'agent-1', 'claude-sonnet-4.6'
   );
 
-  // Verify session_id included in hash (different sessions = different hashes)
-  const hashesDiffer = entryA.entry_hash !== entryB.entry_hash;
+  // Determinism boundary: session_id must NOT affect hashing
+  const hashesSame = entryA.entry_hash === entryB.entry_hash;
 
   console.log(`  Session A: ${sessionA}`);
   console.log(`  Session B: ${sessionB}`);
   console.log(`  Entry A hash: ${entryA.entry_hash.substring(0, 32)}...`);
   console.log(`  Entry B hash: ${entryB.entry_hash.substring(0, 32)}...`);
-  console.log(`  Hashes differ (session-bound): ${hashesDiffer}`);
-  console.log(`  Result: ${hashesDiffer ? '✅ PASS' : '❌ FAIL'}`);
+  console.log(`  Hashes identical (session-agnostic): ${hashesSame}`);
+  console.log(`  Result: ${hashesSame ? '✅ PASS' : '❌ FAIL'}`);
 
   return {
-    test: 'Cross-Session Divergence',
-    passed: hashesDiffer,
-    details: `Same content, different sessions: hashes differ = ${hashesDiffer}`,
+    test: 'Cross-Session Stability',
+    passed: hashesSame,
+    details: `Same content, different sessions: hashes identical = ${hashesSame}`,
     critical: true
   };
 }
@@ -639,7 +644,8 @@ export function runDeterministicStressTest(): void {
   console.log('╚════════════════════════════════════════════════════════════╝');
 }
 
-// Run if executed directly
-if (require.main === module) {
+// Run if executed directly (ESM-safe)
+const isMain = import.meta.url === pathToFileURL(process.argv[1]).href;
+if (isMain) {
   runDeterministicStressTest();
 }
