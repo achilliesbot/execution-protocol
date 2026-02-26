@@ -10,3 +10,9 @@ export { NullAdapter } from './adapters/NullAdapter';
 export { OnChainAdapter } from './adapters/OnChainAdapter';
 export { HybridAdapter } from './adapters/HybridAdapter';
 export { OffChainAdapter } from './adapters/OffChainAdapter';
+
+export {
+  settleWithExecutionToggle,
+  TxPayload,
+  ToggleSettlementResult
+} from './ExecutionToggle';
