@@ -1,11 +1,16 @@
 /**
- * Transcript Logger — Append-only JSONL with hash chain
+ * Transcript Logger — Append-only JSONL with hash chain (file-persisted)
  * 
  * Per-agent transcript isolation.
+ * Persisted to: ~/.openclaw/transcripts/{agent_id}.jsonl
+ * Survives process restarts.
  * Deterministic: identical proposals in order = identical hashes.
  */
 
 import { createHash } from 'crypto';
+import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
+import { homedir } from 'os';
 
 export interface TranscriptEntry {
   entry_id: string;
@@ -18,8 +23,79 @@ export interface TranscriptEntry {
   entry_hash: string;
 }
 
+const TRANSCRIPTS_DIR = join(homedir(), '.openclaw', 'transcripts');
+
+// Ensure directory exists
+try {
+  mkdirSync(TRANSCRIPTS_DIR, { recursive: true });
+} catch (e) {
+  // Directory may already exist
+}
+
+function getTranscriptPath(agentId: string): string {
+  return join(TRANSCRIPTS_DIR, `${agentId}.jsonl`);
+}
+
+function readTranscriptFromDisk(agentId: string): TranscriptEntry[] {
+  const path = getTranscriptPath(agentId);
+  if (!existsSync(path)) {
+    return [];
+  }
+  
+  try {
+    const content = readFileSync(path, 'utf-8').trim();
+    if (!content) return [];
+    
+    return content
+      .split('\n')
+      .filter(line => line.trim())
+      .map(line => JSON.parse(line));
+  } catch (e) {
+    console.error(`[TranscriptLogger] Failed to read transcript for ${agentId}:`, e);
+    return [];
+  }
+}
+
+function appendEntryToDisk(agentId: string, entry: TranscriptEntry): void {
+  const path = getTranscriptPath(agentId);
+  const line = JSON.stringify(entry) + '\n';
+  
+  const flag = existsSync(path) ? 'a' : 'w';
+  writeFileSync(path, line, { flag });
+}
+
 export class TranscriptLogger {
-  private transcripts: Map<string, TranscriptEntry[]> = new Map();
+  private memoryCache: Map<string, TranscriptEntry[]> = new Map();
+
+  constructor() {
+    // Load existing transcripts on startup
+    this.loadAllTranscripts();
+  }
+
+  /**
+   * Load all existing transcripts from disk
+   */
+  private loadAllTranscripts(): void {
+    try {
+      if (!existsSync(TRANSCRIPTS_DIR)) return;
+      
+      const files = require('fs').readdirSync(TRANSCRIPTS_DIR).filter((f: string) => f.endsWith('.jsonl'));
+      
+      for (const file of files) {
+        const agentId = file.replace('.jsonl', '');
+        const transcript = readTranscriptFromDisk(agentId);
+        if (transcript.length > 0) {
+          this.memoryCache.set(agentId, transcript);
+        }
+      }
+      
+      if (files.length > 0) {
+        console.log(`[TranscriptLogger] Loaded ${files.length} transcripts from disk`);
+      }
+    } catch (e) {
+      console.error('[TranscriptLogger] Failed to load transcripts:', e);
+    }
+  }
 
   /**
    * Log entry to agent's transcript
@@ -30,7 +106,12 @@ export class TranscriptLogger {
     proposalId: string,
     verificationResult: any
   ): TranscriptEntry {
-    const agentTranscript = this.transcripts.get(agentId) || [];
+    // Get or load transcript
+    let agentTranscript = this.memoryCache.get(agentId);
+    if (!agentTranscript) {
+      agentTranscript = readTranscriptFromDisk(agentId);
+      this.memoryCache.set(agentId, agentTranscript);
+    }
     
     const prevHash = agentTranscript.length > 0 
       ? agentTranscript[agentTranscript.length - 1].entry_hash 
@@ -55,8 +136,12 @@ export class TranscriptLogger {
       entry_hash: entryHash
     };
     
+    // Update memory cache
     agentTranscript.push(entry);
-    this.transcripts.set(agentId, agentTranscript);
+    this.memoryCache.set(agentId, agentTranscript);
+    
+    // Persist to disk
+    appendEntryToDisk(agentId, entry);
     
     return entry;
   }
@@ -65,7 +150,16 @@ export class TranscriptLogger {
    * Get transcript for agent
    */
   getTranscript(agentId: string): TranscriptEntry[] {
-    return this.transcripts.get(agentId) || [];
+    // Check memory cache first
+    let transcript = this.memoryCache.get(agentId);
+    if (transcript) {
+      return transcript;
+    }
+    
+    // Load from disk
+    transcript = readTranscriptFromDisk(agentId);
+    this.memoryCache.set(agentId, transcript);
+    return transcript;
   }
 
   /**
@@ -84,4 +178,5 @@ export class TranscriptLogger {
   }
 }
 
+// Singleton instance
 export default new TranscriptLogger();

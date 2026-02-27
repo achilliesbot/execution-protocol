@@ -24,7 +24,7 @@
           <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style="background:linear-gradient(135deg,var(--bronze),#8b5a2b);">⚡</div>
           <div>
             <h1 class="font-display text-xl font-bold" style="color:var(--gold)">Execution Protocol</h1>
-            <p class="text-xs text-gray-500">Service Status & Proof Explorer</p>
+            <p class="text-xs text-gray-500">Service Status</p>
           </div>
         </div>
         <div class="flex items-center gap-4">
@@ -78,30 +78,6 @@
           <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Active Policy</div>
           <div class="text-3xl font-bold" style="color:var(--gold)">olympus-v1</div>
           <div class="text-xs text-gray-400">$100 capital base</div>
-        </div>
-      </div>
-
-      <!-- Proof Search -->
-      <div class="glass rounded-xl p-6">
-        <h3 class="font-display font-bold mb-4" style="color:var(--bronze)">Proof Explorer</h3>
-        <div class="flex gap-3 mb-4">
-          <input type="text" id="proof-search" placeholder="Enter proof_hash (e.g., abc123...)" 
-                 class="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm font-mono focus:outline-none focus:border-white/20">
-          <button onclick="searchProof()" class="px-6 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-sm font-semibold">Search</button>
-        </div>
-        <div id="proof-result" class="hidden">
-          <div class="glass rounded-lg p-4 bg-white/5">
-            <div class="grid grid-cols-2 gap-4 text-sm">
-              <div><span class="text-gray-500">Proof Hash:</span> <span class="font-mono" id="result-hash"></span></div>
-              <div><span class="text-gray-500">Valid:</span> <span id="result-valid"></span></div>
-              <div><span class="text-gray-500">Risk Score:</span> <span id="result-risk"></span></div>
-              <div><span class="text-gray-500">Timestamp:</span> <span id="result-time"></span></div>
-              <div class="col-span-2"><span class="text-gray-500">Plan Summary:</span> <span id="result-plan"></span></div>
-            </div>
-          </div>
-        </div>
-        <div id="proof-not-found" class="hidden text-gray-500 text-sm py-4">
-          Proof hash not found in validation log.
         </div>
       </div>
 
@@ -197,16 +173,6 @@
       document.getElementById('total-validations').textContent = '0';
       document.getElementById('pass-rate').textContent = '0%';
       document.getElementById('avg-risk').textContent = 'N/A';
-    }
-
-    // Proof search
-    function searchProof() {
-      const hash = document.getElementById('proof-search').value.trim();
-      if (!hash) return;
-
-      // Mock search — would query actual validation log
-      document.getElementById('proof-result').classList.add('hidden');
-      document.getElementById('proof-not-found').classList.remove('hidden');
     }
 
     // Copy example

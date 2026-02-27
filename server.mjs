@@ -46,9 +46,9 @@ app.get('/ep/status', statusRoute);
 // Core validation endpoint (auth required)
 app.post('/ep/validate', validateRoute);
 
-// Future endpoints (stubs)
+// Future endpoints (stubs) — Phase 3+ features
 app.post('/ep/simulate', simulateRoute);
-app.get('/ep/proof/:hash', proofRoute);
+// app.get('/ep/proof/:hash', proofRoute); // Phase 3: Guardian attestation
 app.get('/ep/session/:id', sessionRoute);
 
 // 404 handler
