@@ -30,7 +30,7 @@ function getAgentRegistry(): Record<string, Agent> {
     },
     argus: {
       id: 'argus',
-      key: process.env.EP_KEY_ARGUS || '',
+      key: process.env.EP_KEY_ARGUS_1 || process.env.EP_KEY_ARGUS || '',
       tier: 'internal'
     },
     atlas: {
