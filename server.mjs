@@ -26,9 +26,9 @@ app.use(express.static(join(__dirname, 'public')));
 
 // Phase 2 capital configuration
 const CAPITAL = {
-  total: 200,
-  deployed: 50,
-  remaining: 150,
+  total: 100,
+  deployed: 0,
+  remaining: 100,
   phase: 'phase2-live',
   mode: 'LIVE',
   autonomy: 'FULL',
