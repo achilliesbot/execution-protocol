@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "effective_date": "2026-02-23T00:00:00Z",
+  "tiers": [
+    { "name": "micro", "min_weight": 0, "max_weight": 100, "unit_rate": 1.0 },
+    { "name": "small", "min_weight": 100, "max_weight": 500, "unit_rate": 0.9 },
+    { "name": "medium", "min_weight": 500, "max_weight": 1000, "unit_rate": 0.8 },
+    { "name": "large", "min_weight": 1000, "max_weight": 5000, "unit_rate": 0.7 },
+    { "name": "enterprise", "min_weight": 5000, "max_weight": 999999999, "unit_rate": 0.5 }
+  ],
+  "base_fee": 100,
+  "currency": "EXEC",
+  "metadata": {
+    "description": "Initial pricing for Phase 6 monetization",
+    "change_reason": "Genesis pricing",
+    "previous_version": null
+  }
+}
