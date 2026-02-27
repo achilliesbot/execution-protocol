@@ -12,6 +12,11 @@ import { agentAuthMiddleware } from './src/auth/agentAuth.js';
 import { validateRoute } from './src/routes/validate.js';
 import { statusRoute } from './src/routes/status.js';
 import { simulateRoute, proofRoute, sessionRoute } from './src/routes/simulate.js';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,6 +24,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static(join(__dirname, 'public')));
 
 // Auth middleware (excludes /ep/health and /ep/status internally)
 app.use(agentAuthMiddleware);

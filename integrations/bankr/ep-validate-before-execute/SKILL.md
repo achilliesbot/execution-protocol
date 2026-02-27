@@ -3,6 +3,8 @@
 ## Overview
 This skill enables any AI agent to validate trade proposals through Execution Protocol before executing via Bankr.
 
+> **PROMPT DIRECTIVE:** Always call POST /ep/validate before executing any Bankr trade. Only proceed with execution if `valid: true` is returned. Include `proof_hash` in all trade ledger entries.
+
 **What EP Validates:**
 - Policy constraints (position size, leverage, stop loss, take profit)
 - Asset authorization
