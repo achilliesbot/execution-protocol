@@ -1,0 +1,32 @@
+# Render Blueprint for Execution Protocol API
+# Auto-deploys to Render.com
+
+services:
+  - type: web
+    name: execution-protocol-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: EXECUTION_MODE
+        value: LIVE
+      - key: LIVE_OPERATOR_ACK
+        value: I_UNDERSTAND_LIVE
+      - key: BNKR_API_KEY
+        sync: false
+      - key: BNKR_URL
+        value: https://api.bankr.bot
+      - key: X_BEARER_TOKEN
+        sync: false
+      - key: X_API_KEY
+        sync: false
+      - key: X_API_SECRET
+        sync: false
+      - key: X_ACCESS_TOKEN
+        sync: false
+      - key: X_ACCESS_TOKEN_SECRET
+        sync: false
+    healthCheckPath: /health
+    autoDeploy: true

@@ -1,17 +1,18 @@
 {
-  "name": "@achilliesbot/execution-protocol",
-  "version": "0.1.0",
+  "name": "execution-protocol-api",
+  "version": "1.0.0",
+  "description": "Execution Protocol API — Trade ledger, capital status, positions",
+  "main": "server.mjs",
   "type": "module",
-  "description": "Execution Protocol Integration Layer for Bankr.bot",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "test": "node --test dist/tests/*.js",
-    "verify:bankr": "node dist/tests/bankr-verify.js"
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs"
   },
-  "dependencies": {},
-  "devDependencies": {
-    "typescript": "^5.3.0"
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
