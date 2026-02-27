@@ -1,18 +1,27 @@
 {
-  "name": "execution-protocol-api",
+  "name": "execution-protocol",
   "version": "1.0.0",
-  "description": "Execution Protocol API — Trade ledger, capital status, positions",
+  "description": "Execution Protocol v1.0 — Multi-tenant deterministic middleware for AI agent swarms. Policy enforcement, session isolation, verification-as-a-service.",
   "main": "server.mjs",
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "dev": "node --watch server.mjs"
+    "dev": "node --watch server.mjs",
+    "test": "node --test dist/tests/**/*.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "zod": "^3.22.4"
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "keywords": [
+    "ai-agents",
+    "deterministic",
+    "policy-enforcement",
+    "multi-tenant",
+    "verification"
+  ]
 }

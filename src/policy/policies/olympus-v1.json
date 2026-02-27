@@ -1,0 +1,39 @@
+{
+  "id": "olympus-v1",
+  "version": "1.0.0",
+  "description": "Olympus Command Phase 2 Trading Policy — $100 Capital",
+  "effective_date": "2026-02-27",
+  "capital": {
+    "total_usd": 100,
+    "currency": "USDC",
+    "network": "base"
+  },
+  "constraints": {
+    "max_single_position": 20,
+    "max_single_position_pct": 20,
+    "max_daily_loss": 10,
+    "max_daily_loss_pct": 10,
+    "max_leverage": 2,
+    "max_slippage": 1,
+    "max_slippage_unit": "percent",
+    "max_open_positions": 3,
+    "stop_loss_required": true,
+    "take_profit_required": true,
+    "allowed_assets": ["BNKR", "CLAWD", "BNKRW"],
+    "autonomy_threshold": 10,
+    "approval_required_above": 10,
+    "approval_method": "telegram_commander"
+  },
+  "risk_levels": {
+    "LOW": "Within all constraints",
+    "MEDIUM": "1-2 minor violations",
+    "HIGH": "3+ violations or oversized position",
+    "CRITICAL": "Missing stop loss, take profit, or unauthorized asset"
+  },
+  "metadata": {
+    "policy_owner": "WolfofCurrency",
+    "policy_author": "Achilles",
+    "last_updated": "2026-02-27T21:30:00Z",
+    "decision_ref": "D_OLYMPUS_009"
+  }
+}
