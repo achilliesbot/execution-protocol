@@ -17,10 +17,12 @@ import { homedir } from 'os';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const __dirname = import.meta.dirname || new URL('.', import.meta.url).pathname;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static(join(__dirname, 'public')));
 
 // Phase 2 capital configuration
 const CAPITAL = {
@@ -180,20 +182,9 @@ app.get('/api/positions', (req, res) => {
   }
 });
 
-// Root endpoint
+// Root endpoint — serve frontend
 app.get('/', (req, res) => {
-  res.json({
-    service: 'Execution Protocol API',
-    version: '1.0.0',
-    phase: 'Phase 2 LIVE',
-    endpoints: {
-      health: '/health',
-      trades: '/api/trades',
-      capital: '/api/capital',
-      positions: '/api/positions'
-    },
-    documentation: 'https://github.com/achilliesbot/execution-protocol'
-  });
+  res.sendFile(join(__dirname, 'public', 'index.html'));
 });
 
 // Error handler
