@@ -1,0 +1,35 @@
+[Unit]
+Description=Achilles OpenClaw EC2 Watchdog
+Documentation=https://docs.openclaw.ai
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=node
+Group=node
+Environment="HOME=/data"
+Environment="NODE_ENV=production"
+EnvironmentFile=-/data/.openclaw/.env
+WorkingDirectory=/data/.openclaw/workspace
+
+# Main OpenClaw process
+ExecStart=/usr/bin/openclaw gateway start
+ExecStop=/usr/bin/openclaw gateway stop
+
+# Restart configuration
+Restart=always
+RestartSec=10
+StartLimitInterval=60s
+StartLimitBurst=3
+
+# Graceful shutdown
+TimeoutStopSec=30
+KillSignal=SIGTERM
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
