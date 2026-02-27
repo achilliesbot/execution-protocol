@@ -25,7 +25,7 @@ function getAgentRegistry(): Record<string, Agent> {
   return {
     achilles: {
       id: 'achilles',
-      key: process.env.EP_KEY_ACHILLES || '',
+      key: process.env.EP_KEY_ACHILLES_1 || process.env.EP_KEY_ACHILLES || '',
       tier: 'internal'
     },
     argus: {
