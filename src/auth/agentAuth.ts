@@ -20,24 +20,26 @@ export interface AuthResult {
   error?: string;
 }
 
-// Agent registry loaded from environment
-const AGENT_REGISTRY: Record<string, Agent> = {
-  achilles: {
-    id: 'achilles',
-    key: process.env.EP_KEY_ACHILLES || '',
-    tier: 'internal'
-  },
-  argus: {
-    id: 'argus',
-    key: process.env.EP_KEY_ARGUS || '',
-    tier: 'internal'
-  },
-  atlas: {
-    id: 'atlas',
-    key: process.env.EP_KEY_ATLAS || '',
-    tier: 'internal'
-  }
-};
+// Agent registry — loaded dynamically to support runtime env changes
+function getAgentRegistry(): Record<string, Agent> {
+  return {
+    achilles: {
+      id: 'achilles',
+      key: process.env.EP_KEY_ACHILLES || '',
+      tier: 'internal'
+    },
+    argus: {
+      id: 'argus',
+      key: process.env.EP_KEY_ARGUS || '',
+      tier: 'internal'
+    },
+    atlas: {
+      id: 'atlas',
+      key: process.env.EP_KEY_ATLAS || '',
+      tier: 'internal'
+    }
+  };
+}
 
 /**
  * Validate X-Agent-Key header
@@ -48,7 +50,8 @@ export function validateAgentKey(keyHeader: string | undefined): AuthResult {
   }
 
   // Find agent by key
-  for (const [agentId, agent] of Object.entries(AGENT_REGISTRY)) {
+  const registry = getAgentRegistry();
+  for (const [agentId, agent] of Object.entries(registry)) {
     if (agent.key && keyHeader === agent.key) {
       return {
         valid: true,

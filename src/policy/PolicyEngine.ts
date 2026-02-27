@@ -196,18 +196,18 @@ function createResult(
 ): VerificationResult {
   const planSummary = `${proposal.asset} ${proposal.direction.toUpperCase()} $${proposal.amount_usd} @ ${proposal.entry_price} | SL: ${proposal.stop_loss} | TP: ${proposal.take_profit} | ${proposal.leverage}x`;
   
-  const resultData = {
+  // Deterministic hash: exclude timestamp to ensure identical proposals = identical hashes
+  const hashData = {
     proposal,
     violations,
-    agentId,
-    timestamp: new Date().toISOString()
+    agentId
   };
   
   return {
     valid: violations.length === 0,
     risk_score: calculateRiskScore(violations),
     violations,
-    proof_hash: createHash('sha256').update(JSON.stringify(resultData)).digest('hex').slice(0, 32),
+    proof_hash: createHash('sha256').update(JSON.stringify(hashData)).digest('hex').slice(0, 32),
     plan_summary: planSummary,
     policy_set_hash: policy ? createHash('sha256').update(JSON.stringify(policy)).digest('hex').slice(0, 32) : 'missing',
     session_id: proposal.session_id || null,
