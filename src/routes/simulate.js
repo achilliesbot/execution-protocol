@@ -10,50 +10,128 @@
 import { evaluateProposal } from '../policy/PolicyEngine.js';
 import { recordValidation } from '../telemetry/Telemetry.js';
 
-// Simple validation (same as validate route)
-function validateProposalSchema(body) {
+// In-memory idempotency cache (scoped per-agent): key -> { result, statusCode, timestamp }
+const idempotencyCache = new Map();
+const IDEMPOTENCY_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+
+function cleanIdempotencyCache() {
+  const now = Date.now();
+  for (const [key, entry] of idempotencyCache.entries()) {
+    if (now - entry.timestamp > IDEMPOTENCY_WINDOW_MS) {
+      idempotencyCache.delete(key);
+    }
+  }
+}
+
+// Validation for OpportunityProposal v1 (must match published JSON Schema)
+function validateProposalSchema(body, agentId) {
   const errors = [];
-  
-  if (!body || typeof body !== 'object') {
+
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
     return { valid: false, errors: [{ message: 'Request body must be an object' }] };
   }
-  
-  const required = ['proposal_id', 'asset', 'direction', 'amount_usd', 'entry_price', 'agent_id', 'policy_set_id'];
+
+  const allowedFields = [
+    'proposal_id',
+    'session_id',
+    'asset',
+    'direction',
+    'amount_usd',
+    'entry_price',
+    'leverage',
+    'stop_loss',
+    'take_profit',
+    'rationale',
+    'agent_id',
+    'policy_set_id',
+    'metadata'
+  ];
+
+  for (const key of Object.keys(body)) {
+    if (!allowedFields.includes(key)) {
+      errors.push({ field: key, message: `Unknown field '${key}' is not allowed` });
+    }
+  }
+
+  const required = ['proposal_id', 'session_id', 'asset', 'direction', 'amount_usd', 'entry_price', 'agent_id', 'policy_set_id'];
   for (const field of required) {
     if (body[field] === undefined || body[field] === null) {
       errors.push({ field, message: `Required field '${field}' is missing` });
     }
   }
-  
-  if (body.proposal_id !== undefined && typeof body.proposal_id !== 'string') {
-    errors.push({ field: 'proposal_id', message: 'proposal_id must be a string' });
+
+  if (body.proposal_id !== undefined) {
+    if (typeof body.proposal_id !== 'string') {
+      errors.push({ field: 'proposal_id', message: 'proposal_id must be a string' });
+    } else if (!/^prop_[0-9]+_[a-z0-9]+$/.test(body.proposal_id)) {
+      errors.push({ field: 'proposal_id', message: 'proposal_id must match ^prop_[0-9]+_[a-z0-9]+$' });
+    }
   }
-  
+
+  if (body.session_id !== undefined && typeof body.session_id !== 'string') {
+    errors.push({ field: 'session_id', message: 'session_id must be a string' });
+  }
+
   if (body.asset !== undefined && typeof body.asset !== 'string') {
     errors.push({ field: 'asset', message: 'asset must be a string' });
   }
-  
+
   if (body.direction !== undefined && !['buy', 'sell'].includes(body.direction)) {
     errors.push({ field: 'direction', message: 'direction must be "buy" or "sell"' });
   }
-  
-  if (body.amount_usd !== undefined && (typeof body.amount_usd !== 'number' || body.amount_usd <= 0)) {
-    errors.push({ field: 'amount_usd', message: 'amount_usd must be a positive number' });
+
+  if (body.amount_usd !== undefined && (typeof body.amount_usd !== 'number' || body.amount_usd < 0.01)) {
+    errors.push({ field: 'amount_usd', message: 'amount_usd must be a number >= 0.01' });
   }
-  
+
   if (body.entry_price !== undefined && (typeof body.entry_price !== 'number' || body.entry_price <= 0)) {
     errors.push({ field: 'entry_price', message: 'entry_price must be a positive number' });
   }
-  
+
+  if (body.leverage !== undefined && (typeof body.leverage !== 'number' || body.leverage < 1)) {
+    errors.push({ field: 'leverage', message: 'leverage must be a number >= 1' });
+  }
+
+  const numOrNull = (v) => v === null || (typeof v === 'number' && v > 0);
+
+  if (body.stop_loss !== undefined && !numOrNull(body.stop_loss)) {
+    errors.push({ field: 'stop_loss', message: 'stop_loss must be a positive number or null' });
+  }
+
+  if (body.take_profit !== undefined && !numOrNull(body.take_profit)) {
+    errors.push({ field: 'take_profit', message: 'take_profit must be a positive number or null' });
+  }
+
+  if (body.rationale !== undefined && body.rationale !== null && typeof body.rationale !== 'string') {
+    errors.push({ field: 'rationale', message: 'rationale must be a string or null' });
+  }
+
   if (body.agent_id !== undefined && typeof body.agent_id !== 'string') {
     errors.push({ field: 'agent_id', message: 'agent_id must be a string' });
   }
-  
+
+  if (body.agent_id && agentId && body.agent_id !== agentId) {
+    errors.push({ field: 'agent_id', message: 'agent_id must match authenticated agent (X-Agent-Key)' });
+  }
+
   if (body.policy_set_id !== undefined && typeof body.policy_set_id !== 'string') {
     errors.push({ field: 'policy_set_id', message: 'policy_set_id must be a string' });
   }
-  
+
+  if (body.metadata !== undefined && body.metadata !== null && (typeof body.metadata !== 'object' || Array.isArray(body.metadata))) {
+    errors.push({ field: 'metadata', message: 'metadata must be an object or null' });
+  }
+
   return { valid: errors.length === 0, errors };
+}
+
+function normalizeProposal(body) {
+  if (body && typeof body === 'object' && !Array.isArray(body)) {
+    if (body.leverage === undefined || body.leverage === null) {
+      body.leverage = 1;
+    }
+  }
+  return body;
 }
 
 /**
@@ -137,8 +215,23 @@ function calculateSimulation(proposal, validationResult) {
  */
 export function simulateRoute(req, res) {
   try {
+    const agentId = req.agent?.id || 'unknown';
+
+    // Idempotency key support (10-minute cache, per-agent)
+    const rawIdempotencyKey = req.headers['idempotency-key'];
+    const idempotencyKey = rawIdempotencyKey ? `${agentId}:${rawIdempotencyKey}` : null;
+
+    if (idempotencyKey) {
+      cleanIdempotencyCache();
+      const cached = idempotencyCache.get(idempotencyKey);
+      if (cached && (Date.now() - cached.timestamp <= IDEMPOTENCY_WINDOW_MS)) {
+        console.log(`[IDEMPOTENCY] Returning cached result for key: ${rawIdempotencyKey} (agent: ${agentId})`);
+        return res.status(cached.statusCode).json(cached.result);
+      }
+    }
+
     // Schema validation
-    const schemaResult = validateProposalSchema(req.body);
+    const schemaResult = validateProposalSchema(req.body, agentId);
     
     if (!schemaResult.valid) {
       return res.status(400).json({
@@ -150,8 +243,8 @@ export function simulateRoute(req, res) {
       });
     }
     
-    const proposal = req.body;
-    const agentId = req.agent?.id || 'unknown';
+    const proposal = normalizeProposal(req.body);
+    // agentId already resolved above
     
     // Step 1: Validate against policy
     const validationResult = evaluateProposal(proposal, agentId);
@@ -181,9 +274,20 @@ export function simulateRoute(req, res) {
       simulation
     };
     
-    // Return result (200 if valid, 422 if invalid)
+    // Return result (200 if valid, 422 if policy-violating)
     const statusCode = validationResult.valid ? 200 : 422;
-    res.status(statusCode).json(response);
+    const responseBody = validationResult.valid ? response : { ...response, code: 'POLICY_VIOLATION' };
+
+    // Cache if idempotency key provided
+    if (idempotencyKey) {
+      idempotencyCache.set(idempotencyKey, {
+        result: responseBody,
+        statusCode,
+        timestamp: Date.now()
+      });
+    }
+
+    res.status(statusCode).json(responseBody);
     
   } catch (error) {
     console.error('Simulation error:', error);

@@ -8,7 +8,7 @@ info:
     producing cryptographic proof hashes that can be independently verified.
     
     ## Authentication
-    All endpoints except `/ep/health` and `/ep/status` require the `X-Agent-Key` header.
+    All endpoints except `/ep/health`, `/ep/status`, `/schemas/*`, and `/telemetry/*` require the `X-Agent-Key` header.
     Contact the EP operator to obtain an agent key.
     
     ## Determinism Guarantee
@@ -167,7 +167,7 @@ paths:
                   take_profit: 0.05
                   leverage: 1
                   rationale: Conservative entry on established token
-                  agent_id: my_agent_v1
+                  agent_id: achilles
                   policy_set_id: olympus-v1
               valid-sell:
                 summary: Valid sell proposal
@@ -182,7 +182,7 @@ paths:
                   take_profit: 2500
                   leverage: 1
                   rationale: Taking profits at resistance
-                  agent_id: my_agent_v1
+                  agent_id: achilles
                   policy_set_id: olympus-v1
       responses:
         '200':
@@ -199,7 +199,7 @@ paths:
                     risk_score: LOW
                     violations: []
                     proof_hash: a1b2c3d4e5f6789012345678901234567890abcd
-                    plan_summary: BNKR BUY $50.00 @ 0.042 | SL: 0.038 | TP: 0.05 | 1x
+                    plan_summary: 'BNKR BUY $50.00 @ 0.042 | SL: 0.038 | TP: 0.05 | 1x'
                     policy_set_hash: 01a85db0f653ef6075aba2c2e2f6adce
                     session_id: sess_1740751234567_xyz789
                     timestamp: '2026-02-28T15:30:00.000Z'
@@ -219,7 +219,7 @@ paths:
                         limit: 100
                         message: Position $1000 exceeds $100 max
                     proof_hash: b2c3d4e5f6a7890123456789012345678901bcde
-                    plan_summary: BNKR BUY $1000.00 @ 0.042 | SL: 0.038 | TP: 0.05 | 1x
+                    plan_summary: 'BNKR BUY $1000.00 @ 0.042 | SL: 0.038 | TP: 0.05 | 1x'
                     policy_set_hash: 01a85db0f653ef6075aba2c2e2f6adce
                     session_id: sess_1740751234567_xyz789
                     timestamp: '2026-02-28T15:30:00.000Z'
@@ -269,6 +269,106 @@ paths:
                 error: Rate limit exceeded
                 retry_after: 60
                 timestamp: '2026-02-28T15:30:00.000Z'
+
+  /ep/simulate:
+    post:
+      summary: Simulate Proposal
+      description: |
+        Validates an OpportunityProposal against policy constraints and returns simulation metrics.
+
+        - On valid proposals: returns VerificationResult plus `simulation`
+        - On policy-violating proposals: returns the same structure with `code: POLICY_VIOLATION`
+
+        Requires X-Agent-Key header.
+      tags:
+        - Validation
+      security:
+        - AgentKey: []
+      requestBody:
+        required: true
+        description: Trade opportunity proposal
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpportunityProposal'
+      responses:
+        '200':
+          description: Simulation completed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/VerificationResult'
+                  - type: object
+                    required: [simulation]
+                    properties:
+                      simulation:
+                        $ref: '#/components/schemas/Simulation'
+        '422':
+          description: Policy violation (returns VerificationResult + simulation, with code)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/VerificationResult'
+                  - type: object
+                    required: [simulation]
+                    properties:
+                      simulation:
+                        $ref: '#/components/schemas/Simulation'
+        '400':
+          description: Invalid request (schema violation)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized (missing or invalid agent key)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds until retry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /telemetry/status:
+    get:
+      summary: Telemetry Status
+      description: Returns current service status telemetry. No authentication required.
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Current status telemetry
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /telemetry/validations:
+    get:
+      summary: Telemetry Validations
+      description: Returns 24h aggregated validation telemetry. No authentication required.
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Current validation telemetry
+          content:
+            application/json:
+              schema:
+                type: object
 
   /schemas/opportunity-proposal.v1.json:
     get:
@@ -377,7 +477,7 @@ components:
         agent_id:
           type: string
           description: Identifier of the submitting agent
-          example: my_agent_v1
+          example: achilles
         policy_set_id:
           type: string
           description: Policy set to validate against
@@ -401,6 +501,11 @@ components:
         - pricing_version
         - base_pay_ready
       properties:
+        code:
+          type: string
+          description: Optional standardized code used on non-200 responses.
+          enum: [POLICY_VIOLATION]
+          example: POLICY_VIOLATION
         valid:
           type: boolean
           description: Whether proposal passed all constraints
@@ -424,7 +529,7 @@ components:
         plan_summary:
           type: string
           description: Human-readable plan summary
-          example: BNKR BUY $50.00 @ 0.042 | SL: 0.038 | TP: 0.05 | 1x
+          example: 'BNKR BUY $50.00 @ 0.042 | SL: 0.038 | TP: 0.05 | 1x'
         policy_set_hash:
           type: string
           pattern: '^[a-f0-9]{32,64}$'
@@ -455,6 +560,41 @@ components:
           description: Whether Base Pay settlement is available
           example: false
       additionalProperties: false
+
+    Simulation:
+      type: object
+      required:
+        - expected_pnl_usd
+        - max_drawdown_pct
+        - risk_reward_ratio
+        - position_size_usd
+        - leverage_applied
+        - scenario
+      properties:
+        expected_pnl_usd:
+          type: number
+          description: Expected profit/loss in USD if take profit is hit.
+          example: 2
+        max_drawdown_pct:
+          type: number
+          description: Max drawdown percentage to stop loss.
+          example: 10
+        risk_reward_ratio:
+          type: number
+          description: Reward/risk ratio (TP distance divided by SL distance).
+          example: 2
+        position_size_usd:
+          type: number
+          example: 10
+        leverage_applied:
+          type: number
+          example: 1
+        scenario:
+          type: string
+          example: target_hit
+        notes:
+          type: string
+          nullable: true
 
     Violation:
       type: object
@@ -500,17 +640,30 @@ components:
     Error:
       type: object
       required:
+        - code
         - error
+        - message
         - timestamp
       properties:
+        code:
+          type: string
+          enum: [INVALID_SCHEMA, POLICY_VIOLATION, RATE_LIMITED, UNAUTHORIZED, NOT_FOUND, INTERNAL_ERROR]
+          description: Standardized machine-readable error code
+          example: UNAUTHORIZED
         error:
           type: string
-          description: Error code or type
-          example: Unauthorized
+          description: Short error label
+          example: Missing X-Agent-Key header
         message:
           type: string
           description: Human-readable error message
-          example: Missing or invalid X-Agent-Key header
+          example: The X-Agent-Key header is required for this endpoint
+        details:
+          type: array
+          description: Optional validation details
+          items:
+            type: object
+            additionalProperties: true
         retry_after:
           type: integer
           description: Seconds until retry (rate limit only)

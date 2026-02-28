@@ -68,7 +68,7 @@ curl -X POST https://api.execution-protocol.ai/ep/validate \
     "take_profit": 0.05,
     "leverage": 1,
     "rationale": "Testing EP integration",
-    "agent_id": "my_agent",
+    "agent_id": "achilles",
     "policy_set_id": "olympus-v1"
   }'
 ```
@@ -142,7 +142,7 @@ def create_proposal(asset="BNKR", amount=50, entry_price=0.042):
         "take_profit": entry_price * 1.2,  # 20% target
         "leverage": 1,
         "rationale": f"Python API test for {asset}",
-        "agent_id": "python_example_agent",
+        "agent_id": "achilles",  # Must match the agent id tied to your X-Agent-Key
         "policy_set_id": "olympus-v1"
     }
     
@@ -207,7 +207,7 @@ async function validateProposal(asset = 'BNKR', amount = 50, entryPrice = 0.042)
     take_profit: entryPrice * 1.2,
     leverage: 1,
     rationale: `JS API test for ${asset}`,
-    agent_id: 'js_example_agent',
+    agent_id: 'achilles', // Must match the agent id tied to your X-Agent-Key
     policy_set_id: 'olympus-v1'
   };
 
@@ -257,8 +257,10 @@ async function validateProposal(asset = 'BNKR', amount = 50, entryPrice = 0.042)
 ### 401 Unauthorized
 ```json
 {
-  "error": "Unauthorized",
-  "message": "Missing or invalid X-Agent-Key header"
+  "code": "UNAUTHORIZED",
+  "error": "Missing X-Agent-Key header",
+  "message": "The X-Agent-Key header is required for this endpoint",
+  "timestamp": "2026-02-28T15:30:00.000Z"
 }
 ```
 **Fix:** Check your agent key with the EP operator.
@@ -266,8 +268,13 @@ async function validateProposal(asset = 'BNKR', amount = 50, entryPrice = 0.042)
 ### 400 Bad Request (Schema Violation)
 ```json
 {
+  "code": "INVALID_SCHEMA",
   "error": "Invalid proposal schema",
-  "details": ["Field 'amount_usd' must be a number"]
+  "message": "The request body does not match the OpportunityProposal schema",
+  "details": [
+    { "field": "amount_usd", "message": "amount_usd must be a number >= 0.01" }
+  ],
+  "timestamp": "2026-02-28T15:30:00.000Z"
 }
 ```
 **Fix:** Validate your JSON against the schema at `/schemas/opportunity-proposal.v1.json`.
@@ -275,10 +282,15 @@ async function validateProposal(asset = 'BNKR', amount = 50, entryPrice = 0.042)
 ### 429 Rate Limited
 ```json
 {
+  "code": "RATE_LIMITED",
   "error": "Rate limit exceeded",
-  "retry_after": 60
+  "message": "Too many requests for this agent. Please try again later.",
+  "retry_after": 60,
+  "timestamp": "2026-02-28T15:30:00.000Z"
 }
 ```
+
+**Header:** `Retry-After: 60`
 **Fix:** Implement exponential backoff. Default rate limit: 100 req/min per agent.
 
 ---

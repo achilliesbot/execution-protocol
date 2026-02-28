@@ -16,6 +16,12 @@
     "base_pay_ready"
   ],
   "properties": {
+    "code": {
+      "type": "string",
+      "description": "Optional standardized code used on non-200 responses.",
+      "enum": ["POLICY_VIOLATION"],
+      "example": "POLICY_VIOLATION"
+    },
     "valid": {
       "type": "boolean",
       "description": "Whether the proposal passed all policy constraints. True if violations array is empty.",

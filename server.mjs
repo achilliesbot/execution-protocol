@@ -10,7 +10,7 @@
 
 import express from 'express';
 import cors from 'cors';
-import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
+import rateLimit from 'express-rate-limit';
 import { agentAuthMiddleware } from './src/auth/agentAuth.js';
 import { validateRoute } from './src/routes/validate.js';
 import { statusRoute } from './src/routes/status.js';
@@ -23,6 +23,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+// Trust proxy must be explicitly enabled to avoid X-Forwarded-For spoofing.
+// Set TRUST_PROXY=1 in production if you are behind a single reverse proxy.
+const TRUST_PROXY = process.env.TRUST_PROXY === '1' || process.env.TRUST_PROXY === 'true';
+app.set('trust proxy', TRUST_PROXY ? 1 : false);
+
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -36,8 +41,9 @@ const publicRateLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: ipKeyGenerator,
+  keyGenerator: (req) => req.ip,
   handler: (req, res) => {
+    res.set('Retry-After', '60');
     res.status(429).json({
       code: 'RATE_LIMITED',
       error: 'Rate limit exceeded',
@@ -54,14 +60,9 @@ const authRateLimiter = rateLimit({
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req, res) => {
-    // Use agent ID if authenticated, otherwise use IP generator
-    if (req.agent?.id) {
-      return req.agent.id;
-    }
-    return ipKeyGenerator(req, res);
-  },
+  keyGenerator: (req) => (req.agent?.id ? req.agent.id : req.ip),
   handler: (req, res) => {
+    res.set('Retry-After', '60');
     res.status(429).json({
       code: 'RATE_LIMITED',
       error: 'Rate limit exceeded',
@@ -132,8 +133,19 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   console.error('API Error:', err);
   
-  // Check if it's a rate limit error from express-rate-limit
+  // JSON parse / body errors
+  if (err?.type === 'entity.parse.failed' || err instanceof SyntaxError) {
+    return res.status(400).json({
+      code: 'INVALID_SCHEMA',
+      error: 'Invalid JSON body',
+      message: 'Request body must be valid JSON',
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  // Rate limit errors
   if (err.status === 429 || err.name === 'RateLimitError') {
+    res.set('Retry-After', '60');
     return res.status(429).json({
       code: 'RATE_LIMITED',
       error: 'Rate limit exceeded',
@@ -142,7 +154,7 @@ app.use((err, req, res, next) => {
       timestamp: new Date().toISOString()
     });
   }
-  
+
   res.status(500).json({
     code: 'INTERNAL_ERROR',
     error: 'Internal server error',

@@ -132,7 +132,8 @@ export function evaluateProposal(proposal, agentId) {
  * Create verification result
  */
 function createResult(proposal, violations, agentId, policy) {
-  const planSummary = `${proposal.asset} ${proposal.direction.toUpperCase()} $${proposal.amount_usd} @ ${proposal.entry_price} | SL: ${proposal.stop_loss} | TP: ${proposal.take_profit} | ${proposal.leverage}x`;
+  const leverage = proposal.leverage ?? 1;
+  const planSummary = `${proposal.asset} ${proposal.direction.toUpperCase()} $${proposal.amount_usd} @ ${proposal.entry_price} | SL: ${proposal.stop_loss} | TP: ${proposal.take_profit} | ${leverage}x`;
   
   // Deterministic hash: exclude timestamp to ensure identical proposals = identical hashes
   const hashData = {
@@ -147,7 +148,10 @@ function createResult(proposal, violations, agentId, policy) {
     violations,
     proof_hash: createHash('sha256').update(JSON.stringify(hashData)).digest('hex').slice(0, 32),
     plan_summary: planSummary,
-    policy_set_hash: policy ? createHash('sha256').update(JSON.stringify(policy)).digest('hex').slice(0, 32) : 'missing',
+    policy_set_hash: createHash('sha256')
+      .update(policy ? JSON.stringify(policy) : 'missing')
+      .digest('hex')
+      .slice(0, 32),
     session_id: proposal.session_id || null,
     timestamp: new Date().toISOString(),
     pricing_version: 'free-v1',
