@@ -1,0 +1,8 @@
+{
+  "service": "execution-protocol",
+  "version": "1.0.0",
+  "mode": "DRY_RUN",
+  "uptime_seconds": 0,
+  "audit_status": "PASS",
+  "timestamp": "2026-02-28T15:53:15.638Z"
+}

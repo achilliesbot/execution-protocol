@@ -10,6 +10,7 @@
  */
 
 import { evaluateProposal } from '../policy/PolicyEngine.js';
+import { recordValidation } from '../telemetry/Telemetry.js';
 
 // In-memory idempotency cache: key -> { result, timestamp }
 const idempotencyCache = new Map();
@@ -123,6 +124,9 @@ export function validateRoute(req, res) {
     
     // Evaluate against policy
     const result = evaluateProposal(proposal, agentId);
+    
+    // Record for telemetry
+    recordValidation(result);
     
     // Log for audit (async, don't block response)
     logValidation(agentId, proposal, result).catch(console.error);

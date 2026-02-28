@@ -15,6 +15,7 @@ import { agentAuthMiddleware } from './src/auth/agentAuth.js';
 import { validateRoute } from './src/routes/validate.js';
 import { statusRoute } from './src/routes/status.js';
 import { simulateRoute, proofRoute, sessionRoute } from './src/routes/simulate.js';
+import { startTelemetry, getCurrentStatus, getCurrentValidationStats } from './src/telemetry/Telemetry.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -97,6 +98,15 @@ app.get('/schemas/verification-result.v1.json', publicRateLimiter, (req, res) =>
   res.sendFile(join(__dirname, 'src', 'schemas', 'verification_result.v1.schema.json'));
 });
 
+// Telemetry endpoints (no auth required, public rate limit)
+app.get('/telemetry/status', publicRateLimiter, (req, res) => {
+  res.json(getCurrentStatus());
+});
+
+app.get('/telemetry/validations', publicRateLimiter, (req, res) => {
+  res.json(getCurrentValidationStats());
+});
+
 // Core validation endpoint (auth + rate limit required)
 app.post('/ep/validate', authRateLimiter, validateRoute);
 
@@ -141,6 +151,9 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Start telemetry collection
+startTelemetry();
+
 app.listen(PORT, () => {
   console.log('='.repeat(60));
   console.log('🚀 Execution Protocol v1.0');
@@ -151,10 +164,12 @@ app.listen(PORT, () => {
   console.log(`Rate Limits: 100 req/min (auth), 200 req/min (public)`);
   console.log('='.repeat(60));
   console.log('Endpoints:');
-  console.log(`  GET  /ep/health     (no auth)`);
-  console.log(`  GET  /ep/status     (no auth)`);
-  console.log(`  GET  /schemas/*     (no auth)`);
-  console.log(`  POST /ep/validate   (auth + rate limit)`);
-  console.log(`  POST /ep/simulate   (auth + rate limit)`);
+  console.log(`  GET  /ep/health              (no auth)`);
+  console.log(`  GET  /ep/status              (no auth)`);
+  console.log(`  GET  /schemas/*              (no auth)`);
+  console.log(`  GET  /telemetry/status       (no auth)`);
+  console.log(`  GET  /telemetry/validations  (no auth)`);
+  console.log(`  POST /ep/validate            (auth + rate limit)`);
+  console.log(`  POST /ep/simulate            (auth + rate limit)`);
   console.log('='.repeat(60));
 });

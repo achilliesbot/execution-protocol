@@ -8,6 +8,7 @@
  */
 
 import { evaluateProposal } from '../policy/PolicyEngine.js';
+import { recordValidation } from '../telemetry/Telemetry.js';
 
 // Simple validation (same as validate route)
 function validateProposalSchema(body) {
@@ -154,6 +155,9 @@ export function simulateRoute(req, res) {
     
     // Step 1: Validate against policy
     const validationResult = evaluateProposal(proposal, agentId);
+    
+    // Record for telemetry
+    recordValidation(validationResult);
     
     // Step 2: Calculate simulation metrics
     const simulation = calculateSimulation(proposal, validationResult);
