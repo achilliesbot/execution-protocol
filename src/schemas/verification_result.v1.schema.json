@@ -1,0 +1,161 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://execution-protocol.achilles.ai/schemas/verification-result.v1.schema.json",
+  "title": "VerificationResult v1",
+  "description": "Output of the Execution Protocol's policy validation. Returned for every OpportunityProposal. Contains validation status, risk assessment, and proof of verification.",
+  "type": "object",
+  "required": [
+    "valid",
+    "risk_score",
+    "violations",
+    "proof_hash",
+    "plan_summary",
+    "policy_set_hash",
+    "timestamp",
+    "pricing_version",
+    "base_pay_ready"
+  ],
+  "properties": {
+    "valid": {
+      "type": "boolean",
+      "description": "Whether the proposal passed all policy constraints. True if violations array is empty.",
+      "example": true
+    },
+    "risk_score": {
+      "type": "string",
+      "description": "Aggregate risk assessment based on violations.",
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      "example": "LOW"
+    },
+    "violations": {
+      "type": "array",
+      "description": "List of policy constraint violations. Empty array means proposal is valid.",
+      "items": {
+        "type": "object",
+        "required": ["type", "field", "constraint", "actual", "limit", "message"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Category of violation.",
+            "enum": [
+              "unauthorized_asset",
+              "position_oversized",
+              "excessive_leverage",
+              "stop_loss_missing",
+              "take_profit_missing",
+              "policy_not_found",
+              "invalid_schema"
+            ],
+            "example": "position_oversized"
+          },
+          "field": {
+            "type": "string",
+            "description": "Field that violated the constraint.",
+            "example": "amount_usd"
+          },
+          "constraint": {
+            "type": "string",
+            "description": "Name of the constraint that was violated.",
+            "example": "max_single_position"
+          },
+          "actual": {
+            "description": "Actual value provided in the proposal.",
+            "example": 1000
+          },
+          "limit": {
+            "description": "Maximum allowed value per policy.",
+            "example": 100
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable explanation of the violation.",
+            "example": "Position $1000 exceeds $100 max"
+          }
+        }
+      },
+      "example": []
+    },
+    "proof_hash": {
+      "type": "string",
+      "description": "Deterministic hash of the verification. Can be used to lookup proof in Verification Explorer.",
+      "pattern": "^[a-f0-9]{32,64}$",
+      "example": "a1b2c3d4e5f678901234567890123456"
+    },
+    "plan_summary": {
+      "type": "string",
+      "description": "Human-readable summary of the proposed trade plan.",
+      "example": "BNKR BUY $35.00 @ 0.042 | SL: 0.038 | TP: 0.05 | 1x"
+    },
+    "policy_set_hash": {
+      "type": "string",
+      "description": "Hash of the policy set used for validation. Enables verification that constraints haven't changed.",
+      "pattern": "^[a-f0-9]{32,64}$",
+      "example": "01a85db0f653ef6075aba2c2e2f6adce"
+    },
+    "session_id": {
+      "type": ["string", "null"],
+      "description": "Session ID from the proposal, echoed back. Null if not provided.",
+      "example": "sess_1740751234567_x1y2z"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of when verification occurred.",
+      "example": "2026-02-28T15:30:00.000Z"
+    },
+    "pricing_version": {
+      "type": "string",
+      "description": "Pricing tier of the verification response.",
+      "enum": ["free-v1", "standard-v1", "premium-v1"],
+      "example": "free-v1"
+    },
+    "payment_receipt": {
+      "type": ["string", "null"],
+      "description": "Receipt ID if this was a paid verification. Null for free tier.",
+      "example": null
+    },
+    "base_pay_ready": {
+      "type": "boolean",
+      "description": "Whether this verification can be settled via Base Pay. Always false until payment integration is active.",
+      "example": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "valid": true,
+      "risk_score": "LOW",
+      "violations": [],
+      "proof_hash": "a1b2c3d4e5f678901234567890123456",
+      "plan_summary": "BNKR BUY $35.00 @ 0.042 | SL: 0.038 | TP: 0.05 | 1x",
+      "policy_set_hash": "01a85db0f653ef6075aba2c2e2f6adce",
+      "session_id": "sess_1740751234567_x1y2z",
+      "timestamp": "2026-02-28T15:30:00.000Z",
+      "pricing_version": "free-v1",
+      "payment_receipt": null,
+      "base_pay_ready": false
+    },
+    {
+      "valid": false,
+      "risk_score": "HIGH",
+      "violations": [
+        {
+          "type": "position_oversized",
+          "field": "amount_usd",
+          "constraint": "max_single_position",
+          "actual": 1000,
+          "limit": 100,
+          "message": "Position $1000 exceeds $100 max"
+        }
+      ],
+      "proof_hash": "b2c3d4e5f6a7890123456789012345678",
+      "plan_summary": "BNKR BUY $1000.00 @ 0.042 | SL: null | TP: null | 1x",
+      "policy_set_hash": "01a85db0f653ef6075aba2c2e2f6adce",
+      "session_id": "sess_1740751234567_x1y2z",
+      "timestamp": "2026-02-28T15:30:00.000Z",
+      "pricing_version": "free-v1",
+      "payment_receipt": null,
+      "base_pay_ready": false
+    }
+  ]
+}

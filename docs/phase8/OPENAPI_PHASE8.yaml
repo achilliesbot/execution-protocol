@@ -1,0 +1,539 @@
+openapi: 3.0.3
+info:
+  title: Execution Protocol API
+  description: |
+    Deterministic, verifiable policy validation for AI agent trading.
+    
+    Execution Protocol validates trade opportunities against policy constraints,
+    producing cryptographic proof hashes that can be independently verified.
+    
+    ## Authentication
+    All endpoints except `/ep/health` and `/ep/status` require the `X-Agent-Key` header.
+    Contact the EP operator to obtain an agent key.
+    
+    ## Determinism Guarantee
+    Given the same OpportunityProposal and policy set, EP produces:
+    - Identical validation results
+    - Identical proof hashes
+    - Identical violation lists
+    
+    This enables replayability, attestation, and dispute resolution.
+  version: 1.0.0
+  contact:
+    name: Execution Protocol Support
+    url: https://execution-protocol.ai/support
+  license:
+    name: Proprietary
+    url: https://execution-protocol.ai/license
+
+servers:
+  - url: https://api.execution-protocol.ai
+    description: Production
+  - url: http://localhost:3000
+    description: Local Development
+
+tags:
+  - name: Health
+    description: Service health and status
+  - name: Validation
+    description: Core policy validation
+  - name: Schemas
+    description: JSON Schema definitions
+
+paths:
+  /ep/health:
+    get:
+      summary: Health Check
+      description: Returns service health status. No authentication required.
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - service
+                  - version
+                  - timestamp
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded]
+                    example: healthy
+                  service:
+                    type: string
+                    example: execution-protocol
+                  version:
+                    type: string
+                    example: 1.0.0
+                  mode:
+                    type: string
+                    enum: [DRY_RUN, LIVE]
+                    example: DRY_RUN
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2026-02-28T15:30:00.000Z'
+
+  /ep/status:
+    get:
+      summary: System Status
+      description: Returns detailed system status and policy information. No authentication required.
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: System status
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - version
+                  - mode
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  version:
+                    type: string
+                    example: 1.0.0
+                  mode:
+                    type: string
+                    enum: [DRY_RUN, LIVE]
+                    example: DRY_RUN
+                  policy_set:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: olympus-v1
+                      hash:
+                        type: string
+                        example: 01a85db0f653ef6075aba2c2e2f6adce
+                  agents:
+                    type: object
+                    properties:
+                      registered:
+                        type: integer
+                        example: 3
+                      active:
+                        type: integer
+                        example: 2
+
+  /ep/validate:
+    post:
+      summary: Validate Proposal
+      description: |
+        Validates an OpportunityProposal against policy constraints.
+        
+        Returns a VerificationResult containing:
+        - Validation status (valid/invalid)
+        - Risk score (LOW/MEDIUM/HIGH/CRITICAL)
+        - List of policy violations (if any)
+        - Cryptographic proof hash
+        - Plan summary
+        
+        Requires X-Agent-Key header.
+      tags:
+        - Validation
+      security:
+        - AgentKey: []
+      requestBody:
+        required: true
+        description: Trade opportunity proposal
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpportunityProposal'
+            examples:
+              valid-buy:
+                summary: Valid buy proposal
+                value:
+                  proposal_id: prop_1740751234567_abc123
+                  session_id: sess_1740751234567_xyz789
+                  asset: BNKR
+                  direction: buy
+                  amount_usd: 50
+                  entry_price: 0.042
+                  stop_loss: 0.038
+                  take_profit: 0.05
+                  leverage: 1
+                  rationale: Conservative entry on established token
+                  agent_id: my_agent_v1
+                  policy_set_id: olympus-v1
+              valid-sell:
+                summary: Valid sell proposal
+                value:
+                  proposal_id: prop_1740751234568_def456
+                  session_id: sess_1740751234568_abc012
+                  asset: ETH
+                  direction: sell
+                  amount_usd: 100
+                  entry_price: 3000
+                  stop_loss: 3200
+                  take_profit: 2500
+                  leverage: 1
+                  rationale: Taking profits at resistance
+                  agent_id: my_agent_v1
+                  policy_set_id: olympus-v1
+      responses:
+        '200':
+          description: Validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationResult'
+              examples:
+                valid:
+                  summary: Valid proposal
+                  value:
+                    valid: true
+                    risk_score: LOW
+                    violations: []
+                    proof_hash: a1b2c3d4e5f6789012345678901234567890abcd
+                    plan_summary: BNKR BUY $50.00 @ 0.042 | SL: 0.038 | TP: 0.05 | 1x
+                    policy_set_hash: 01a85db0f653ef6075aba2c2e2f6adce
+                    session_id: sess_1740751234567_xyz789
+                    timestamp: '2026-02-28T15:30:00.000Z'
+                    pricing_version: free-v1
+                    payment_receipt: null
+                    base_pay_ready: false
+                invalid:
+                  summary: Invalid proposal (violations)
+                  value:
+                    valid: false
+                    risk_score: HIGH
+                    violations:
+                      - type: position_oversized
+                        field: amount_usd
+                        constraint: max_single_position
+                        actual: 1000
+                        limit: 100
+                        message: Position $1000 exceeds $100 max
+                    proof_hash: b2c3d4e5f6a7890123456789012345678901bcde
+                    plan_summary: BNKR BUY $1000.00 @ 0.042 | SL: 0.038 | TP: 0.05 | 1x
+                    policy_set_hash: 01a85db0f653ef6075aba2c2e2f6adce
+                    session_id: sess_1740751234567_xyz789
+                    timestamp: '2026-02-28T15:30:00.000Z'
+                    pricing_version: free-v1
+                    payment_receipt: null
+                    base_pay_ready: false
+        '400':
+          description: Invalid request (schema violation)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Invalid proposal schema
+                message: "Field 'amount_usd' must be a number"
+                timestamp: '2026-02-28T15:30:00.000Z'
+        '401':
+          description: Unauthorized (missing or invalid agent key)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Unauthorized
+                message: Missing or invalid X-Agent-Key header
+                timestamp: '2026-02-28T15:30:00.000Z'
+        '429':
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: Request limit per window
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: Remaining requests in window
+            X-RateLimit-Reset:
+              schema:
+                type: integer
+              description: Unix timestamp when limit resets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Rate limit exceeded
+                retry_after: 60
+                timestamp: '2026-02-28T15:30:00.000Z'
+
+  /schemas/opportunity-proposal.v1.json:
+    get:
+      summary: OpportunityProposal Schema
+      description: Returns the JSON Schema for OpportunityProposal v1. No authentication required.
+      tags:
+        - Schemas
+      security: []
+      responses:
+        '200':
+          description: JSON Schema document
+          content:
+            application/json:
+              schema:
+                type: object
+                description: JSON Schema Draft 07 document
+
+  /schemas/verification-result.v1.json:
+    get:
+      summary: VerificationResult Schema
+      description: Returns the JSON Schema for VerificationResult v1. No authentication required.
+      tags:
+        - Schemas
+      security: []
+      responses:
+        '200':
+          description: JSON Schema document
+          content:
+            application/json:
+              schema:
+                type: object
+                description: JSON Schema Draft 07 document
+
+components:
+  securitySchemes:
+    AgentKey:
+      type: apiKey
+      in: header
+      name: X-Agent-Key
+      description: Agent authentication key. Contact EP operator to obtain.
+
+  schemas:
+    OpportunityProposal:
+      type: object
+      required:
+        - proposal_id
+        - session_id
+        - asset
+        - direction
+        - amount_usd
+        - entry_price
+        - agent_id
+        - policy_set_id
+      properties:
+        proposal_id:
+          type: string
+          pattern: '^prop_[0-9]+_[a-z0-9]+$'
+          description: Unique identifier for this proposal
+          example: prop_1740751234567_abc123
+        session_id:
+          type: string
+          description: Session identifier for audit trail
+          example: sess_1740751234567_xyz789
+        asset:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: Trading asset symbol
+          example: BNKR
+        direction:
+          type: string
+          enum: [buy, sell]
+          description: Trade direction
+          example: buy
+        amount_usd:
+          type: number
+          minimum: 0.01
+          description: Position size in USD
+          example: 50
+        entry_price:
+          type: number
+          minimum: 0
+          description: Proposed entry price
+          example: 0.042
+        leverage:
+          type: number
+          minimum: 1
+          default: 1
+          description: Leverage multiplier
+          example: 1
+        stop_loss:
+          type: number
+          minimum: 0
+          description: Stop loss price (null if not required)
+          example: 0.038
+        take_profit:
+          type: number
+          minimum: 0
+          description: Take profit price (null if not required)
+          example: 0.05
+        rationale:
+          type: string
+          maxLength: 2000
+          description: Agent's reasoning for this trade
+          example: Conservative entry on established token
+        agent_id:
+          type: string
+          description: Identifier of the submitting agent
+          example: my_agent_v1
+        policy_set_id:
+          type: string
+          description: Policy set to validate against
+          example: olympus-v1
+        metadata:
+          type: object
+          description: Optional agent-specific metadata
+          additionalProperties: true
+      additionalProperties: false
+
+    VerificationResult:
+      type: object
+      required:
+        - valid
+        - risk_score
+        - violations
+        - proof_hash
+        - plan_summary
+        - policy_set_hash
+        - timestamp
+        - pricing_version
+        - base_pay_ready
+      properties:
+        valid:
+          type: boolean
+          description: Whether proposal passed all constraints
+          example: true
+        risk_score:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          description: Aggregate risk assessment
+          example: LOW
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Violation'
+          description: List of policy violations (empty if valid)
+          example: []
+        proof_hash:
+          type: string
+          pattern: '^[a-f0-9]{32,64}$'
+          description: Cryptographic hash of verification
+          example: a1b2c3d4e5f6789012345678901234567890abcd
+        plan_summary:
+          type: string
+          description: Human-readable plan summary
+          example: BNKR BUY $50.00 @ 0.042 | SL: 0.038 | TP: 0.05 | 1x
+        policy_set_hash:
+          type: string
+          pattern: '^[a-f0-9]{32,64}$'
+          description: Hash of policy set used for validation
+          example: 01a85db0f653ef6075aba2c2e2f6adce
+        session_id:
+          type: string
+          nullable: true
+          description: Session ID from proposal
+          example: sess_1740751234567_xyz789
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp of validation
+          example: '2026-02-28T15:30:00.000Z'
+        pricing_version:
+          type: string
+          enum: [free-v1, standard-v1, premium-v1]
+          description: Pricing tier of response
+          example: free-v1
+        payment_receipt:
+          type: string
+          nullable: true
+          description: Receipt ID for paid verifications
+          example: rcpt_1234567890
+        base_pay_ready:
+          type: boolean
+          description: Whether Base Pay settlement is available
+          example: false
+      additionalProperties: false
+
+    Violation:
+      type: object
+      required:
+        - type
+        - field
+        - constraint
+        - actual
+        - limit
+        - message
+      properties:
+        type:
+          type: string
+          enum:
+            - unauthorized_asset
+            - position_oversized
+            - excessive_leverage
+            - stop_loss_missing
+            - take_profit_missing
+            - policy_not_found
+            - invalid_schema
+          description: Category of violation
+          example: position_oversized
+        field:
+          type: string
+          description: Field that violated the constraint
+          example: amount_usd
+        constraint:
+          type: string
+          description: Name of the constraint
+          example: max_single_position
+        actual:
+          description: Actual value provided
+          example: 1000
+        limit:
+          description: Maximum allowed value
+          example: 100
+        message:
+          type: string
+          description: Human-readable explanation
+          example: Position $1000 exceeds $100 max
+
+    Error:
+      type: object
+      required:
+        - error
+        - timestamp
+      properties:
+        error:
+          type: string
+          description: Error code or type
+          example: Unauthorized
+        message:
+          type: string
+          description: Human-readable error message
+          example: Missing or invalid X-Agent-Key header
+        retry_after:
+          type: integer
+          description: Seconds until retry (rate limit only)
+          example: 60
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+          example: '2026-02-28T15:30:00.000Z'
+
+  headers:
+    X-RateLimit-Limit:
+      description: Request limit per window
+      schema:
+        type: integer
+      example: 100
+    X-RateLimit-Remaining:
+      description: Remaining requests in window
+      schema:
+        type: integer
+      example: 87
+    X-RateLimit-Reset:
+      description: Unix timestamp when limit resets
+      schema:
+        type: integer
+      example: 1740751800

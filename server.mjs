@@ -51,6 +51,15 @@ app.post('/ep/simulate', simulateRoute);
 // app.get('/ep/proof/:hash', proofRoute); // Phase 3: Guardian attestation
 app.get('/ep/session/:id', sessionRoute);
 
+// Schema endpoints — Phase 8: Public schemas (no auth required)
+app.get('/schemas/opportunity-proposal.v1.json', (req, res) => {
+  res.sendFile(join(__dirname, 'src', 'schemas', 'opportunity_proposal.v1.schema.json'));
+});
+
+app.get('/schemas/verification-result.v1.json', (req, res) => {
+  res.sendFile(join(__dirname, 'src', 'schemas', 'verification_result.v1.schema.json'));
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
