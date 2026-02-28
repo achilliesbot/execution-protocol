@@ -1,11 +1,9 @@
 /**
  * Agent Authentication Layer
  * 
- * All routes except /ep/health and /ep/status require X-Agent-Key header.
- * Invalid or missing key returns 401.
+ * All routes except /ep/health, /ep/status, /schemas/* require X-Agent-Key header.
+ * Invalid or missing key returns 401 with standardized error format.
  */
-
-import { createHash } from 'crypto';
 
 // Agent registry — loaded dynamically to support runtime env changes
 function getAgentRegistry() {
@@ -33,7 +31,12 @@ function getAgentRegistry() {
  */
 export function validateAgentKey(keyHeader) {
   if (!keyHeader) {
-    return { valid: false, error: 'Missing X-Agent-Key header' };
+    return { 
+      valid: false, 
+      code: 'UNAUTHORIZED',
+      error: 'Missing X-Agent-Key header',
+      message: 'The X-Agent-Key header is required for this endpoint'
+    };
   }
 
   // Find agent by key
@@ -48,15 +51,23 @@ export function validateAgentKey(keyHeader) {
     }
   }
 
-  return { valid: false, error: 'Invalid X-Agent-Key' };
+  return { 
+    valid: false, 
+    code: 'UNAUTHORIZED',
+    error: 'Invalid X-Agent-Key',
+    message: 'The provided X-Agent-Key is not recognized'
+  };
 }
 
 /**
  * Express middleware for auth
  */
 export function agentAuthMiddleware(req, res, next) {
-  // Skip auth for health and status endpoints
-  if (req.path === '/ep/health' || req.path === '/ep/status') {
+  // Skip auth for public endpoints
+  const publicPaths = ['/ep/health', '/ep/status'];
+  const isPublicPath = publicPaths.includes(req.path) || req.path.startsWith('/schemas/');
+  
+  if (isPublicPath) {
     return next();
   }
 
@@ -65,8 +76,9 @@ export function agentAuthMiddleware(req, res, next) {
 
   if (!result.valid) {
     return res.status(401).json({
-      error: 'Unauthorized',
-      message: result.error,
+      code: result.code,
+      error: result.error,
+      message: result.message,
       timestamp: new Date().toISOString()
     });
   }

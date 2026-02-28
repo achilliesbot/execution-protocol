@@ -10,8 +10,9 @@
     "test": "node --test dist/tests/**/*.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-rate-limit": "^8.2.1",
     "zod": "^3.22.4"
   },
   "engines": {
