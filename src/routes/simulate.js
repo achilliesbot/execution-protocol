@@ -3,7 +3,7 @@
  */
 
 // POST /ep/simulate — Simulate execution (future)
-export function simulateRoute(req: any, res: any) {
+export function simulateRoute(req, res) {
   res.status(501).json({
     error: 'Not implemented',
     message: 'Simulation endpoint coming in v1.1',
@@ -12,7 +12,7 @@ export function simulateRoute(req: any, res: any) {
 }
 
 // GET /ep/proof/:hash — Get verification proof (future)
-export function proofRoute(req: any, res: any) {
+export function proofRoute(req, res) {
   res.status(501).json({
     error: 'Not implemented',
     message: 'Proof retrieval coming in v1.1',
@@ -21,7 +21,7 @@ export function proofRoute(req: any, res: any) {
 }
 
 // Session routes (future)
-export function sessionRoute(req: any, res: any) {
+export function sessionRoute(req, res) {
   res.status(501).json({
     error: 'Not implemented',
     message: 'Session management coming in v1.1',

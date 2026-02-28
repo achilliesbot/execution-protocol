@@ -2,7 +2,7 @@
  * GET /ep/status — Service status
  */
 
-export function statusRoute(req: any, res: any) {
+export function statusRoute(req, res) {
   res.json({
     service: 'Execution Protocol',
     version: '1.0.0',

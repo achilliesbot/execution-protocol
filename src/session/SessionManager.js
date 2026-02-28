@@ -10,14 +10,6 @@ import { writeFileSync, readFileSync, existsSync, mkdirSync, readdirSync } from 
 import { join } from 'path';
 import { homedir } from 'os';
 
-export interface Session {
-  id: string;
-  agent_id: string;
-  created_at: string;
-  status: 'active' | 'closed' | 'failed';
-  proposal_count: number;
-}
-
 const SESSIONS_DIR = join(homedir(), '.openclaw', 'sessions');
 
 // Ensure directory exists
@@ -27,17 +19,17 @@ try {
   // Directory may already exist
 }
 
-function getSessionPath(sessionId: string): string {
+function getSessionPath(sessionId) {
   return join(SESSIONS_DIR, `${sessionId}.jsonl`);
 }
 
-function writeSession(session: Session): void {
+function writeSession(session) {
   const path = getSessionPath(session.id);
   const line = JSON.stringify(session) + '\n';
   writeFileSync(path, line);
 }
 
-function readSession(sessionId: string): Session | null {
+function readSession(sessionId) {
   const path = getSessionPath(sessionId);
   if (!existsSync(path)) {
     return null;
@@ -57,7 +49,7 @@ function readSession(sessionId: string): Session | null {
   }
 }
 
-function appendSessionState(session: Session): void {
+function appendSessionState(session) {
   const path = getSessionPath(session.id);
   const line = JSON.stringify(session) + '\n';
   
@@ -67,9 +59,8 @@ function appendSessionState(session: Session): void {
 }
 
 export class SessionManager {
-  private memoryCache: Map<string, Session> = new Map();
-
   constructor() {
+    this.memoryCache = new Map();
     // On startup, load all existing sessions into memory cache
     this.loadAllSessions();
   }
@@ -77,7 +68,7 @@ export class SessionManager {
   /**
    * Load all existing sessions from disk
    */
-  private loadAllSessions(): void {
+  loadAllSessions() {
     try {
       if (!existsSync(SESSIONS_DIR)) return;
       
@@ -102,8 +93,8 @@ export class SessionManager {
   /**
    * Create new session for agent
    */
-  createSession(agentId: string): Session {
-    const session: Session = {
+  createSession(agentId) {
+    const session = {
       id: `sess_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       agent_id: agentId,
       created_at: new Date().toISOString(),
@@ -123,7 +114,7 @@ export class SessionManager {
   /**
    * Get session by ID (scoped to agent)
    */
-  getSession(sessionId: string, agentId: string): Session | null {
+  getSession(sessionId, agentId) {
     // Check memory cache first
     let session = this.memoryCache.get(sessionId);
     
@@ -146,7 +137,7 @@ export class SessionManager {
   /**
    * Close session
    */
-  closeSession(sessionId: string, agentId: string): boolean {
+  closeSession(sessionId, agentId) {
     const session = this.getSession(sessionId, agentId);
     if (!session) return false;
     
@@ -164,7 +155,7 @@ export class SessionManager {
   /**
    * Increment proposal count
    */
-  incrementProposal(sessionId: string, agentId: string): void {
+  incrementProposal(sessionId, agentId) {
     const session = this.getSession(sessionId, agentId);
     if (session) {
       session.proposal_count++;
@@ -180,8 +171,8 @@ export class SessionManager {
   /**
    * Get all active sessions for an agent
    */
-  getAgentSessions(agentId: string): Session[] {
-    const sessions: Session[] = [];
+  getAgentSessions(agentId) {
+    const sessions = [];
     
     for (const session of this.memoryCache.values()) {
       if (session.agent_id === agentId && session.status === 'active') {

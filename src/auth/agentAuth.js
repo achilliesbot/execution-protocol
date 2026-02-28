@@ -7,21 +7,8 @@
 
 import { createHash } from 'crypto';
 
-export interface Agent {
-  id: string;
-  key: string;
-  tier: 'internal' | 'external' | 'enterprise';
-}
-
-export interface AuthResult {
-  valid: boolean;
-  agent_id?: string;
-  tier?: string;
-  error?: string;
-}
-
 // Agent registry — loaded dynamically to support runtime env changes
-function getAgentRegistry(): Record<string, Agent> {
+function getAgentRegistry() {
   return {
     achilles: {
       id: 'achilles',
@@ -44,7 +31,7 @@ function getAgentRegistry(): Record<string, Agent> {
 /**
  * Validate X-Agent-Key header
  */
-export function validateAgentKey(keyHeader: string | undefined): AuthResult {
+export function validateAgentKey(keyHeader) {
   if (!keyHeader) {
     return { valid: false, error: 'Missing X-Agent-Key header' };
   }
@@ -67,7 +54,7 @@ export function validateAgentKey(keyHeader: string | undefined): AuthResult {
 /**
  * Express middleware for auth
  */
-export function agentAuthMiddleware(req: any, res: any, next: any) {
+export function agentAuthMiddleware(req, res, next) {
   // Skip auth for health and status endpoints
   if (req.path === '/ep/health' || req.path === '/ep/status') {
     return next();

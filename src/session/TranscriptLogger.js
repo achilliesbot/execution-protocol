@@ -12,17 +12,6 @@ import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
 
-export interface TranscriptEntry {
-  entry_id: string;
-  timestamp: string;
-  session_id: string;
-  agent_id: string;
-  proposal_id: string;
-  verification_result: any;
-  prev_entry_hash: string | null;
-  entry_hash: string;
-}
-
 const TRANSCRIPTS_DIR = join(homedir(), '.openclaw', 'transcripts');
 
 // Ensure directory exists
@@ -32,11 +21,11 @@ try {
   // Directory may already exist
 }
 
-function getTranscriptPath(agentId: string): string {
+function getTranscriptPath(agentId) {
   return join(TRANSCRIPTS_DIR, `${agentId}.jsonl`);
 }
 
-function readTranscriptFromDisk(agentId: string): TranscriptEntry[] {
+function readTranscriptFromDisk(agentId) {
   const path = getTranscriptPath(agentId);
   if (!existsSync(path)) {
     return [];
@@ -56,7 +45,7 @@ function readTranscriptFromDisk(agentId: string): TranscriptEntry[] {
   }
 }
 
-function appendEntryToDisk(agentId: string, entry: TranscriptEntry): void {
+function appendEntryToDisk(agentId, entry) {
   const path = getTranscriptPath(agentId);
   const line = JSON.stringify(entry) + '\n';
   
@@ -65,9 +54,8 @@ function appendEntryToDisk(agentId: string, entry: TranscriptEntry): void {
 }
 
 export class TranscriptLogger {
-  private memoryCache: Map<string, TranscriptEntry[]> = new Map();
-
   constructor() {
+    this.memoryCache = new Map();
     // Load existing transcripts on startup
     this.loadAllTranscripts();
   }
@@ -75,11 +63,11 @@ export class TranscriptLogger {
   /**
    * Load all existing transcripts from disk
    */
-  private loadAllTranscripts(): void {
+  loadAllTranscripts() {
     try {
       if (!existsSync(TRANSCRIPTS_DIR)) return;
       
-      const files = require('fs').readdirSync(TRANSCRIPTS_DIR).filter((f: string) => f.endsWith('.jsonl'));
+      const files = readdirSync(TRANSCRIPTS_DIR).filter(f => f.endsWith('.jsonl'));
       
       for (const file of files) {
         const agentId = file.replace('.jsonl', '');
@@ -100,12 +88,7 @@ export class TranscriptLogger {
   /**
    * Log entry to agent's transcript
    */
-  logEntry(
-    agentId: string,
-    sessionId: string,
-    proposalId: string,
-    verificationResult: any
-  ): TranscriptEntry {
+  logEntry(agentId, sessionId, proposalId, verificationResult) {
     // Get or load transcript
     let agentTranscript = this.memoryCache.get(agentId);
     if (!agentTranscript) {
@@ -131,7 +114,7 @@ export class TranscriptLogger {
       .update(JSON.stringify(entryData))
       .digest('hex');
     
-    const entry: TranscriptEntry = {
+    const entry = {
       ...entryData,
       entry_hash: entryHash
     };
@@ -149,7 +132,7 @@ export class TranscriptLogger {
   /**
    * Get transcript for agent
    */
-  getTranscript(agentId: string): TranscriptEntry[] {
+  getTranscript(agentId) {
     // Check memory cache first
     let transcript = this.memoryCache.get(agentId);
     if (transcript) {
@@ -165,7 +148,7 @@ export class TranscriptLogger {
   /**
    * Verify hash chain integrity
    */
-  verifyChain(agentId: string): boolean {
+  verifyChain(agentId) {
     const transcript = this.getTranscript(agentId);
     
     for (let i = 1; i < transcript.length; i++) {
@@ -177,6 +160,9 @@ export class TranscriptLogger {
     return true;
   }
 }
+
+// Need to import readdirSync for loadAllTranscripts
+import { readdirSync } from 'fs';
 
 // Singleton instance
 export default new TranscriptLogger();

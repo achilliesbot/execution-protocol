@@ -27,7 +27,7 @@ const OpportunityProposalSchema = z.object({
 /**
  * Validate route handler
  */
-export function validateRoute(req: any, res: any) {
+export function validateRoute(req, res) {
   try {
     // Schema validation
     const parseResult = OpportunityProposalSchema.safeParse(req.body);
@@ -65,11 +65,7 @@ export function validateRoute(req: any, res: any) {
 /**
  * Async audit logging
  */
-async function logValidation(
-  agentId: string,
-  proposal: any,
-  result: any
-): Promise<void> {
+async function logValidation(agentId, proposal, result) {
   // TODO: Write to audit log / transcript
   // For now, console log
   console.log('[AUDIT]', {
