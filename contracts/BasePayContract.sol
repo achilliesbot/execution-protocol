@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+// Minimal ERC20 interface (USDC)
+interface IERC20 {
+    function transferFrom(address from, address to, uint256 amount) external returns (bool);
+    function transfer(address to, uint256 amount) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+}
+
 /// @title BasePayContract
 /// @notice Accepts USDC micro-fee payments per EP validation request (requestId).
 /// @dev Agents approve USDC to this contract, then call pay(requestId).
 ///      EP server verifies payment by reading receipts[requestId].
 ///      Owner can withdraw accumulated USDC.
 contract BasePayContract {
-    // Minimal ERC20 interface (USDC)
-    interface IERC20 {
-        function transferFrom(address from, address to, uint256 amount) external returns (bool);
-        function transfer(address to, uint256 amount) external returns (bool);
-        function balanceOf(address account) external view returns (uint256);
-    }
-
     struct Receipt {
         address payer;
         uint256 amount;
