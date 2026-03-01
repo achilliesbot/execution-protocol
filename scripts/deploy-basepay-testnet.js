@@ -6,14 +6,16 @@
  *
  * Prerequisites:
  * 1. Get Base Sepolia ETH from https://docs.base.org/docs/network-information#base-sepolia
- * 2. Get Base Sepolia USDC (or use any ERC20 for testing)
- * 3. Set env vars below
- * 4. Run: node scripts/deploy-basepay-testnet.js
+ * 2. Set PRIVATE_KEY env var from MetaMask
+ * 3. Run: node scripts/deploy-basepay-testnet.js
  */
 
 import { ethers } from 'ethers';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Base Sepolia USDC (canonical testnet address)
 // If unavailable, any ERC20 works for testing
@@ -38,10 +40,18 @@ async function main() {
   const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
   
   console.log('Deployer:', wallet.address);
-  console.log('Balance:', ethers.formatEther(await provider.getBalance(wallet.address)), 'ETH');
+  
+  const balance = await provider.getBalance(wallet.address);
+  console.log('Balance:', ethers.formatEther(balance), 'ETH');
+  
+  if (balance === 0n) {
+    console.error('\nERROR: Wallet has no Sepolia ETH');
+    console.error('Get Sepolia ETH from: https://docs.base.org/docs/network-information#base-sepolia');
+    process.exit(1);
+  }
 
   // Read contract bytecode
-  const artifactPath = path.resolve('artifacts/contracts/BasePayContract.sol/BasePayContract.json');
+  const artifactPath = path.resolve(__dirname, '../artifacts/contracts/BasePayContract.sol/BasePayContract.json');
   if (!fs.existsSync(artifactPath)) {
     console.error('Contract artifact not found. Run: npx hardhat compile');
     process.exit(1);
@@ -49,13 +59,15 @@ async function main() {
 
   const artifact = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
   
-  const factory = new ethers.ContractFactory(artifact.abi, artifact.bytecode, wallet);
-  
-  console.log('Constructor args:');
+  console.log('\nConstructor args:');
   console.log('  USDC:', USDC_BASE_SEPOLIA);
   console.log('  Fee:', FEE_USDC_6DP);
 
+  // Deploy
+  const factory = new ethers.ContractFactory(artifact.abi, artifact.bytecode, wallet);
   const contract = await factory.deploy(USDC_BASE_SEPOLIA, FEE_USDC_6DP);
+  
+  console.log('Deploying... tx:', contract.deploymentTransaction().hash);
   await contract.waitForDeployment();
 
   const address = await contract.getAddress();
@@ -69,6 +81,25 @@ async function main() {
   console.log(`  BASE_PAY_USDC_ADDRESS=${USDC_BASE_SEPOLIA}`);
   console.log(`  BASE_PAY_FEE_USDC=${FEE_USDC_6DP}`);
   console.log(`  BASE_RPC_URL=${RPC_URL}`);
+  
+  // Save deployment info
+  const deploymentInfo = {
+    network: 'baseSepolia',
+    contractAddress: address,
+    usdcAddress: USDC_BASE_SEPOLIA,
+    feeAmount: FEE_USDC_6DP,
+    deployer: wallet.address,
+    timestamp: new Date().toISOString(),
+    transactionHash: contract.deploymentTransaction().hash
+  };
+  
+  const deploymentPath = path.resolve(__dirname, '../deployments/base-sepolia.json');
+  fs.mkdirSync(path.dirname(deploymentPath), { recursive: true });
+  fs.writeFileSync(deploymentPath, JSON.stringify(deploymentInfo, null, 2));
+  console.log('\nDeployment saved to:', deploymentPath);
 }
 
-main().catch(console.error);
+main().catch(err => {
+  console.error('Deployment failed:', err);
+  process.exit(1);
+});
