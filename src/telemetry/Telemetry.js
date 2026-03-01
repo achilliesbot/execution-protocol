@@ -22,6 +22,15 @@ const validationStats = {
   startTime: Date.now()
 };
 
+// Payment stats accumulator (USDC micro-fees)
+const paymentStats = {
+  total_required: 0,
+  total_paid: 0,
+  total_402: 0,
+  total_usdc_6dp: 0,
+  startTime: Date.now()
+};
+
 /**
  * Ensure telemetry directory exists
  */
@@ -133,11 +142,25 @@ function writeValidationsFile() {
 /**
  * Write all telemetry files
  */
+function writePaymentsFile() {
+  const stats = {
+    total_required: paymentStats.total_required,
+    total_paid: paymentStats.total_paid,
+    total_402: paymentStats.total_402,
+    total_usdc: paymentStats.total_usdc_6dp / 1_000_000,
+    timestamp: new Date().toISOString()
+  };
+
+  const filepath = join(TELEMETRY_DIR, 'payments_24h.json');
+  writeFileSync(filepath, JSON.stringify(stats, null, 2));
+}
+
 function writeTelemetryFiles() {
   try {
     ensureTelemetryDir();
     writeStatusFile();
     writeValidationsFile();
+    writePaymentsFile();
     console.log(`[TELEMETRY] Files written at ${new Date().toISOString()}`);
   } catch (error) {
     console.error('[TELEMETRY] Error writing files:', error);
@@ -176,6 +199,29 @@ export function getCurrentStatus() {
 /**
  * Get current validation stats (for API endpoint)
  */
+export function recordPayment({ required, paid, fee_usdc_6dp }) {
+  if (required) paymentStats.total_required++;
+  if (paid) paymentStats.total_paid++;
+  if (required && !paid) paymentStats.total_402++;
+
+  if (paid && fee_usdc_6dp !== undefined && fee_usdc_6dp !== null) {
+    const n = Number(fee_usdc_6dp);
+    if (Number.isFinite(n)) {
+      paymentStats.total_usdc_6dp += n;
+    }
+  }
+}
+
+export function getCurrentPaymentStats() {
+  return {
+    total_required: paymentStats.total_required,
+    total_paid: paymentStats.total_paid,
+    total_402: paymentStats.total_402,
+    total_usdc: paymentStats.total_usdc_6dp / 1_000_000,
+    timestamp: new Date().toISOString()
+  };
+}
+
 export function getCurrentValidationStats() {
   const passRate = validationStats.total > 0 
     ? Math.round((validationStats.passed / validationStats.total) * 1000) / 1000 
@@ -194,6 +240,8 @@ export function getCurrentValidationStats() {
 export default {
   startTelemetry,
   recordValidation,
+  recordPayment,
   getCurrentStatus,
-  getCurrentValidationStats
+  getCurrentValidationStats,
+  getCurrentPaymentStats
 };

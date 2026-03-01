@@ -15,9 +15,10 @@ import { agentAuthMiddleware } from './src/auth/agentAuth.js';
 import { validateRoute } from './src/routes/validate.js';
 import { statusRoute } from './src/routes/status.js';
 import { simulateRoute, proofRoute, sessionRoute } from './src/routes/simulate.js';
-import { startTelemetry, getCurrentStatus, getCurrentValidationStats } from './src/telemetry/Telemetry.js';
+import { startTelemetry, getCurrentStatus, getCurrentValidationStats, getCurrentPaymentStats, recordPayment } from './src/telemetry/Telemetry.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { computeRequestId, getBasePayConfig, verifyBasePay } from './src/payments/basePay.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -108,8 +109,63 @@ app.get('/telemetry/validations', publicRateLimiter, (req, res) => {
   res.json(getCurrentValidationStats());
 });
 
+app.get('/telemetry/payments', publicRateLimiter, (req, res) => {
+  res.json(getCurrentPaymentStats());
+});
+
+// BasePay middleware for /ep/validate
+async function basePayMiddleware(req, res, next) {
+  try {
+    const { enabled, contractAddress, feeUsdc } = getBasePayConfig();
+
+    // Only enforced for /ep/validate
+    if (!enabled) {
+      recordPayment({ required: false, paid: true, fee_usdc_6dp: 0 });
+      return next();
+    }
+
+    const agentId = req.agent?.id || 'unknown';
+    const policySetId = req.body?.policy_set_id || 'unknown';
+
+    const requestId = computeRequestId({ agentId, policySetId, proposal: req.body });
+    req.basePay = { requestId };
+
+    const v = await verifyBasePay({ requestId });
+
+    const requiredFee = v.feeAmount || feeUsdc;
+
+    if (!v.paid) {
+      recordPayment({ required: true, paid: false, fee_usdc_6dp: requiredFee });
+      return res.status(402).json({
+        code: 'PAYMENT_REQUIRED',
+        error: 'Payment required',
+        message: 'USDC fee required before validation',
+        fee_usdc_6dp: String(requiredFee),
+        request_id: requestId,
+        contract_address: contractAddress,
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    recordPayment({ required: true, paid: true, fee_usdc_6dp: requiredFee });
+    return next();
+  } catch (err) {
+    // Fail closed if BasePay enabled but verification errors
+    console.error('[BASE_PAY] Verification error:', err);
+    recordPayment({ required: true, paid: false, fee_usdc_6dp: getBasePayConfig().feeUsdc });
+    return res.status(402).json({
+      code: 'PAYMENT_REQUIRED',
+      error: 'Payment verification failed',
+      message: 'Unable to verify BasePay receipt. Try again shortly.',
+      fee_usdc_6dp: String(getBasePayConfig().feeUsdc),
+      contract_address: getBasePayConfig().contractAddress,
+      timestamp: new Date().toISOString()
+    });
+  }
+}
+
 // Core validation endpoint (auth + rate limit required)
-app.post('/ep/validate', authRateLimiter, validateRoute);
+app.post('/ep/validate', authRateLimiter, basePayMiddleware, validateRoute);
 
 // Simulation endpoint (auth + rate limit required)
 app.post('/ep/simulate', authRateLimiter, simulateRoute);
