@@ -14,6 +14,16 @@ npm install
 npm start
 ```
 
+## Live Service
+- https://execution-protocol.onrender.com
+
+## Documentation
+- Phase 8 docs: https://github.com/achilliesbot/execution-protocol/tree/master/docs/phase8
+
+## Schemas
+- OpportunityProposal v1: https://execution-protocol.onrender.com/schemas/opportunity-proposal.v1.json
+- VerificationResult v1: https://execution-protocol.onrender.com/schemas/verification-result.v1.json
+
 ## API Endpoints
 - GET /ep/health — Health check (no auth)
 - GET /ep/status — Service status (no auth)
