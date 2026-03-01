@@ -18,6 +18,8 @@ id_ed25519
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+logs/
+telemetry/
 
 # Local artifacts
 .tmp/

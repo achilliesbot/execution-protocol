@@ -93,7 +93,7 @@ This enables:
 EP uses **X-Agent-Key** header authentication. Each agent receives a unique key:
 
 ```
-X-Agent-Key: ep_key_achilles_1a2b3c4d5e6f
+X-Agent-Key: <YOUR_AGENT_KEY>
 ```
 
 Keys are configured via environment variables on the EP server. No registration API — keys are provisioned out-of-band by the operator.

@@ -28,7 +28,7 @@ Execution Protocol operates on a **fail-closed, defense-in-depth** security mode
 All validation endpoints require the `X-Agent-Key` header:
 
 ```
-X-Agent-Key: ep_key_{agent}_{hash}
+X-Agent-Key: <YOUR_AGENT_KEY>
 ```
 
 **Security Properties:**
