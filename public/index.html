@@ -3,751 +3,452 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Execution Protocol — Command Center</title>
+  <title>Execution Protocol</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bronze: #B87333;
-      --bronze-light: #CD853F;
-      --bronze-dark: #8B4513;
-      --gold: #FFD700;
-      --gold-dim: #DAA520;
-      --fire-orange: #FF6B35;
-      --fire-red: #DC143C;
-      --electric-blue: #00D4FF;
-      --temple-dark: #0A0A0F;
-      --temple-stone: #1A1A24;
-      --stone-border: #2A2A3A;
+      --bg-obsidian: #0B0F1A;
+      --bg-stone: #111827;
+      --bg-panel: #0F1419;
+      --gold: #FFB000;
+      --gold-bright: #FFC940;
+      --ember: #FF5A1F;
+      --cyan: #20E3FF;
+      --text-primary: #E5E7EB;
+      --text-secondary: #9CA3AF;
+      --border-stone: #1F2937;
     }
-    
-    * { box-sizing: border-box; }
-    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: Inter, system-ui, sans-serif;
-      background: var(--temple-dark);
-      color: #e8e8e8;
-      margin: 0;
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--bg-obsidian);
+      color: var(--text-primary);
       min-height: 100vh;
-      position: relative;
     }
-    
-    /* Fire atmosphere background */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
+      background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(32, 227, 255, 0.02) 4px, rgba(32, 227, 255, 0.02) 5px),
+        repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(32, 227, 255, 0.02) 4px, rgba(32, 227, 255, 0.02) 5px);
+      pointer-events: none;
+      z-index: 100;
+    }
+    .ember-bg {
+      position: fixed;
+      inset: 0;
       background: 
-        radial-gradient(ellipse at 20% 100%, rgba(255, 107, 53, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 100%, rgba(220, 20, 60, 0.1) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 0%, rgba(255, 215, 0, 0.05) 0%, transparent 30%);
+        radial-gradient(ellipse at 20% 100%, rgba(255, 90, 31, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(255, 90, 31, 0.05) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 0%, rgba(255, 176, 0, 0.03) 0%, transparent 30%);
       pointer-events: none;
       z-index: 0;
     }
-    
-    .font-display { font-family: Cinzel, serif; }
+    .font-orbitron { font-family: 'Orbitron', sans-serif; }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
-    
-    /* Temple stone panels */
-    .temple-panel {
-      background: linear-gradient(180deg, rgba(26, 26, 36, 0.95) 0%, rgba(15, 15, 22, 0.98) 100%);
-      border: 2px solid var(--stone-border);
-      box-shadow: 
-        0 0 0 1px rgba(184, 115, 51, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05),
-        0 8px 32px rgba(0, 0, 0, 0.6);
+    .text-gold {
+      background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 50%, var(--ember) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 20px rgba(255, 176, 0, 0.4));
+    }
+    .text-glow-gold { text-shadow: 0 0 30px rgba(255, 176, 0, 0.5), 0 0 60px rgba(255, 90, 31, 0.3); }
+    .stone-panel {
+      background: linear-gradient(180deg, var(--bg-stone) 0%, var(--bg-panel) 100%);
+      border: 2px solid var(--border-stone);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 40px rgba(0, 0, 0, 0.8);
       position: relative;
     }
-    
-    .temple-panel::before {
+    .stone-panel::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       height: 2px;
-      background: linear-gradient(90deg, 
-        transparent 0%, 
-        var(--bronze) 20%, 
-        var(--gold) 50%, 
-        var(--bronze) 80%, 
-        transparent 100%);
+      background: linear-gradient(90deg, transparent 0%, var(--gold) 20%, var(--gold-bright) 50%, var(--gold) 80%, transparent 100%);
+      box-shadow: 0 0 10px var(--gold);
     }
-    
-    /* Corner ornaments */
-    .temple-panel::after {
-      content: '◆';
-      position: absolute;
-      top: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: var(--bronze);
-      font-size: 12px;
-      text-shadow: 0 0 10px var(--bronze);
-    }
-    
-    /* Column style */
-    .column {
-      background: linear-gradient(90deg, 
-        transparent 0%, 
-        rgba(184, 115, 51, 0.1) 10%, 
-        rgba(184, 115, 51, 0.2) 50%, 
-        rgba(184, 115, 51, 0.1) 90%, 
-        transparent 100%);
-      border-left: 1px solid rgba(184, 115, 51, 0.3);
-      border-right: 1px solid rgba(184, 115, 51, 0.3);
-    }
-    
-    /* Fire glow animation */
-    .fire-glow {
-      animation: fire-flicker 3s ease-in-out infinite;
-    }
-    
-    @keyframes fire-flicker {
-      0%, 100% { 
-        box-shadow: 0 0 20px rgba(255, 107, 53, 0.3), 0 0 40px rgba(255, 107, 53, 0.1);
-      }
-      50% { 
-        box-shadow: 0 0 30px rgba(255, 107, 53, 0.4), 0 0 60px rgba(255, 107, 53, 0.15);
-      }
-    }
-    
-    /* Header styling */
-    .forge-header {
-      background: linear-gradient(180deg, rgba(10, 10, 15, 0.98) 0%, rgba(15, 15, 22, 0.95) 100%);
-      border-bottom: 2px solid var(--bronze-dark);
-      position: relative;
-    }
-    
-    .forge-header::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    }
-    
-    /* Tab buttons */
-    .forge-tab {
-      position: relative;
-      padding: 12px 24px;
-      font-family: Cinzel, serif;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      color: #6b7280;
-      background: transparent;
+    .btn-primary {
+      background: linear-gradient(180deg, var(--gold) 0%, var(--ember) 100%);
       border: none;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-transform: uppercase;
-    }
-    
-    .forge-tab:hover {
-      color: var(--bronze-light);
-      text-shadow: 0 0 10px rgba(205, 127, 50, 0.5);
-    }
-    
-    .forge-tab.active {
-      color: var(--gold);
-      text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-    }
-    
-    .forge-tab.active::after {
-      content: '';
-      position: absolute;
-      bottom: -2px;
-      left: 10%;
-      right: 10%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--fire-orange), var(--gold), var(--fire-orange), transparent);
-      box-shadow: 0 -2px 10px var(--fire-orange);
-    }
-    
-    /* CTA Button */
-    .btn-arena {
-      background: linear-gradient(135deg, var(--fire-orange), var(--fire-red));
-      border: 1px solid rgba(255, 107, 53, 0.5);
-      color: white;
-      font-family: Cinzel, serif;
+      color: #000;
+      font-family: 'Orbitron', sans-serif;
       font-weight: 700;
+      font-size: 13px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 10px 20px;
-      border-radius: 4px;
+      padding: 16px 32px;
       cursor: pointer;
       transition: all 0.3s;
-      box-shadow: 0 0 20px rgba(255, 107, 53, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+      box-shadow: 0 4px 20px rgba(255, 90, 31, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      clip-path: polygon(10% 0%, 100% 0%, 100% 70%, 90% 100%, 0% 100%, 0% 30%);
     }
-    
-    .btn-arena:hover {
+    .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 30px rgba(255, 107, 53, 0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+      box-shadow: 0 6px 30px rgba(255, 90, 31, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      filter: brightness(1.1);
     }
-    
     .btn-secondary {
       background: transparent;
-      border: 1px solid var(--bronze);
-      color: var(--bronze-light);
-      font-family: Cinzel, serif;
+      border: 2px solid var(--cyan);
+      color: var(--cyan);
+      font-family: 'Orbitron', sans-serif;
       font-weight: 600;
-      letter-spacing: 0.05em;
-      padding: 10px 20px;
-      border-radius: 4px;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 14px 30px;
       cursor: pointer;
       transition: all 0.3s;
+      box-shadow: 0 0 20px rgba(32, 227, 255, 0.2), inset 0 0 20px rgba(32, 227, 255, 0.05);
+      clip-path: polygon(10% 0%, 100% 0%, 100% 70%, 90% 100%, 0% 100%, 0% 30%);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
     }
-    
     .btn-secondary:hover {
-      background: rgba(184, 115, 51, 0.1);
-      border-color: var(--gold);
-      color: var(--gold);
+      background: rgba(32, 227, 255, 0.1);
+      box-shadow: 0 0 30px rgba(32, 227, 255, 0.4), inset 0 0 30px rgba(32, 227, 255, 0.1);
+      text-shadow: 0 0 20px var(--cyan);
     }
-    
-    /* Artifact cards */
     .artifact-card {
-      background: linear-gradient(180deg, rgba(26, 26, 36, 0.9) 0%, rgba(15, 15, 22, 0.95) 100%);
-      border: 2px solid var(--stone-border);
-      border-radius: 8px;
+      background: linear-gradient(180deg, #161B22 0%, #0D1117 100%);
+      border: 2px solid var(--border-stone);
       position: relative;
-      overflow: hidden;
       transition: all 0.3s;
     }
-    
     .artifact-card::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--bronze), var(--gold), var(--bronze));
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--ember), var(--gold));
+      box-shadow: 0 0 15px var(--gold);
     }
-    
     .artifact-card:hover {
-      border-color: var(--bronze);
-      box-shadow: 0 0 30px rgba(184, 115, 51, 0.2);
-      transform: translateY(-4px);
+      transform: translateY(-8px);
+      border-color: var(--gold);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 176, 0, 0.2);
     }
-    
     .artifact-icon {
-      width: 64px;
-      height: 64px;
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, rgba(255, 176, 0, 0.2) 0%, rgba(255, 90, 31, 0.1) 100%);
+      border: 2px solid var(--gold);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 16px;
-      position: relative;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 30px rgba(255, 176, 0, 0.3);
     }
-    
-    .artifact-icon::before {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--bronze), var(--gold), var(--bronze));
-      z-index: -1;
-      opacity: 0.5;
-    }
-    
-    /* Section titles */
-    .section-title {
-      font-family: Cinzel, serif;
-      font-weight: 700;
-      font-size: 14px;
+    .capability-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(32, 227, 255, 0.05);
+      border: 1px solid rgba(32, 227, 255, 0.2);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: var(--gold);
-      text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+      color: var(--cyan);
+    }
+    .frame-bar {
+      height: 4px;
+      background: linear-gradient(90deg, transparent 0%, var(--border-stone) 20%, var(--gold) 50%, var(--border-stone) 80%, transparent 100%);
+      margin: 80px 0;
       position: relative;
-      display: inline-block;
     }
-    
-    .section-title::after {
-      content: '';
+    .frame-bar::before, .frame-bar::after {
+      content: '◆';
       position: absolute;
-      bottom: -4px;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--bronze), transparent);
-    }
-    
-    /* Combat log styling */
-    .combat-log {
-      font-family: 'JetBrains Mono', monospace;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gold);
       font-size: 12px;
-      line-height: 1.8;
+      text-shadow: 0 0 10px var(--gold);
     }
-    
-    .log-entry {
-      display: flex;
-      gap: 12px;
-      padding: 6px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+    .frame-bar::before { left: 20%; }
+    .frame-bar::after { right: 20%; }
+    .warrior-frame {
+      position: relative;
+      background: linear-gradient(135deg, rgba(255, 176, 0, 0.1) 0%, rgba(32, 227, 255, 0.05) 100%);
+      border: 2px solid var(--border-stone);
+      box-shadow: 0 0 60px rgba(255, 176, 0, 0.15), inset 0 0 60px rgba(0, 0, 0, 0.5);
     }
-    
-    .log-time { color: var(--bronze); min-width: 60px; }
-    .log-action { color: #e8e8e8; }
-    .log-status { margin-left: auto; font-size: 10px; text-transform: uppercase; }
-    .status-success { color: #4ade80; }
-    .status-pending { color: var(--gold); }
-    .status-error { color: #ef4444; }
-    
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-    ::-webkit-scrollbar-thumb { background: var(--bronze-dark); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--bronze); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-obsidian); }
+    ::-webkit-scrollbar-thumb { background: var(--border-stone); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
   </style>
 </head>
 <body>
-  <div class="min-h-screen flex flex-col relative">
-    
-    <!-- FORGE Header -->
-    <header class="forge-header sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-6">
-        <div class="flex items-center justify-between h-20">
-          <!-- Logo -->
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl fire-glow" 
-                 style="background: linear-gradient(135deg, var(--bronze-dark), var(--bronze));
-                 border: 2px solid var(--gold);">
-              <span>⚔️</span>
-            </div>
-            <div>
-              <h1 class="font-display text-xl font-black tracking-widest" style="color: var(--gold);">Execution Protocol</h1>
-              <div class="text-xs font-mono" style="color: var(--bronze);">v1.0.0 — Olympus Command</div>
-            </div>
+  <div class="ember-bg"></div>
+  
+  <header class="relative z-10 border-b border-gray-800" style="background: rgba(11, 15, 26, 0.95);">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 flex items-center justify-center text-xl" style="color: var(--gold); text-shadow: 0 0 20px var(--gold);">⚡</div>
+        <div>
+          <div class="font-orbitron text-lg font-bold tracking-wider text-gold">Execution Protocol</div>
+          <div class="font-mono text-xs" style="color: var(--text-secondary);">v1.0.0 — Olympus Command</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-2 text-xs font-orbitron" style="color: var(--cyan);">
+          <span class="w-2 h-2 rounded-full animate-pulse" style="background: var(--cyan); box-shadow: 0 0 10px var(--cyan);"></span>
+          OPERATIONAL
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <section class="relative z-10 py-20 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <h1 class="font-orbitron text-5xl md:text-6xl font-black leading-tight mb-6 text-gold" style="letter-spacing: 0.02em;">
+            FORGE DECISIONS<br>AT BATTLE SPEED.
+          </h1>
+          <p class="text-lg mb-8" style="color: var(--text-secondary); max-width: 500px;">
+            Mythic-grade intelligence, cybernetic execution.<br>
+            Built for operators who demand deterministic validation.
+          </p>
+          <div class="flex flex-wrap gap-4 mb-10">
+            <button onclick="showGetStarted()" class="btn-primary">Start Now</button>
+            <a href="https://github.com/achilliesbot/execution-protocol/tree/master/docs" target="_blank" class="btn-secondary">API Docs</a>
           </div>
-          
-          <!-- Navigation -->
-          <nav class="hidden lg:flex items-center gap-2">
-            <button class="forge-tab active" data-tab="war-console">War Console</button>
-            <button class="forge-tab" data-tab="artifacts">Artifacts</button>
-            <button class="forge-tab" data-tab="playground">Playground</button>
-            <button class="forge-tab" data-tab="api">Codex</button>
-          </nav>
-          
-          <!-- Actions -->
-          <div class="flex items-center gap-4">
-            <button onclick="showGetStarted()" class="btn-secondary text-sm">Get Started</button>
-            <a href="https://github.com/achilliesbot/execution-protocol/tree/master/docs" target="_blank" class="btn-arena text-sm inline-flex items-center justify-center">API Docs</a>
+          <div class="flex flex-wrap gap-4">
+            <div class="capability-badge"><i data-lucide="shield-check" class="w-4 h-4"></i><span>Secure</span></div>
+            <div class="capability-badge"><i data-lucide="eye" class="w-4 h-4"></i><span>Auditable</span></div>
+            <div class="capability-badge"><i data-lucide="git-commit" class="w-4 h-4"></i><span>Deterministic</span></div>
+          </div>
+        </div>
+        <div class="warrior-frame rounded-lg p-8 flex items-center justify-center min-h-[400px]">
+          <div class="text-center">
+            <div class="text-8xl mb-4" style="filter: drop-shadow(0 0 30px var(--gold));">⚔️</div>
+            <div class="font-orbitron text-2xl font-bold text-gold mb-2">The Shield Holds</div>
+            <div class="font-mono text-sm" style="color: var(--cyan);">Deterministic • Verifiable • Unstoppable</div>
           </div>
         </div>
       </div>
-    </header>
+    </div>
+  </section>
 
-    <!-- Hero Section -->
-    <section class="relative py-16 px-6">
-      <div class="max-w-4xl mx-auto text-center">
-        <h2 class="font-display text-4xl md:text-5xl font-black mb-6" style="color: var(--gold); text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);">
-          DETERMINISTIC EXECUTION<br>AT BATTLE SPEED.
-        </h2>
-        <p class="text-lg mb-8" style="color: #9ca3af;">
-          Mythic-grade intelligence, cybernetic execution.<br>Built for operators.
-        </p>
-        <div class="flex items-center justify-center gap-4 mb-8">
-          <span class="flex items-center gap-2 text-sm" style="color: var(--bronze);">
-            <i data-lucide="shield-check" class="w-4 h-4"></i> SECURE
-          </span>
-          <span class="flex items-center gap-2 text-sm" style="color: var(--bronze);">
-            <i data-lucide="eye" class="w-4 h-4"></i> AUDITABLE
-          </span>
-          <span class="flex items-center gap-2 text-sm" style="color: var(--bronze);">
-            <i data-lucide="git-commit" class="w-4 h-4"></i> DETERMINISTIC
-          </span>
-        </div>
-        <div class="flex items-center justify-center gap-4">
-          <button onclick="showGetStarted()" class="btn-arena px-8 py-4 text-base">Get API Key</button>
-          <a href="https://github.com/achilliesbot/execution-protocol/tree/master/docs" target="_blank" class="btn-secondary px-8 py-4 text-base inline-flex items-center justify-center">View API Docs</a>
-        </div>
+  <div class="frame-bar max-w-7xl mx-auto px-6"></div>
+
+  <section class="relative z-10 py-10 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="font-orbitron text-3xl font-bold text-gold mb-2" style="letter-spacing: 0.1em;">THE WAR CONSOLE</h2>
+        <div class="w-24 h-1 mx-auto" style="background: linear-gradient(90deg, transparent, var(--gold), transparent);"></div>
       </div>
-    </section>
-
-    <!-- Main Content -->
-    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pb-12">
-      
-      <!-- Tab: War Console -->
-      <div id="tab-war-console" class="tab-content space-y-8">
-        
-        <!-- Section Title -->
-        <div class="text-center mb-8">
-          <h3 class="section-title text-2xl">The War Console</h3>
-        </div>
-        
-        <!-- Dual Panel Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          
-          <!-- Combat Log Panel -->
-          <div class="temple-panel rounded-lg p-6">
-            <div class="flex items-center justify-between mb-6">
-              <h4 class="section-title">Combat Log</h4>
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span class="text-xs font-mono" style="color: var(--bronze);">LIVE</span>
-              </div>
-            </div>
-            
-            <div class="combat-log space-y-1" style="max-height: 300px; overflow-y: auto;">
-              <div class="log-entry">
-                <span class="log-time">49:18</span>
-                <span class="log-action">Deploy Scouts</span>
-                <span class="log-status status-success">Complete</span>
-              </div>
-              <div class="log-entry">
-                <span class="log-time">49:18</span>
-                <span class="log-action">Analyze Opponent</span>
-                <span class="log-status status-success">Complete</span>
-              </div>
-              <div class="log-entry">
-                <span class="log-time">49:26</span>
-                <span class="log-action">Generate Strategy</span>
-                <span class="log-status status-pending">Processing</span>
-              </div>
-              <div class="log-entry">
-                <span class="log-time">49:18</span>
-                <span class="log-action">Execute Maneuver</span>
-                <span class="log-status status-success">Complete</span>
-              </div>
-              <div class="log-entry">
-                <span class="log-time">48:45</span>
-                <span class="log-action">Validation Request</span>
-                <span class="log-status status-success">Passed</span>
-              </div>
-              <div class="log-entry">
-                <span class="log-time">48:42</span>
-                <span class="log-action">BasePay Tribute</span>
-                <span class="log-status status-success">0.10 USDC</span>
-              </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+        <div class="stone-panel rounded-lg overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+            <h3 class="font-orbitron text-sm font-bold tracking-widest" style="color: var(--gold);">◆ COMBAT LOG</h3>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full animate-pulse" style="background: var(--cyan); box-shadow: 0 0 10px var(--cyan);"></span>
+              <span class="font-mono text-xs" style="color: var(--cyan);">LIVE</span>
             </div>
           </div>
-          
-          <!-- Oracle Output Panel -->
-          <div class="temple-panel rounded-lg p-6">
-            <div class="flex items-center justify-between mb-6">
-              <h4 class="section-title">Oracle Output</h4>
-              <i data-lucide="sparkles" class="w-5 h-5" style="color: var(--gold);"></i>
+          <div class="p-4 font-mono text-sm space-y-3" style="max-height: 280px; overflow-y: auto;">
+            <div class="flex items-center gap-4 py-2 border-b border-white/5">
+              <span class="w-2 h-2 rounded-full" style="background: var(--cyan); box-shadow: 0 0 8px var(--cyan);"></span>
+              <span style="color: var(--text-secondary);">49:18</span>
+              <span class="flex-1">Deploy Scouts</span>
+              <span style="color: var(--cyan);">Complete</span>
             </div>
-            
-            <div class="space-y-4">
-              <div>
-                <div class="text-xs uppercase tracking-wider mb-2" style="color: var(--bronze);">Recommended Strategy</div>
-                <p class="text-sm leading-relaxed" style="color: #d1d5db;">
-                  Summarized insight on SOURCE-HOWARD targets. Artifact: insight recording, catalog link and SUMMARIES. 1 codec of SPARKS TEAM. COMMANDER.
-                </p>
-              </div>
-              
-              <div class="p-4 rounded-lg" style="background: rgba(0, 212, 255, 0.05); border: 1px solid rgba(0, 212, 255, 0.2);">
-                <div class="flex items-center gap-2 mb-2">
-                  <i data-lucide="zap" class="w-4 h-4" style="color: var(--electric-blue);"></i>
-                  <span class="text-xs font-bold uppercase" style="color: var(--electric-blue);">Signal Confidence</span>
-                </div>
-                <div class="text-2xl font-bold font-display" style="color: var(--electric-blue);">94.7%</div>
-              </div>
-              
-              <div class="grid grid-cols-2 gap-3">
-                <div class="p-3 rounded text-center" style="background: rgba(0,0,0,0.3);">
-                  <div class="text-xs" style="color: var(--bronze);">Risk Score</div>
-                  <div class="text-lg font-bold text-green-400">LOW</div>
-                </div>
-                <div class="p-3 rounded text-center" style="background: rgba(0,0,0,0.3);">
-                  <div class="text-xs" style="color: var(--bronze);">Expected PnL</div>
-                  <div class="text-lg font-bold" style="color: var(--gold);">+12.4%</div>
-                </div>
-              </div>
+            <div class="flex items-center gap-4 py-2 border-b border-white/5">
+              <span class="w-2 h-2 rounded-full" style="background: var(--cyan); box-shadow: 0 0 8px var(--cyan);"></span>
+              <span style="color: var(--text-secondary);">49:18</span>
+              <span class="flex-1">Analyze Opponent</span>
+              <span style="color: var(--cyan);">Complete</span>
+            </div>
+            <div class="flex items-center gap-4 py-2 border-b border-white/5">
+              <span class="w-2 h-2 rounded-full" style="background: var(--gold); box-shadow: 0 0 8px var(--gold);"></span>
+              <span style="color: var(--text-secondary);">49:26</span>
+              <span class="flex-1">Generate Strategy</span>
+              <span style="color: var(--gold);">Processing</span>
+            </div>
+            <div class="flex items-center gap-4 py-2 border-b border-white/5">
+              <span class="w-2 h-2 rounded-full" style="background: var(--cyan); box-shadow: 0 0 8px var(--cyan);"></span>
+              <span style="color: var(--text-secondary);">49:18</span>
+              <span class="flex-1">Execute Maneuver</span>
+              <span style="color: var(--cyan);">Complete</span>
+            </div>
+            <div class="flex items-center gap-4 py-2">
+              <span class="w-2 h-2 rounded-full" style="background: var(--cyan); box-shadow: 0 0 8px var(--cyan);"></span>
+              <span style="color: var(--text-secondary);">48:42</span>
+              <span class="flex-1">BasePay Tribute</span>
+              <span style="color: var(--gold);">0.10 USDC</span>
             </div>
           </div>
         </div>
-        
-        <!-- Status Bar -->
-        <div class="flex flex-wrap items-center justify-center gap-6 py-4">
-          <div class="flex items-center gap-2">
-            <i data-lucide="shield-check" class="w-5 h-5" style="color: var(--electric-blue);"></i>
-            <span class="text-sm font-bold" style="color: var(--electric-blue);">SECURE</span>
+        <div class="stone-panel rounded-lg overflow-hidden" style="border-left: 3px solid var(--cyan); box-shadow: -5px 0 20px rgba(32, 227, 255, 0.2);">
+          <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+            <h3 class="font-orbitron text-sm font-bold tracking-widest" style="color: var(--gold);">◆ ORACLE OUTPUT</h3>
+            <i data-lucide="sparkles" class="w-5 h-5" style="color: var(--cyan); filter: drop-shadow(0 0 10px var(--cyan));"></i>
           </div>
-          <div class="flex items-center gap-2">
-            <i data-lucide="eye" class="w-5 h-5" style="color: var(--bronze);"></i>
-            <span class="text-sm font-bold" style="color: var(--bronze);">AUDITABLE</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <i data-lucide="git-commit" class="w-5 h-5" style="color: var(--gold);"></i>
-            <span class="text-sm font-bold" style="color: var(--gold);">DETERMINISTIC</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <i data-lucide="cpu" class="w-5 h-5" style="color: var(--fire-orange);"></i>
-            <span class="text-sm font-bold" style="color: var(--fire-orange);">AGENT-NATIVE</span>
+          <div class="p-6">
+            <div class="mb-4">
+              <div class="text-xs uppercase tracking-widest mb-2" style="color: var(--text-secondary);">Recommended Strategy</div>
+              <p class="text-sm leading-relaxed">
+                Summarized insight on <span style="color: var(--cyan); text-shadow: 0 0 10px var(--cyan);">SOURCE-HOWARD</span> targets. 
+                Artifact: insight recording, catalog link and <span style="color: var(--gold);">SUMMARIES</span>. 
+                1 codec of <span style="color: var(--cyan);">SPARKS TEAM</span>.
+              </p>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="p-4 rounded" style="background: rgba(32, 227, 255, 0.05); border: 1px solid rgba(32, 227, 255, 0.2);">
+                <div class="text-xs uppercase tracking-widest mb-1" style="color: var(--text-secondary);">Signal Confidence</div>
+                <div class="font-orbitron text-2xl font-bold" style="color: var(--cyan); text-shadow: 0 0 20px var(--cyan);">94.7%</div>
+              </div>
+              <div class="p-4 rounded" style="background: rgba(255, 176, 0, 0.05); border: 1px solid rgba(255, 176, 0, 0.2);">
+                <div class="text-xs uppercase tracking-widest mb-1" style="color: var(--text-secondary);">Expected PnL</div>
+                <div class="font-orbitron text-2xl font-bold text-gold">+12.4%</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <div class="capability-badge"><i data-lucide="shield-check" class="w-4 h-4"></i><span>Secure</span></div>
+        <div class="capability-badge"><i data-lucide="eye" class="w-4 h-4"></i><span>Auditable</span></div>
+        <div class="capability-badge"><i data-lucide="git-commit" class="w-4 h-4"></i><span>Deterministic</span></div>
+        <div class="capability-badge"><i data-lucide="cpu" class="w-4 h-4"></i><span>Agent-Native</span></div>
+      </div>
+    </div>
+  </section>
 
-      <!-- Tab: Artifacts -->
-      <div id="tab-artifacts" class="tab-content hidden">
-        <div class="text-center mb-8">
-          <h3 class="section-title text-2xl">Train Your Army of Artifacts</h3>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          
-          <!-- Artifact: Insight -->
-          <div class="artifact-card p-6 text-center">
-            <div class="artifact-icon" style="background: radial-gradient(circle, rgba(0, 212, 255, 0.3), rgba(0, 212, 255, 0.1)); border: 2px solid var(--electric-blue);">
-              <i data-lucide="eye" class="w-8 h-8" style="color: var(--electric-blue);"></i>
-            </div>
-            <h4 class="font-display font-bold text-lg mb-2" style="color: var(--gold);">Artifact of Insight</h4>
-            <ul class="text-xs space-y-1 mb-4" style="color: #9ca3af;">
-              <li>Adaptive vision systems</li>
-              <li>Execute on clarity</li>
+  <div class="frame-bar max-w-7xl mx-auto px-6"></div>
+
+  <section class="relative z-10 py-10 px-6 pb-20">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="font-orbitron text-3xl font-bold text-gold mb-2" style="letter-spacing: 0.1em;">TRAIN YOUR ARMY OF ARTIFACTS</h2>
+        <div class="w-24 h-1 mx-auto" style="background: linear-gradient(90deg, transparent, var(--gold), transparent);"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="artifact-card rounded-lg overflow-hidden">
+          <div class="p-6">
+            <div class="artifact-icon"><i data-lucide="eye" class="w-8 h-8" style="color: var(--gold);"></i></div>
+            <h3 class="font-orbitron text-lg font-bold text-center text-gold mb-3">ARTIFACT OF INSIGHT</h3>
+            <ul class="text-sm space-y-2 mb-4" style="color: var(--text-secondary);">
+              <li><span style="color: var(--cyan);">›</span> Adaptive vision systems</li>
+              <li><span style="color: var(--cyan);">›</span> Execute on clarity</li>
             </ul>
-            <div class="text-xs font-mono" style="color: var(--bronze);">Latency 247ms</div>
           </div>
-          
-          <!-- Artifact: Proof -->
-          <div class="artifact-card p-6 text-center">
-            <div class="artifact-icon" style="background: radial-gradient(circle, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1)); border: 2px solid var(--gold);">
-              <i data-lucide="scroll" class="w-8 h-8" style="color: var(--gold);"></i>
-            </div>
-            <h4 class="font-display font-bold text-lg mb-2" style="color: var(--gold);">Artifact of Proof</h4>
-            <ul class="text-xs space-y-1 mb-4" style="color: #9ca3af;">
-              <li>Chain-first storage</li>
-              <li>Zero-trust validation</li>
+          <div style="background: linear-gradient(90deg, rgba(255,90,31,0.2), rgba(255,176,0,0.2)); border-top: 1px solid rgba(255,176,0,0.3); padding: 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gold);">Latency 247ms</div>
+        </div>
+        <div class="artifact-card rounded-lg overflow-hidden">
+          <div class="p-6">
+            <div class="artifact-icon"><i data-lucide="scroll" class="w-8 h-8" style="color: var(--gold);"></i></div>
+            <h3 class="font-orbitron text-lg font-bold text-center text-gold mb-3">ARTIFACT OF PROOF</h3>
+            <ul class="text-sm space-y-2 mb-4" style="color: var(--text-secondary);">
+              <li><span style="color: var(--cyan);">›</span> Chain-first storage</li>
+              <li><span style="color: var(--cyan);">›</span> Zero-trust validation</li>
             </ul>
-            <div class="text-xs font-mono" style="color: var(--bronze);">Accuracy 99.9%</div>
           </div>
-          
-          <!-- Artifact: Speed -->
-          <div class="artifact-card p-6 text-center">
-            <div class="artifact-icon" style="background: radial-gradient(circle, rgba(255, 107, 53, 0.3), rgba(255, 107, 53, 0.1)); border: 2px solid var(--fire-orange);">
-              <i data-lucide="zap" class="w-8 h-8" style="color: var(--fire-orange);"></i>
-            </div>
-            <h4 class="font-display font-bold text-lg mb-2" style="color: var(--gold);">Artifact of Speed</h4>
-            <ul class="text-xs space-y-1 mb-4" style="color: #9ca3af;">
-              <li>Sub-100ms response</li>
-              <li>Execution in 16 cores</li>
+          <div style="background: linear-gradient(90deg, rgba(255,90,31,0.2), rgba(255,176,0,0.2)); border-top: 1px solid rgba(255,176,0,0.3); padding: 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gold);">Accuracy 99.9%</div>
+        </div>
+        <div class="artifact-card rounded-lg overflow-hidden">
+          <div class="p-6">
+            <div class="artifact-icon"><i data-lucide="zap" class="w-8 h-8" style="color: var(--gold);"></i></div>
+            <h3 class="font-orbitron text-lg font-bold text-center text-gold mb-3">ARTIFACT OF SPEED</h3>
+            <ul class="text-sm space-y-2 mb-4" style="color: var(--text-secondary);">
+              <li><span style="color: var(--cyan);">›</span> Sub-100ms response</li>
+              <li><span style="color: var(--cyan);">›</span> Execution in 16 cores</li>
             </ul>
-            <div class="text-xs font-mono" style="color: var(--bronze);">Cost per $0.025</div>
           </div>
-          
-          <!-- Artifact: Control -->
-          <div class="artifact-card p-6 text-center">
-            <div class="artifact-icon" style="background: radial-gradient(circle, rgba(34, 197, 94, 0.3), rgba(34, 197, 94, 0.1)); border: 2px solid #22c55e;">
-              <i data-lucide="shield" class="w-8 h-8" style="color: #22c55e;"></i>
-            </div>
-            <h4 class="font-display font-bold text-lg mb-2" style="color: var(--gold);">Artifact of Control</h4>
-            <ul class="text-xs space-y-1 mb-4" style="color: #9ca3af;">
-              <li>Right at 1000 feats</li>
-              <li>Separates fact in combat</li>
+          <div style="background: linear-gradient(90deg, rgba(255,90,31,0.2), rgba(255,176,0,0.2)); border-top: 1px solid rgba(255,176,0,0.3); padding: 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gold);">Cost per $0.025</div>
+        </div>
+        <div class="artifact-card rounded-lg overflow-hidden">
+          <div class="p-6">
+            <div class="artifact-icon"><i data-lucide="shield" class="w-8 h-8" style="color: var(--gold);"></i></div>
+            <h3 class="font-orbitron text-lg font-bold text-center text-gold mb-3">ARTIFACT OF CONTROL</h3>
+            <ul class="text-sm space-y-2 mb-4" style="color: var(--text-secondary);">
+              <li><span style="color: var(--cyan);">›</span> Right at 1000 feats</li>
+              <li><span style="color: var(--cyan);">›</span> Separates fact in combat</li>
             </ul>
-            <div class="text-xs font-mono" style="color: var(--bronze);">Secret 98,921 ops</div>
           </div>
+          <div style="background: linear-gradient(90deg, rgba(255,90,31,0.2), rgba(255,176,0,0.2)); border-top: 1px solid rgba(255,176,0,0.3); padding: 12px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gold);">Secret 98,921 ops</div>
         </div>
       </div>
+    </div>
+  </section>
 
-      <!-- Tab: Combat Log -->
-      <div id="tab-combat-log" class="tab-content hidden">
-        <div class="temple-panel rounded-lg p-6">
-          <h3 class="section-title mb-6">Full Combat Log</h3>
-          <div class="combat-log" style="max-height: 500px; overflow-y: auto;">
-            <!-- Log entries would be populated dynamically -->
-            <div class="text-center py-8" style="color: var(--bronze);">
-              <i data-lucide="scroll-text" class="w-12 h-12 mx-auto mb-4 opacity-50"></i>
-              <p>Loading battle history...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab: API Playground -->
-      <div id="tab-playground" class="tab-content hidden">
-        <div class="temple-panel rounded-lg p-6">
-          <h3 class="section-title mb-6">API Playground</h3>
-          <p class="text-sm mb-6" style="color: #9ca3af;">Test endpoints directly in your browser. No authentication required for health/status endpoints.</p>
-          
-          <div class="space-y-4">
-            <!-- Test Health -->
-            <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3);">
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-3">
-                  <span class="px-2 py-1 rounded text-xs font-bold badge-get">GET</span>
-                  <code class="font-mono text-sm">/ep/health</code>
-                </div>
-                <button onclick="testEndpoint('/ep/health', 'health-result')" class="btn-arena text-xs px-4 py-2">Test</button>
-              </div>
-              <div id="health-result" class="hidden mt-3 p-3 rounded font-mono text-xs" style="background: rgba(0,0,0,0.5);"></div>
-            </div>
-            
-            <!-- Test Telemetry -->
-            <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3);">
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-3">
-                  <span class="px-2 py-1 rounded text-xs font-bold" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);">GET</span>
-                  <code class="font-mono text-sm">/telemetry/status</code>
-                </div>
-                <button onclick="testEndpoint('/telemetry/status', 'telemetry-result')" class="btn-arena text-xs px-4 py-2">Test</button>
-              </div>
-              <div id="telemetry-result" class="hidden mt-3 p-3 rounded font-mono text-xs" style="background: rgba(0,0,0,0.5);"></div>
-            </div>
-            
-            <!-- Test Payments -->
-            <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3);">
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-3">
-                  <span class="px-2 py-1 rounded text-xs font-bold" style="background: rgba(255, 215, 0, 0.15); color: var(--gold); border: 1px solid rgba(255, 215, 0, 0.3);">GET</span>
-                  <code class="font-mono text-sm">/telemetry/payments</code>
-                </div>
-                <button onclick="testEndpoint('/telemetry/payments', 'payments-result')" class="btn-arena text-xs px-4 py-2">Test</button>
-              </div>
-              <div id="payments-result" class="hidden mt-3 p-3 rounded font-mono text-xs" style="background: rgba(0,0,0,0.5);"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab: Oracle -->
-      <div id="tab-oracle" class="tab-content hidden">
-        <div class="temple-panel rounded-lg p-6">
-          <h3 class="section-title mb-6">Oracle Configuration</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3);">
-              <div class="text-xs uppercase tracking-wider mb-2" style="color: var(--bronze);">Policy Set</div>
-              <div class="font-mono text-lg" style="color: var(--gold);">olympus-v1</div>
-            </div>
-            <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3);">
-              <div class="text-xs uppercase tracking-wider mb-2" style="color: var(--bronze);">BasePay Status</div>
-              <div class="font-mono text-lg text-green-400">Active</div>
-            </div>
-            <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3);">
-              <div class="text-xs uppercase tracking-wider mb-2" style="color: var(--bronze);">Chain</div>
-              <div class="font-mono text-lg" style="color: var(--electric-blue);">Base (8453)</div>
-            </div>
-            <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3);">
-              <div class="text-xs uppercase tracking-wider mb-2" style="color: var(--bronze);">Mode</div>
-              <div class="font-mono text-lg" style="color: var(--fire-orange);">DRY_RUN</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="border-t border-white/5 mt-auto" style="background: rgba(10,10,15,0.95);">
-      <div class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <span class="font-display font-bold" style="color: var(--gold);">Execution Protocol</span>
-          <span class="text-sm" style="color: #4a5568;">Deterministic Execution Infrastructure</span>
-        </div>
-        <div class="flex items-center gap-2 text-sm" style="color: var(--bronze);">
-          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          <span>All Systems Operational</span>
-        </div>
-      </div>
-    </footer>
-
-  </div>
-
-  <!-- Get Started Modal -->
-  <div id="get-started-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);">
-    <div class="temple-panel rounded-xl p-8 max-w-2xl w-full mx-4 relative">
-      <button onclick="closeGetStarted()" class="absolute top-4 right-4 text-gray-500 hover:text-white">
-        <i data-lucide="x" class="w-6 h-6"></i>
-      </button>
-      <h2 class="font-display text-2xl font-bold mb-2" style="color: var(--gold);">Agent Integration Guide</h2>
-      <p class="text-sm mb-6" style="color: var(--bronze);">Three steps to deterministic execution</p>
-      
+  <div id="get-started-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background: rgba(0,0,0,0.85);">
+    <div class="stone-panel rounded-lg p-8 max-w-2xl w-full mx-4 relative">
+      <button onclick="closeGetStarted()" class="absolute top-4 right-4" style="color: var(--text-secondary);"><i data-lucide="x" class="w-6 h-6"></i></button>
+      <h2 class="font-orbitron text-2xl font-bold text-gold mb-2">Agent Integration Guide</h2>
+      <p class="text-sm mb-6" style="color: var(--text-secondary);">Three steps to deterministic execution</p>
       <div class="space-y-4">
         <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--gold);">
           <div class="flex items-center gap-3 mb-2">
             <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background: var(--gold); color: black;">1</span>
             <span class="font-semibold" style="color: var(--gold);">Get Your Agent Key</span>
           </div>
-          <p class="text-sm mb-3" style="color: #9ca3af;">Contact Commander to provision X-Agent-Key for your agent.</p>
-          <code class="block p-3 rounded font-mono text-xs" style="background: rgba(0,0,0,0.5); color: var(--electric-blue);">X-Agent-Key: ep_your_agent_key_here</code>
+          <p class="text-sm mb-3" style="color: var(--text-secondary);">Contact Commander to provision X-Agent-Key.</p>
+          <code class="block p-3 rounded font-mono text-xs" style="background: rgba(0,0,0,0.5); color: var(--cyan);">X-Agent-Key: ep_your_agent_key_here</code>
         </div>
-        
-        <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--bronze);">
+        <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--cyan);">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background: var(--bronze); color: white;">2</span>
-            <span class="font-semibold" style="color: var(--bronze);">Pay the Tribute (BasePay)</span>
+            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background: var(--cyan); color: black;">2</span>
+            <span class="font-semibold" style="color: var(--cyan);">Pay the Tribute (BasePay)</span>
           </div>
-          <p class="text-sm mb-3" style="color: #9ca3af;">Approve 0.10 USDC and call pay(requestId) before validation.</p>
-          <div class="flex items-center gap-2 text-xs font-mono" style="color: var(--electric-blue);">
-            <i data-lucide="wallet" class="w-4 h-4"></i>
-            <span>Contract: 0x... (Base Mainnet)</span>
-          </div>
+          <p class="text-sm mb-3" style="color: var(--text-secondary);">Approve 0.10 USDC and call pay(requestId).</p>
         </div>
-        
-        <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--fire-orange);">
+        <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--ember);">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background: var(--fire-orange); color: white;">3</span>
-            <span class="font-semibold" style="color: var(--fire-orange);">Call /ep/validate</span>
+            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background: var(--ember); color: white;">3</span>
+            <span class="font-semibold" style="color: var(--ember);">Call /ep/validate</span>
           </div>
-          <p class="text-sm mb-3" style="color: #9ca3af;">Send your proposal with X-Agent-Key header.</p>
-          <code class="block p-3 rounded font-mono text-xs" style="background: rgba(0,0,0,0.5);">curl -X POST https://execution-protocol.onrender.com/ep/validate \
-  -H "X-Agent-Key: your_key" \
-  -H "Content-Type: application/json" \
-  -d '{"proposal_id": "...", "asset": "ETH", "direction": "buy"}'</code>
+          <p class="text-sm mb-3" style="color: var(--text-secondary);">Send your proposal with X-Agent-Key header.</p>
+          <code class="block p-3 rounded font-mono text-xs" style="background: rgba(0,0,0,0.5);">curl -X POST https://execution-protocol.onrender.com/ep/validate -H "X-Agent-Key: your_key" -d '{"asset":"ETH"}'</code>
         </div>
       </div>
-      
       <div class="mt-6 flex gap-4">
-        <a href="https://github.com/achilliesbot/execution-protocol/tree/master/docs" target="_blank" onclick="closeGetStarted()" class="btn-arena flex-1 inline-flex items-center justify-center">View Full API Docs</a>
-        <button onclick="closeGetStarted();" class="btn-secondary flex-1">Close</button>
+        <a href="https://github.com/achilliesbot/execution-protocol/tree/master/docs" target="_blank" onclick="closeGetStarted()" class="btn-primary flex-1 text-center" style="display: inline-block; text-decoration: none;">View Full API Docs</a>
+        <button onclick="closeGetStarted()" class="btn-secondary flex-1">Close</button>
       </div>
     </div>
   </div>
 
+  <footer class="border-t border-gray-800 mt-auto" style="background: rgba(10, 10, 15, 0.95);">
+    <div class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <span class="font-orbitron font-bold text-gold">Execution Protocol</span>
+        <span class="text-sm" style="color: var(--text-secondary);">Deterministic Execution Infrastructure</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm" style="color: var(--cyan);">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+        <span>All Systems Operational</span>
+      </div>
+    </div>
+  </footer>
+
   <script>
-    // Initialize Lucide icons
     lucide.createIcons();
-    
-    // Tab switching
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.forge-tab').forEach(el => el.classList.remove('active'));
-      document.getElementById('tab-' + tabId).classList.remove('hidden');
-      document.querySelector('[data-tab="' + tabId + '"]').classList.add('active');
-      // Re-init icons for newly visible content
-      lucide.createIcons();
-    }
-    
-    // Get Started Modal
     function showGetStarted() {
       document.getElementById('get-started-modal').classList.remove('hidden');
       lucide.createIcons();
     }
-    
     function closeGetStarted() {
       document.getElementById('get-started-modal').classList.add('hidden');
     }
-    
-    document.querySelectorAll('.forge-tab').forEach(btn => {
-      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-    });
-    
-    // Close modal on backdrop click
     document.getElementById('get-started-modal').addEventListener('click', (e) => {
       if (e.target === e.currentTarget) closeGetStarted();
     });
-    
-    // API Playground
-    async function testEndpoint(endpoint, resultId) {
-      const resultDiv = document.getElementById(resultId);
-      resultDiv.classList.remove('hidden');
-      resultDiv.innerHTML = '<span style="color: var(--bronze);">Testing...</span>';
-      
-      try {
-        const response = await fetch(endpoint);
-        const data = await response.json();
-        resultDiv.innerHTML = `<span style="color: #4ade80;">✓ ${response.status}</span>\n` + JSON.stringify(data, null, 2);
-      } catch (error) {
-        resultDiv.innerHTML = `<span style="color: #ef4444;">✗ Error:</span> ${error.message}`;
-      }
-    }
   </script>
 </body>
 </html>
