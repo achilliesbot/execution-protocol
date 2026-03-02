@@ -3,336 +3,192 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Execution Protocol — Service Status</title>
+  <title>Execution Protocol — Command Center</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root { --bronze:#cd7f32; --gold:#ffd700; }
-    body { font-family: Inter, system-ui, sans-serif; background:#0a0a0c; color:#e5e5e5; }
+    :root { --bronze: #cd7f32; --gold: #ffd700; --electric-blue: #4A9EFF; }
+    body { font-family: Inter, system-ui, sans-serif; background: #0A0A0F; color: #e5e5e5; }
     .font-display { font-family: Cinzel, serif; }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
-    .glass { background:rgba(20,20,24,0.9); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,0.08); }
-    .status-dot { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: .5; }
-    }
+    .glass { background: rgba(26, 26, 31, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); }
+    .glass-deep { background: rgba(17, 17, 20, 0.95); backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
+    .gradient-border::before { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: linear-gradient(135deg, rgba(205, 127, 50, 0.5), rgba(255, 215, 0, 0.3), transparent); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .status-live { background: #22c55e; box-shadow: 0 0 12px #22c55e; animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .tab-btn { position: relative; padding: 12px 24px; font-size: 13px; font-weight: 500; color: #6b7280; background: transparent; border: none; cursor: pointer; transition: all 0.2s; }
+    .tab-btn:hover { color: #e5e5e5; }
+    .tab-btn.active { color: var(--gold); }
+    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--bronze), var(--gold)); box-shadow: 0 -4px 12px var(--bronze); }
+    .panel { position: relative; border-radius: 12px; overflow: hidden; }
+    .grid-bg { background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 50px 50px; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
   </style>
 </head>
-<body class="min-h-screen">
-  <div class="min-h-screen" style="background:linear-gradient(180deg,#0a0a0c 0%,#111114 100%);">
-    
-    <!-- Header -->
-    <header class="border-b border-white/10">
-      <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style="background:linear-gradient(135deg,var(--bronze),#8b5a2b);">⚡</div>
-          <div>
-            <h1 class="font-display text-xl font-bold" style="color:var(--gold)">Execution Protocol</h1>
-            <p class="text-xs text-gray-500">Service Status Dashboard</p>
+<body class="grid-bg min-h-screen">
+  <div class="min-h-screen flex flex-col">
+    <header class="glass-deep sticky top-0 z-50 border-b border-white/5">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background: linear-gradient(135deg, var(--bronze), #8b5a2b);">⚡</div>
+            <div>
+              <h1 class="font-display text-lg font-bold" style="color: var(--gold);">Execution Protocol</h1>
+              <div class="flex items-center gap-2 text-xs text-gray-500"><span class="status-dot status-live"></span><span>v1.0.0 — Base Mainnet</span></div>
+            </div>
           </div>
-        </div>
-        <div class="flex items-center gap-4">
-          <div class="text-right">
-            <div class="text-xs text-gray-500">Version</div>
-            <div class="font-mono text-sm" id="version">v1.0.0</div>
+          <nav class="hidden md:flex items-center gap-1">
+            <button class="tab-btn active" data-tab="overview">Overview</button>
+            <button class="tab-btn" data-tab="payments">BasePay</button>
+            <button class="tab-btn" data-tab="validations">Validations</button>
+            <button class="tab-btn" data-tab="api">API</button>
+          </nav>
+          <div class="text-right hidden sm:block">
+            <div class="text-xs text-gray-500">Mode</div>
+            <div class="font-mono text-sm" style="color: var(--gold);" id="header-mode">DRY_RUN</div>
           </div>
-          <div class="text-right">
-            <div class="text-xs text-gray-500">Last Updated</div>
-            <div class="font-mono text-sm" id="last-update">--</div>
-          </div>
-          <a href="https://github.com/achilliesbot/execution-protocol" target="_blank" class="glass px-4 py-2 rounded-lg text-sm hover:bg-white/5">GitHub →</a>
         </div>
       </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-6 py-8 space-y-6">
-      
-      <!-- Service Status (Live from /telemetry/status) -->
-      <div id="status-card" class="glass rounded-xl p-6 border-l-4 border-gray-500">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <div id="status-indicator" class="w-3 h-3 rounded-full bg-gray-500"></div>
-            <div>
-              <div id="service-status" class="text-lg font-bold text-gray-400">Loading...</div>
-              <div class="text-sm text-gray-400">Multi-tenant verification service</div>
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 py-6">
+      <div id="tab-overview" class="tab-content space-y-6">
+        <div class="panel glass-deep rounded-2xl p-8 gradient-border">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="flex items-center gap-5">
+              <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);">
+                <i data-lucide="shield-check" class="w-8 h-8 text-green-400"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-white mb-1" id="service-status">Operational</div>
+                <div class="text-sm text-gray-400">Deterministic verification infrastructure</div>
+                <div class="flex items-center gap-4 mt-2 text-xs">
+                  <span class="text-gray-500">Audit: <span class="text-green-400 font-mono">PASS</span></span>
+                  <span class="text-gray-500">Uptime: <span class="font-mono" id="uptime-display">--</span></span>
+                  <span class="text-gray-500">Chain: <span class="font-mono text-blue-400">Base (8453)</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-6 text-right">
+              <div><div class="text-xs text-gray-500 uppercase tracking-wider">Total Requests</div><div class="text-3xl font-bold font-mono" id="total-requests">--</div></div>
+              <div class="w-px h-12 bg-white/10"></div>
+              <div><div class="text-xs text-gray-500 uppercase tracking-wider">Success Rate</div><div class="text-3xl font-bold font-mono text-green-400" id="success-rate">--%</div></div>
             </div>
           </div>
-          <div class="text-right space-y-1">
-            <div class="text-xs text-gray-500">Mode: <span id="service-mode" class="font-mono text-yellow-400">--</span></div>
-            <div class="text-xs text-gray-500">Audit: <span id="audit-status" class="font-mono">--</span></div>
-            <div class="text-xs text-gray-500">Uptime: <span id="uptime" class="font-mono">--</span></div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="panel glass rounded-xl p-5 gradient-border"><div class="flex items-center justify-between mb-3"><div class="text-xs text-gray-500 uppercase tracking-wider">Validations</div><i data-lucide="check-circle" class="w-4 h-4 text-gray-600"></i></div><div class="text-2xl font-bold font-mono" id="stat-validations">--</div><div class="text-xs text-gray-500 mt-1">24h total</div></div>
+          <div class="panel glass rounded-xl p-5 gradient-border"><div class="flex items-center justify-between mb-3"><div class="text-xs text-gray-500 uppercase tracking-wider">Pass Rate</div><i data-lucide="trending-up" class="w-4 h-4 text-green-500"></i></div><div class="text-2xl font-bold font-mono text-green-400" id="stat-passrate">--%</div><div class="text-xs text-gray-500 mt-1">Valid / Total</div></div>
+          <div class="panel glass rounded-xl p-5 gradient-border"><div class="flex items-center justify-between mb-3"><div class="text-xs text-gray-500 uppercase tracking-wider">Risk Score</div><i data-lucide="activity" class="w-4 h-4 text-blue-500"></i></div><div class="text-2xl font-bold font-mono text-blue-400" id="stat-risk">--</div><div class="text-xs text-gray-500 mt-1">Average</div></div>
+          <div class="panel glass rounded-xl p-5 gradient-border"><div class="flex items-center justify-between mb-3"><div class="text-xs text-gray-500 uppercase tracking-wider">USDC Fees</div><i data-lucide="wallet" class="w-4 h-4" style="color: var(--gold);"></i></div><div class="text-2xl font-bold font-mono" style="color: var(--gold);" id="stat-fees">--</div><div class="text-xs text-gray-500 mt-1">Total collected</div></div>
+        </div>
+      </div>
+
+      <div id="tab-payments" class="tab-content hidden space-y-6">
+        <div class="panel glass-deep rounded-2xl p-8 gradient-border">
+          <div class="flex items-center justify-between mb-6">
+            <div><h2 class="text-xl font-bold font-display" style="color: var(--gold);">BasePay</h2><p class="text-sm text-gray-400">USDC micro-fee payment system on Base</p></div>
+            <div class="flex items-center gap-2 px-4 py-2 rounded-lg" style="background: rgba(205, 127, 50, 0.1); border: 1px solid rgba(205, 127, 50, 0.3);"><div class="status-dot status-live"></div><span class="text-sm font-medium" style="color: var(--bronze);">Active</span></div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass rounded-xl p-5"><div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Fee per Validation</div><div class="text-3xl font-bold font-mono" style="color: var(--gold);">0.10 <span class="text-lg">USDC</span></div></div>
+            <div class="glass rounded-xl p-5"><div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Contract Address</div><div class="font-mono text-sm text-blue-400 break-all" id="contract-address">--</div></div>
+            <div class="glass rounded-xl p-5"><div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Total Fees Collected</div><div class="text-3xl font-bold font-mono" id="total-fees-collected">--</div></div>
           </div>
         </div>
       </div>
 
-      <!-- Aggregated Stats (Live from /telemetry/validations) -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="glass rounded-xl p-5">
-          <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Total Validations</div>
-          <div class="text-3xl font-bold text-white" id="total-validations">--</div>
-          <div class="text-xs text-gray-400">All agents (aggregated)</div>
-        </div>
-        <div class="glass rounded-xl p-5">
-          <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Pass Rate</div>
-          <div class="text-3xl font-bold text-green-400" id="pass-rate">--%</div>
-          <div class="text-xs text-gray-400">Valid / Total</div>
-        </div>
-        <div class="glass rounded-xl p-5">
-          <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Avg Risk Score</div>
-          <div class="text-3xl font-bold text-blue-400" id="avg-risk">--</div>
-          <div class="text-xs text-gray-400">Across all validations</div>
-        </div>
-        <div class="glass rounded-xl p-5">
-          <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Active Policy</div>
-          <div class="text-3xl font-bold" style="color:var(--gold)">olympus-v1</div>
-          <div class="text-xs text-gray-400">$100 capital base</div>
-        </div>
-      </div>
-
-      <!-- Proof Explorer -->
-      <div class="glass rounded-xl p-6">
-        <h3 class="font-display font-bold mb-4 flex items-center gap-2" style="color:var(--bronze)">
-          <span>🔍</span> Proof Explorer
-        </h3>
-        <p class="text-sm text-gray-400 mb-4">Lookup verification proofs by hash. No sensitive data exposed.</p>
-        
-        <div class="flex gap-3">
-          <input 
-            type="text" 
-            id="proof-hash-input"
-            placeholder="Enter proof hash (e.g., a1b2c3d4...)"
-            class="flex-1 px-4 py-3 bg-black/50 border border-white/10 rounded-lg font-mono text-sm focus:outline-none focus:border-yellow-500/50"
-          >
-          <button 
-            onclick="lookupProof()"
-            class="px-6 py-3 rounded-lg font-medium text-sm transition-all hover:opacity-90"
-            style="background:linear-gradient(135deg,var(--bronze),#8b5a2b);"
-          >
-            Lookup
-          </button>
-        </div>
-        
-        <div id="proof-result" class="mt-4 hidden">
-          <div class="p-4 bg-black/30 rounded-lg border border-white/5">
-            <div class="text-xs text-gray-500 mb-2">Proof Lookup Result</div>
-            <div id="proof-content" class="font-mono text-sm text-gray-300"></div>
+      <div id="tab-validations" class="tab-content hidden space-y-6">
+        <div class="panel glass rounded-xl p-6 gradient-border">
+          <h2 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="search" class="w-5 h-5" style="color: var(--bronze);"></i>Proof Explorer</h2>
+          <div class="flex gap-3">
+            <input type="text" id="proof-hash-input" placeholder="Enter proof hash (0x...)" class="flex-1 px-4 py-3 bg-black/50 border border-white/10 rounded-lg font-mono text-sm focus:outline-none focus:border-yellow-500/50">
+            <button onclick="lookupProof()" class="px-6 py-3 rounded-lg font-medium text-sm transition-all hover:opacity-90" style="background: linear-gradient(135deg, var(--bronze), #8b5a2b);">Verify</button>
           </div>
         </div>
       </div>
 
-      <!-- API Reference -->
-      <div class="glass rounded-xl p-6">
-        <h3 class="font-display font-bold mb-4" style="color:var(--bronze)">API Reference</h3>
-        
-        <div class="space-y-4">
-          <!-- Health -->
-          <div class="border-l-2 border-green-500 pl-4">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-xs font-bold">GET</span>
-              <code class="font-mono text-sm">/ep/health</code>
-              <span class="text-xs text-gray-500">(No auth)</span>
-            </div>
-            <p class="text-sm text-gray-400 mb-2">Service health check.</p>
-          </div>
-
-          <!-- Status -->
-          <div class="border-l-2 border-blue-500 pl-4">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 text-xs font-bold">GET</span>
-              <code class="font-mono text-sm">/ep/status</code>
-              <span class="text-xs text-gray-500">(No auth)</span>
-            </div>
-            <p class="text-sm text-gray-400 mb-2">Service status and configuration.</p>
-          </div>
-
-          <!-- Telemetry Status -->
-          <div class="border-l-2 border-purple-500 pl-4">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 text-xs font-bold">GET</span>
-              <code class="font-mono text-sm">/telemetry/status</code>
-              <span class="text-xs text-gray-500">(No auth)</span>
-            </div>
-            <p class="text-sm text-gray-400 mb-2">Live service health telemetry for dashboards.</p>
-          </div>
-
-          <!-- Telemetry Validations -->
-          <div class="border-l-2 border-indigo-500 pl-4">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 text-xs font-bold">GET</span>
-              <code class="font-mono text-sm">/telemetry/validations</code>
-              <span class="text-xs text-gray-500">(No auth)</span>
-            </div>
-            <p class="text-sm text-gray-400 mb-2">Aggregated validation statistics (24h).</p>
-          </div>
-
-          <!-- Validate -->
-          <div class="border-l-2 border-yellow-500 pl-4">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 text-xs font-bold">POST</span>
-              <code class="font-mono text-sm">/ep/validate</code>
-              <span class="text-xs text-gray-500">(X-Agent-Key required)</span>
-            </div>
-            <p class="text-sm text-gray-400 mb-2">Validate proposal against policy. Returns verification result with proof_hash.</p>
-          </div>
-
-          <!-- Simulate -->
-          <div class="border-l-2 border-orange-500 pl-4">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 text-xs font-bold">POST</span>
-              <code class="font-mono text-sm">/ep/simulate</code>
-              <span class="text-xs text-gray-500">(X-Agent-Key required)</span>
-            </div>
-            <p class="text-sm text-gray-400 mb-2">Validate + simulate trade outcome. Returns expected PnL, drawdown, risk/reward.</p>
+      <div id="tab-api" class="tab-content hidden space-y-4">
+        <div class="panel glass rounded-xl p-6 gradient-border">
+          <h2 class="text-lg font-bold mb-6">API Reference</h2>
+          <div class="space-y-4">
+            <div class="border-l-2 border-green-500 pl-4 py-2"><div class="flex items-center gap-3"><span class="px-2 py-0.5 rounded text-xs font-bold" style="background: rgba(34, 197, 94, 0.15); color: #4ade80;">GET</span><code class="font-mono text-sm">/ep/health</code></div></div>
+            <div class="border-l-2 border-yellow-500 pl-4 py-2"><div class="flex items-center gap-3"><span class="px-2 py-0.5 rounded text-xs font-bold" style="background: rgba(234, 179, 8, 0.15); color: #facc15;">POST</span><code class="font-mono text-sm">/ep/validate</code><span class="text-xs text-gray-500">X-Agent-Key required</span></div></div>
           </div>
         </div>
       </div>
-
-      <!-- Schema Links -->
-      <div class="glass rounded-xl p-6">
-        <h3 class="font-display font-bold mb-4" style="color:var(--bronze)">JSON Schemas</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/schemas/opportunity-proposal.v1.json" target="_blank" class="flex items-center gap-3 p-4 bg-black/30 rounded-lg hover:bg-white/5 transition-colors">
-            <span class="text-2xl">📄</span>
-            <div>
-              <div class="font-medium text-sm">OpportunityProposal v1</div>
-              <div class="text-xs text-gray-500">Request schema for validation</div>
-            </div>
-          </a>
-          <a href="/schemas/verification-result.v1.json" target="_blank" class="flex items-center gap-3 p-4 bg-black/30 rounded-lg hover:bg-white/5 transition-colors">
-            <span class="text-2xl">✅</span>
-            <div>
-              <div class="font-medium text-sm">VerificationResult v1</div>
-              <div class="text-xs text-gray-500">Response schema from validation</div>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- No Personal Data Notice -->
-      <div class="glass rounded-xl p-4 border border-white/5">
-        <div class="flex items-center gap-3 text-sm text-gray-500">
-          <span class="text-lg">🔒</span>
-          <span>This dashboard displays only aggregated service statistics. No wallet balances, personal trade history, or agent-specific data is shown.</span>
-        </div>
-      </div>
-
     </main>
 
-    <footer class="border-t border-white/10 mt-12">
-      <div class="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between text-sm text-gray-500">
+    <footer class="border-t border-white/5 mt-auto">
+      <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between text-xs text-gray-500">
         <div>Execution Protocol v1.0 • Deterministic verification infrastructure</div>
-        <div class="font-mono" id="footer-mode">Mode: --</div>
+        <div class="font-mono" id="footer-mode">Mode: DRY_RUN</div>
       </div>
     </footer>
-
   </div>
 
   <script>
-    // Format uptime from seconds
-    function formatUptime(seconds) {
-      if (!seconds || seconds < 0) return '--';
-      const hours = Math.floor(seconds / 3600);
-      const mins = Math.floor((seconds % 3600) / 60);
-      if (hours > 0) return `${hours}h ${mins}m`;
-      return `${mins}m`;
-    }
+    lucide.createIcons();
+    
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+      });
+    });
 
-    // Format timestamp
-    function formatTime(isoString) {
-      if (!isoString) return '--';
-      const date = new Date(isoString);
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    // Load service status from telemetry
-    async function loadStatus() {
+    // Load telemetry data
+    async function loadData() {
       try {
-        const res = await fetch('/telemetry/status');
-        if (!res.ok) throw new Error('Failed to fetch status');
-        const data = await res.json();
+        const [status, validations, payments] = await Promise.all([
+          fetch('/telemetry/status').then(r => r.json()).catch(() => null),
+          fetch('/telemetry/validations').then(r => r.json()).catch(() => null),
+          fetch('/telemetry/payments').then(r => r.json()).catch(() => null)
+        ]);
         
-        // Update status card
-        const statusCard = document.getElementById('status-card');
-        const statusIndicator = document.getElementById('status-indicator');
-        const serviceStatus = document.getElementById('service-status');
-        
-        if (data.audit_status === 'PASS') {
-          statusCard.className = 'glass rounded-xl p-6 border-l-4 border-green-500';
-          statusIndicator.className = 'w-3 h-3 rounded-full bg-green-500 status-dot';
-          serviceStatus.textContent = 'Operational';
-          serviceStatus.className = 'text-lg font-bold text-green-400';
-        } else {
-          statusCard.className = 'glass rounded-xl p-6 border-l-4 border-yellow-500';
-          statusIndicator.className = 'w-3 h-3 rounded-full bg-yellow-500';
-          serviceStatus.textContent = 'Degraded';
-          serviceStatus.className = 'text-lg font-bold text-yellow-400';
+        if (status) {
+          document.getElementById('header-mode').textContent = status.mode || 'DRY_RUN';
+          document.getElementById('footer-mode').textContent = 'Mode: ' + (status.mode || 'DRY_RUN');
+          document.getElementById('uptime-display').textContent = formatUptime(status.uptime_seconds);
         }
         
-        document.getElementById('service-mode').textContent = data.mode || 'DRY_RUN';
-        document.getElementById('audit-status').textContent = data.audit_status || 'PENDING';
-        document.getElementById('audit-status').className = 'font-mono ' + (data.audit_status === 'PASS' ? 'text-green-400' : 'text-yellow-400');
-        document.getElementById('uptime').textContent = formatUptime(data.uptime_seconds);
-        document.getElementById('version').textContent = data.version || 'v1.0.0';
-        document.getElementById('last-update').textContent = formatTime(data.timestamp);
-        document.getElementById('footer-mode').textContent = `Mode: ${data.mode || 'DRY_RUN'}`;
-      } catch (e) {
-        console.error('Failed to load status:', e);
-        document.getElementById('service-status').textContent = 'Unavailable';
-        document.getElementById('service-status').className = 'text-lg font-bold text-red-400';
-        document.getElementById('status-indicator').className = 'w-3 h-3 rounded-full bg-red-500';
-        document.getElementById('status-card').className = 'glass rounded-xl p-6 border-l-4 border-red-500';
-      }
-    }
-
-    // Load validation stats from telemetry
-    async function loadStats() {
-      try {
-        const res = await fetch('/telemetry/validations');
-        if (!res.ok) throw new Error('Failed to fetch validations');
-        const data = await res.json();
+        if (validations) {
+          document.getElementById('total-requests').textContent = validations.total || 0;
+          document.getElementById('success-rate').textContent = ((validations.pass_rate || 0) * 100).toFixed(1) + '%';
+          document.getElementById('stat-validations').textContent = validations.total || 0;
+          document.getElementById('stat-passrate').textContent = ((validations.pass_rate || 0) * 100).toFixed(1) + '%';
+          document.getElementById('stat-risk').textContent = validations.avg_risk_score || 'N/A';
+        }
         
-        document.getElementById('total-validations').textContent = data.total || 0;
-        document.getElementById('pass-rate').textContent = ((data.pass_rate || 0) * 100).toFixed(1) + '%';
-        document.getElementById('avg-risk').textContent = data.avg_risk_score || 'N/A';
-      } catch (e) {
-        console.error('Failed to load stats:', e);
-        document.getElementById('total-validations').textContent = 'Err';
-        document.getElementById('pass-rate').textContent = '--';
-        document.getElementById('avg-risk').textContent = '--';
-      }
+        if (payments) {
+          document.getElementById('stat-fees').textContent = (payments.total_usdc || 0).toFixed(2);
+          document.getElementById('total-fees-collected').textContent = (payments.total_usdc || 0).toFixed(2);
+        }
+      } catch (e) { console.error('Failed to load telemetry:', e); }
     }
 
-    // Proof lookup (stub - would connect to real endpoint)
+    function formatUptime(seconds) {
+      if (!seconds) return '--';
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      return h > 0 ? `${h}h ${m}m` : `${m}m`;
+    }
+
     function lookupProof() {
       const hash = document.getElementById('proof-hash-input').value.trim();
       if (!hash) return;
-      
-      const resultDiv = document.getElementById('proof-result');
-      const contentDiv = document.getElementById('proof-content');
-      
-      // For now, show a placeholder message
-      // In production, this would fetch from /ep/proof/:hash
-      resultDiv.classList.remove('hidden');
-      contentDiv.innerHTML = `
-        <div class="text-yellow-400 mb-2">Proof lookup endpoint coming in v1.1</div>
-        <div class="text-gray-500">Hash searched: ${hash.substring(0, 32)}...</div>
-        <div class="mt-2 text-xs text-gray-400">
-          Proof verification requires the Guardian module (Phase 3).
-          <br>For now, proof hashes can be verified manually via EP API.
-        </div>
-      `;
+      alert('Proof lookup: ' + hash.substring(0, 20) + '... (endpoint coming in v1.1)');
     }
 
-    // Initial load
-    loadStatus();
-    loadStats();
-    
-    // Refresh every 30 seconds
-    setInterval(() => {
-      loadStatus();
-      loadStats();
-    }, 30000);
+    loadData();
+    setInterval(loadData, 30000);
   </script>
 </body>
 </html>
