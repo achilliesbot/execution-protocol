@@ -8,187 +8,334 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root { --bronze: #cd7f32; --gold: #ffd700; --electric-blue: #4A9EFF; }
-    body { font-family: Inter, system-ui, sans-serif; background: #0A0A0F; color: #e5e5e5; }
+    :root {
+      --bronze: #CD7F32;
+      --bronze-dark: #8B4513;
+      --gold: #FFD700;
+      --electric-blue: #00D4FF;
+      --fire-orange: #FF6B35;
+      --deep-navy: #0A0A1A;
+    }
+    
+    * { box-sizing: border-box; }
+    
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: linear-gradient(180deg, var(--deep-navy) 0%, #0d0d1a 50%, #0a0a14 100%);
+      color: #e8e8e8;
+      margin: 0;
+      min-height: 100vh;
+    }
+    
     .font-display { font-family: Cinzel, serif; }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
-    .glass { background: rgba(26, 26, 31, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); }
-    .glass-deep { background: rgba(17, 17, 20, 0.95); backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
-    .gradient-border::before { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: linear-gradient(135deg, rgba(205, 127, 50, 0.5), rgba(255, 215, 0, 0.3), transparent); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; }
-    .status-live { background: #22c55e; box-shadow: 0 0 12px #22c55e; animation: pulse 2s ease-in-out infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-    .tab-btn { position: relative; padding: 12px 24px; font-size: 13px; font-weight: 500; color: #6b7280; background: transparent; border: none; cursor: pointer; transition: all 0.2s; }
-    .tab-btn:hover { color: #e5e5e5; }
+    
+    .glass {
+      background: rgba(10, 10, 26, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(205, 127, 50, 0.15);
+    }
+    
+    .glass-deep {
+      background: rgba(8, 8, 18, 0.95);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(205, 127, 50, 0.2);
+    }
+    
+    .bronze-border {
+      position: relative;
+    }
+    .bronze-border::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(205, 127, 50, 0.6) 0%, rgba(255, 215, 0, 0.4) 50%, rgba(205, 127, 50, 0.6) 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    
+    .status-glow { box-shadow: 0 0 20px rgba(205, 127, 50, 0.3); }
+    .status-live { animation: bronze-pulse 2s ease-in-out infinite; }
+    
+    @keyframes bronze-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(205, 127, 50, 0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(205, 127, 50, 0); }
+    }
+    
+    .tab-btn {
+      position: relative;
+      padding: 14px 28px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #6b7280;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-family: Cinzel, serif;
+    }
+    .tab-btn:hover { color: #CD7F32; }
     .tab-btn.active { color: var(--gold); }
-    .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--bronze), var(--gold)); box-shadow: 0 -4px 12px var(--bronze); }
-    .panel { position: relative; border-radius: 12px; overflow: hidden; }
-    .grid-bg { background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 50px 50px; }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--bronze), var(--gold), var(--bronze), transparent);
+    }
+    
+    .badge-get { 
+      background: rgba(0, 212, 255, 0.15); 
+      color: var(--electric-blue);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+    }
+    .badge-post { 
+      background: rgba(205, 127, 50, 0.15); 
+      color: var(--bronze);
+      border: 1px solid rgba(205, 127, 50, 0.3);
+    }
   </style>
 </head>
-<body class="grid-bg min-h-screen">
+<body>
   <div class="min-h-screen flex flex-col">
-    <header class="glass-deep sticky top-0 z-50 border-b border-white/5">
+    
+    <!-- Header -->
+    <header class="glass-deep sticky top-0 z-50 border-b border-orange-900/20">
       <div class="max-w-7xl mx-auto px-6">
-        <div class="flex items-center justify-between h-16">
-          <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background: linear-gradient(135deg, var(--bronze), #8b5a2b);">⚡</div>
+        <div class="flex items-center justify-between h-20">
+          <div class="flex items-center gap-5">
+            <div class="w-12 h-14 flex items-center justify-center text-2xl" 
+                 style="background: linear-gradient(135deg, var(--bronze-dark), var(--bronze));
+                 clip-path: polygon(50% 0%, 100% 25%, 85% 100%, 50% 85%, 15% 100%, 0% 25%);">
+              <span>⚡</span>
+            </div>
             <div>
-              <h1 class="font-display text-lg font-bold" style="color: var(--gold);">Execution Protocol</h1>
-              <div class="flex items-center gap-2 text-xs text-gray-500"><span class="status-dot status-live"></span><span>v1.0.0 — Base Mainnet</span></div>
+              <h1 class="font-display text-xl font-bold tracking-wider" style="color: var(--gold);">Execution Protocol</h1>
+              <div class="flex items-center gap-3 text-xs" style="color: var(--bronze);">
+                <span class="w-2 h-2 rounded-full bg-green-500 status-live"></span>
+                <span>v1.0.0 — Olympus Command</span>
+              </div>
             </div>
           </div>
-          <nav class="hidden md:flex items-center gap-1">
-            <button class="tab-btn active" data-tab="overview">Overview</button>
+          
+          <nav class="hidden md:flex items-center">
+            <button class="tab-btn active" data-tab="overview">Command</button>
             <button class="tab-btn" data-tab="payments">BasePay</button>
-            <button class="tab-btn" data-tab="validations">Validations</button>
-            <button class="tab-btn" data-tab="api">API</button>
+            <button class="tab-btn" data-tab="validations">Proving</button>
+            <button class="tab-btn" data-tab="api">Codex</button>
+            <button class="tab-btn" data-tab="logs">Transcript</button>
           </nav>
-          <div class="text-right hidden sm:block">
-            <div class="text-xs text-gray-500">Mode</div>
-            <div class="font-mono text-sm" style="color: var(--gold);" id="header-mode">DRY_RUN</div>
+          
+          <div class="flex items-center gap-4">
+            <div class="text-right hidden sm:block">
+              <div class="text-xs" style="color: var(--bronze);">Battle Status</div>
+              <div class="font-mono text-sm font-bold" style="color: var(--gold);">DRY_RUN</div>
+            </div>
+            <a href="https://github.com/achilliesbot/execution-protocol" target="_blank" 
+               class="glass px-4 py-2.5 rounded-lg text-sm hover:bg-orange-900/20 transition-all flex items-center gap-2">
+              <i data-lucide="github" class="w-4 h-4"></i>
+              <span class="hidden sm:inline">Forge</span>
+            </a>
           </div>
         </div>
       </div>
     </header>
 
-    <main class="flex-1 max-w-7xl mx-auto w-full px-6 py-6">
-      <div id="tab-overview" class="tab-content space-y-6">
-        <div class="panel glass-deep rounded-2xl p-8 gradient-border">
-          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div class="flex items-center gap-5">
-              <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);">
-                <i data-lucide="shield-check" class="w-8 h-8 text-green-400"></i>
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
+      
+      <!-- Overview Tab -->
+      <div id="tab-overview" class="tab-content space-y-8">
+        
+        <!-- Hero Status Panel -->
+        <div class="glass-deep rounded-2xl p-8 bronze-border status-glow">
+          <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+            <div class="flex items-center gap-6">
+              <div class="w-20 h-20 rounded-2xl flex items-center justify-center relative"
+                   style="background: linear-gradient(135deg, rgba(205, 127, 50, 0.3), rgba(139, 69, 19, 0.2));
+                   border: 2px solid rgba(205, 127, 50, 0.5);">
+                <i data-lucide="shield" class="w-10 h-10" style="color: var(--gold);"></i>
+                <div class="absolute top-2 right-2 w-3 h-3 rounded-full bg-green-500 border-2 border-gray-900 animate-pulse"></div>
               </div>
               <div>
-                <div class="text-2xl font-bold text-white mb-1" id="service-status">Operational</div>
-                <div class="text-sm text-gray-400">Deterministic verification infrastructure</div>
-                <div class="flex items-center gap-4 mt-2 text-xs">
-                  <span class="text-gray-500">Audit: <span class="text-green-400 font-mono">PASS</span></span>
-                  <span class="text-gray-500">Uptime: <span class="font-mono" id="uptime-display">--</span></span>
-                  <span class="text-gray-500">Chain: <span class="font-mono text-blue-400">Base (8453)</span></span>
+                <div class="text-3xl font-bold font-display mb-2" style="color: var(--gold);">The Shield Holds</div>
+                <div class="text-sm" style="color: var(--bronze);">Deterministic verification infrastructure — All phalanxes operational</div>
+                <div class="flex items-center gap-6 mt-4 text-xs font-mono">
+                  <span style="color: #4a5568;">Audit: <span class="text-green-400">PASS</span></span>
+                  <span style="color: #4a5568;">Chain: <span style="color: var(--electric-blue);">Base (8453)</span></span>
                 </div>
               </div>
             </div>
-            <div class="flex items-center gap-6 text-right">
-              <div><div class="text-xs text-gray-500 uppercase tracking-wider">Total Requests</div><div class="text-3xl font-bold font-mono" id="total-requests">--</div></div>
-              <div class="w-px h-12 bg-white/10"></div>
-              <div><div class="text-xs text-gray-500 uppercase tracking-wider">Success Rate</div><div class="text-3xl font-bold font-mono text-green-400" id="success-rate">--%</div></div>
+            <div class="flex items-center gap-8 text-right">
+              <div>
+                <div class="text-xs uppercase tracking-widest mb-1" style="color: var(--bronze);">Total Requests</div>
+                <div class="text-4xl font-bold font-display" style="color: var(--gold);">--</div>
+              </div>
+              <div class="w-px h-16 bg-gradient-to-b from-transparent via-orange-700/50 to-transparent"></div>
+              <div>
+                <div class="text-xs uppercase tracking-widest mb-1" style="color: var(--bronze);">Victory Rate</div>
+                <div class="text-4xl font-bold font-display text-green-400">--%</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="panel glass rounded-xl p-5 gradient-border"><div class="flex items-center justify-between mb-3"><div class="text-xs text-gray-500 uppercase tracking-wider">Validations</div><i data-lucide="check-circle" class="w-4 h-4 text-gray-600"></i></div><div class="text-2xl font-bold font-mono" id="stat-validations">--</div><div class="text-xs text-gray-500 mt-1">24h total</div></div>
-          <div class="panel glass rounded-xl p-5 gradient-border"><div class="flex items-center justify-between mb-3"><div class="text-xs text-gray-500 uppercase tracking-wider">Pass Rate</div><i data-lucide="trending-up" class="w-4 h-4 text-green-500"></i></div><div class="text-2xl font-bold font-mono text-green-400" id="stat-passrate">--%</div><div class="text-xs text-gray-500 mt-1">Valid / Total</div></div>
-          <div class="panel glass rounded-xl p-5 gradient-border"><div class="flex items-center justify-between mb-3"><div class="text-xs text-gray-500 uppercase tracking-wider">Risk Score</div><i data-lucide="activity" class="w-4 h-4 text-blue-500"></i></div><div class="text-2xl font-bold font-mono text-blue-400" id="stat-risk">--</div><div class="text-xs text-gray-500 mt-1">Average</div></div>
-          <div class="panel glass rounded-xl p-5 gradient-border"><div class="flex items-center justify-between mb-3"><div class="text-xs text-gray-500 uppercase tracking-wider">USDC Fees</div><i data-lucide="wallet" class="w-4 h-4" style="color: var(--gold);"></i></div><div class="text-2xl font-bold font-mono" style="color: var(--gold);" id="stat-fees">--</div><div class="text-xs text-gray-500 mt-1">Total collected</div></div>
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="glass rounded-xl p-6 bronze-border">
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-xs uppercase tracking-widest" style="color: var(--bronze);">Validations</div>
+              <i data-lucide="sword" class="w-5 h-5" style="color: var(--bronze-dark);"></i>
+            </div>
+            <div class="text-3xl font-bold font-display" style="color: var(--gold);">--</div>
+            <div class="text-xs mt-2" style="color: #4a5568;">24h tally</div>
+          </div>
+          
+          <div class="glass rounded-xl p-6 bronze-border">
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-xs uppercase tracking-widest" style="color: var(--bronze);">Pass Rate</div>
+              <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+            </div>
+            <div class="text-3xl font-bold font-display text-green-400">--%</div>
+            <div class="text-xs mt-2" style="color: #4a5568;">Valid / Total</div>
+          </div>
+          
+          <div class="glass rounded-xl p-6 bronze-border">
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-xs uppercase tracking-widest" style="color: var(--bronze);">Risk Score</div>
+              <i data-lucide="activity" class="w-5 h-5" style="color: var(--electric-blue);"></i>
+            </div>
+            <div class="text-3xl font-bold font-display" style="color: var(--electric-blue);">--</div>
+            <div class="text-xs mt-2" style="color: #4a5568;">Average</div>
+          </div>
+          
+          <div class="glass rounded-xl p-6 bronze-border">
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-xs uppercase tracking-widest" style="color: var(--bronze);">Tribute</div>
+              <i data-lucide="coins" class="w-5 h-5" style="color: var(--gold);"></i>
+            </div>
+            <div class="text-3xl font-bold font-display" style="color: var(--gold);">--</div>
+            <div class="text-xs mt-2" style="color: #4a5568;">USDC Collected</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <button onclick="switchTab('payments')" class="glass rounded-xl p-6 text-left hover:bg-orange-900/10 transition-all group bronze-border">
+            <div class="flex items-center gap-5">
+              <div class="w-14 h-14 rounded-xl flex items-center justify-center" style="background: rgba(205, 127, 50, 0.15); border: 1px solid rgba(205, 127, 50, 0.3);">
+                <i data-lucide="credit-card" class="w-7 h-7" style="color: var(--bronze);"></i>
+              </div>
+              <div class="flex-1">
+                <div class="font-display font-semibold" style="color: var(--gold);">BasePay Status</div>
+                <div class="text-xs mt-1" style="color: var(--bronze);">Payment flows & tribute ledger</div>
+              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-700 group-hover:text-orange-500 transition-colors"></i>
+            </div>
+          </button>
+          
+          <button onclick="switchTab('validations')" class="glass rounded-xl p-6 text-left hover:bg-orange-900/10 transition-all group bronze-border">
+            <div class="flex items-center gap-5">
+              <div class="w-14 h-14 rounded-xl flex items-center justify-center" style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3);">
+                <i data-lucide="search" class="w-7 h-7" style="color: var(--electric-blue);"></i>
+              </div>
+              <div class="flex-1">
+                <div class="font-display font-semibold" style="color: var(--gold);">Proof Explorer</div>
+                <div class="text-xs mt-1" style="color: var(--bronze);">Verify transaction proofs</div>
+              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-700 group-hover:text-blue-400 transition-colors"></i>
+            </div>
+          </button>
+          
+          <button onclick="switchTab('api')" class="glass rounded-xl p-6 text-left hover:bg-orange-900/10 transition-all group bronze-border">
+            <div class="flex items-center gap-5">
+              <div class="w-14 h-14 rounded-xl flex items-center justify-center" style="background: rgba(255, 107, 53, 0.1); border: 1px solid rgba(255, 107, 53, 0.3);">
+                <i data-lucide="scroll" class="w-7 h-7" style="color: var(--fire-orange);"></i>
+              </div>
+              <div class="flex-1">
+                <div class="font-display font-semibold" style="color: var(--gold);">The Codex</div>
+                <div class="text-xs mt-1" style="color: var(--bronze);">API reference & schemas</div>
+              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-700 group-hover:text-orange-400 transition-colors"></i>
+            </div>
+          </button>
         </div>
       </div>
 
+      <!-- Tab: BasePay -->
       <div id="tab-payments" class="tab-content hidden space-y-6">
-        <div class="panel glass-deep rounded-2xl p-8 gradient-border">
-          <div class="flex items-center justify-between mb-6">
-            <div><h2 class="text-xl font-bold font-display" style="color: var(--gold);">BasePay</h2><p class="text-sm text-gray-400">USDC micro-fee payment system on Base</p></div>
-            <div class="flex items-center gap-2 px-4 py-2 rounded-lg" style="background: rgba(205, 127, 50, 0.1); border: 1px solid rgba(205, 127, 50, 0.3);"><div class="status-dot status-live"></div><span class="text-sm font-medium" style="color: var(--bronze);">Active</span></div>
+        <div class="glass-deep rounded-2xl p-8 bronze-border status-glow">
+          <div class="flex items-center justify-between mb-8">
+            <div>
+              <h2 class="text-2xl font-bold font-display mb-2" style="color: var(--gold);">BasePay</h2>
+              <p style="color: var(--bronze);">USDC tribute system on Base — One validation, one offering</p>
+            </div>
+            <div class="flex items-center gap-3 px-5 py-2.5 rounded-lg" style="background: rgba(205, 127, 50, 0.1); border: 1px solid rgba(205, 127, 50, 0.4);">
+              <div class="w-2 h-2 rounded-full bg-green-500 status-live"></div>
+              <span class="text-sm font-display font-semibold" style="color: var(--bronze);">Receiving Tribute</span>
+            </div>
           </div>
+          
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="glass rounded-xl p-5"><div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Fee per Validation</div><div class="text-3xl font-bold font-mono" style="color: var(--gold);">0.10 <span class="text-lg">USDC</span></div></div>
-            <div class="glass rounded-xl p-5"><div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Contract Address</div><div class="font-mono text-sm text-blue-400 break-all" id="contract-address">--</div></div>
-            <div class="glass rounded-xl p-5"><div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Total Fees Collected</div><div class="text-3xl font-bold font-mono" id="total-fees-collected">--</div></div>
+            <div class="glass rounded-xl p-6 bronze-border">
+              <div class="text-xs uppercase tracking-widest mb-3" style="color: var(--bronze);">Fee per Validation</div>
+              <div class="text-4xl font-bold font-display" style="color: var(--gold);">0.10 <span class="text-xl">USDC</span></div>
+              <div class="text-xs mt-2 font-mono" style="color: #4a5568;">100,000 units (6 decimals)</div>
+            </div>
+            
+            <div class="glass rounded-xl p-6 bronze-border">
+              <div class="text-xs uppercase tracking-widest mb-3" style="color: var(--bronze);">Contract Address</div>
+              <div class="font-mono text-sm break-all" style="color: var(--electric-blue);">--</div>
+              <div class="text-xs mt-2" style="color: #4a5568;">Base Mainnet (chainId: 8453)</div>
+            </div>
+            
+            <div class="glass rounded-xl p-6 bronze-border">
+              <div class="text-xs uppercase tracking-widest mb-3" style="color: var(--bronze);">Total Tribute</div>
+              <div class="text-4xl font-bold font-display" style="color: var(--gold);">--</div>
+              <div class="text-xs mt-2" style="color: #4a5568;">USDC collected</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div id="tab-validations" class="tab-content hidden space-y-6">
-        <div class="panel glass rounded-xl p-6 gradient-border">
-          <h2 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="search" class="w-5 h-5" style="color: var(--bronze);"></i>Proof Explorer</h2>
-          <div class="flex gap-3">
-            <input type="text" id="proof-hash-input" placeholder="Enter proof hash (0x...)" class="flex-1 px-4 py-3 bg-black/50 border border-white/10 rounded-lg font-mono text-sm focus:outline-none focus:border-yellow-500/50">
-            <button onclick="lookupProof()" class="px-6 py-3 rounded-lg font-medium text-sm transition-all hover:opacity-90" style="background: linear-gradient(135deg, var(--bronze), #8b5a2b);">Verify</button>
-          </div>
-        </div>
-      </div>
-
-      <div id="tab-api" class="tab-content hidden space-y-4">
-        <div class="panel glass rounded-xl p-6 gradient-border">
-          <h2 class="text-lg font-bold mb-6">API Reference</h2>
-          <div class="space-y-4">
-            <div class="border-l-2 border-green-500 pl-4 py-2"><div class="flex items-center gap-3"><span class="px-2 py-0.5 rounded text-xs font-bold" style="background: rgba(34, 197, 94, 0.15); color: #4ade80;">GET</span><code class="font-mono text-sm">/ep/health</code></div></div>
-            <div class="border-l-2 border-yellow-500 pl-4 py-2"><div class="flex items-center gap-3"><span class="px-2 py-0.5 rounded text-xs font-bold" style="background: rgba(234, 179, 8, 0.15); color: #facc15;">POST</span><code class="font-mono text-sm">/ep/validate</code><span class="text-xs text-gray-500">X-Agent-Key required</span></div></div>
-          </div>
-        </div>
-      </div>
     </main>
 
     <footer class="border-t border-white/5 mt-auto">
-      <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between text-xs text-gray-500">
-        <div>Execution Protocol v1.0 • Deterministic verification infrastructure</div>
-        <div class="font-mono" id="footer-mode">Mode: DRY_RUN</div>
+      <div class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between text-sm" style="color: #4a5568;">
+        <div class="font-mono">Execution Protocol v1.0 — Deterministic verification infrastructure</div>
+        <div>Mode: DRY_RUN</div>
       </div>
     </footer>
+
   </div>
 
   <script>
+    // Initialize Lucide icons
     lucide.createIcons();
     
     // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+      document.querySelector('[data-tab="' + tabId + '"]').classList.add('active');
+    }
+    
+    // Tab click handlers
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-        btn.classList.add('active');
-        document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+        switchTab(btn.dataset.tab);
       });
     });
-
-    // Load telemetry data
-    async function loadData() {
-      try {
-        const [status, validations, payments] = await Promise.all([
-          fetch('/telemetry/status').then(r => r.json()).catch(() => null),
-          fetch('/telemetry/validations').then(r => r.json()).catch(() => null),
-          fetch('/telemetry/payments').then(r => r.json()).catch(() => null)
-        ]);
-        
-        if (status) {
-          document.getElementById('header-mode').textContent = status.mode || 'DRY_RUN';
-          document.getElementById('footer-mode').textContent = 'Mode: ' + (status.mode || 'DRY_RUN');
-          document.getElementById('uptime-display').textContent = formatUptime(status.uptime_seconds);
-        }
-        
-        if (validations) {
-          document.getElementById('total-requests').textContent = validations.total || 0;
-          document.getElementById('success-rate').textContent = ((validations.pass_rate || 0) * 100).toFixed(1) + '%';
-          document.getElementById('stat-validations').textContent = validations.total || 0;
-          document.getElementById('stat-passrate').textContent = ((validations.pass_rate || 0) * 100).toFixed(1) + '%';
-          document.getElementById('stat-risk').textContent = validations.avg_risk_score || 'N/A';
-        }
-        
-        if (payments) {
-          document.getElementById('stat-fees').textContent = (payments.total_usdc || 0).toFixed(2);
-          document.getElementById('total-fees-collected').textContent = (payments.total_usdc || 0).toFixed(2);
-        }
-      } catch (e) { console.error('Failed to load telemetry:', e); }
-    }
-
-    function formatUptime(seconds) {
-      if (!seconds) return '--';
-      const h = Math.floor(seconds / 3600);
-      const m = Math.floor((seconds % 3600) / 60);
-      return h > 0 ? `${h}h ${m}m` : `${m}m`;
-    }
-
-    function lookupProof() {
-      const hash = document.getElementById('proof-hash-input').value.trim();
-      if (!hash) return;
-      alert('Proof lookup: ' + hash.substring(0, 20) + '... (endpoint coming in v1.1)');
-    }
-
-    loadData();
-    setInterval(loadData, 30000);
   </script>
 </body>
 </html>
