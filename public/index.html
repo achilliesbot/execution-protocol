@@ -329,14 +329,14 @@
           <nav class="hidden lg:flex items-center gap-2">
             <button class="forge-tab active" data-tab="war-console">War Console</button>
             <button class="forge-tab" data-tab="artifacts">Artifacts</button>
-            <button class="forge-tab" data-tab="combat-log">Combat Log</button>
-            <button class="forge-tab" data-tab="oracle">Oracle</button>
+            <button class="forge-tab" data-tab="playground">Playground</button>
+            <button class="forge-tab" data-tab="api">Codex</button>
           </nav>
           
           <!-- Actions -->
           <div class="flex items-center gap-4">
-            <button class="btn-secondary text-sm">Enter the Arena</button>
-            <button class="btn-arena text-sm">Deploy</button>
+            <button onclick="showGetStarted()" class="btn-secondary text-sm">Get Started</button>
+            <button onclick="switchTab('api')" class="btn-arena text-sm">API Docs</button>
           </div>
         </div>
       </div>
@@ -363,8 +363,8 @@
           </span>
         </div>
         <div class="flex items-center justify-center gap-4">
-          <button class="btn-arena px-8 py-4 text-base">Start Now</button>
-          <button class="btn-secondary px-8 py-4 text-base">Watch Overview</button>
+          <button onclick="showGetStarted()" class="btn-arena px-8 py-4 text-base">Get API Key</button>
+          <button onclick="switchTab('api')" class="btn-secondary px-8 py-4 text-base">View API Docs</button>
         </div>
       </div>
     </section>
@@ -561,6 +561,52 @@
         </div>
       </div>
 
+      <!-- Tab: API Playground -->
+      <div id="tab-playground" class="tab-content hidden">
+        <div class="temple-panel rounded-lg p-6">
+          <h3 class="section-title mb-6">API Playground</h3>
+          <p class="text-sm mb-6" style="color: #9ca3af;">Test endpoints directly in your browser. No authentication required for health/status endpoints.</p>
+          
+          <div class="space-y-4">
+            <!-- Test Health -->
+            <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3);">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <span class="px-2 py-1 rounded text-xs font-bold badge-get">GET</span>
+                  <code class="font-mono text-sm">/ep/health</code>
+                </div>
+                <button onclick="testEndpoint('/ep/health', 'health-result')" class="btn-arena text-xs px-4 py-2">Test</button>
+              </div>
+              <div id="health-result" class="hidden mt-3 p-3 rounded font-mono text-xs" style="background: rgba(0,0,0,0.5);"></div>
+            </div>
+            
+            <!-- Test Telemetry -->
+            <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3);">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <span class="px-2 py-1 rounded text-xs font-bold" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);">GET</span>
+                  <code class="font-mono text-sm">/telemetry/status</code>
+                </div>
+                <button onclick="testEndpoint('/telemetry/status', 'telemetry-result')" class="btn-arena text-xs px-4 py-2">Test</button>
+              </div>
+              <div id="telemetry-result" class="hidden mt-3 p-3 rounded font-mono text-xs" style="background: rgba(0,0,0,0.5);"></div>
+            </div>
+            
+            <!-- Test Payments -->
+            <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3);">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <span class="px-2 py-1 rounded text-xs font-bold" style="background: rgba(255, 215, 0, 0.15); color: var(--gold); border: 1px solid rgba(255, 215, 0, 0.3);">GET</span>
+                  <code class="font-mono text-sm">/telemetry/payments</code>
+                </div>
+                <button onclick="testEndpoint('/telemetry/payments', 'payments-result')" class="btn-arena text-xs px-4 py-2">Test</button>
+              </div>
+              <div id="payments-result" class="hidden mt-3 p-3 rounded font-mono text-xs" style="background: rgba(0,0,0,0.5);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Tab: Oracle -->
       <div id="tab-oracle" class="tab-content hidden">
         <div class="temple-panel rounded-lg p-6">
@@ -604,6 +650,57 @@
 
   </div>
 
+  <!-- Get Started Modal -->
+  <div id="get-started-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);">
+    <div class="temple-panel rounded-xl p-8 max-w-2xl w-full mx-4 relative">
+      <button onclick="closeGetStarted()" class="absolute top-4 right-4 text-gray-500 hover:text-white">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+      <h2 class="font-display text-2xl font-bold mb-2" style="color: var(--gold);">Agent Integration Guide</h2>
+      <p class="text-sm mb-6" style="color: var(--bronze);">Three steps to deterministic execution</p>
+      
+      <div class="space-y-4">
+        <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--gold);">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background: var(--gold); color: black;">1</span>
+            <span class="font-semibold" style="color: var(--gold);">Get Your Agent Key</span>
+          </div>
+          <p class="text-sm mb-3" style="color: #9ca3af;">Contact Commander to provision X-Agent-Key for your agent.</p>
+          <code class="block p-3 rounded font-mono text-xs" style="background: rgba(0,0,0,0.5); color: var(--electric-blue);">X-Agent-Key: ep_your_agent_key_here</code>
+        </div>
+        
+        <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--bronze);">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background: var(--bronze); color: white;">2</span>
+            <span class="font-semibold" style="color: var(--bronze);">Pay the Tribute (BasePay)</span>
+          </div>
+          <p class="text-sm mb-3" style="color: #9ca3af;">Approve 0.10 USDC and call pay(requestId) before validation.</p>
+          <div class="flex items-center gap-2 text-xs font-mono" style="color: var(--electric-blue);">
+            <i data-lucide="wallet" class="w-4 h-4"></i>
+            <span>Contract: 0x... (Base Mainnet)</span>
+          </div>
+        </div>
+        
+        <div class="p-4 rounded-lg" style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--fire-orange);">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background: var(--fire-orange); color: white;">3</span>
+            <span class="font-semibold" style="color: var(--fire-orange);">Call /ep/validate</span>
+          </div>
+          <p class="text-sm mb-3" style="color: #9ca3af;">Send your proposal with X-Agent-Key header.</p>
+          <code class="block p-3 rounded font-mono text-xs" style="background: rgba(0,0,0,0.5);">curl -X POST https://execution-protocol.onrender.com/ep/validate \
+  -H "X-Agent-Key: your_key" \
+  -H "Content-Type: application/json" \
+  -d '{"proposal_id": "...", "asset": "ETH", "direction": "buy"}'</code>
+        </div>
+      </div>
+      
+      <div class="mt-6 flex gap-4">
+        <button onclick="closeGetStarted(); switchTab('api');" class="btn-arena flex-1">View Full API Docs</button>
+        <button onclick="closeGetStarted();" class="btn-secondary flex-1">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Initialize Lucide icons
     lucide.createIcons();
@@ -614,11 +711,43 @@
       document.querySelectorAll('.forge-tab').forEach(el => el.classList.remove('active'));
       document.getElementById('tab-' + tabId).classList.remove('hidden');
       document.querySelector('[data-tab="' + tabId + '"]').classList.add('active');
+      // Re-init icons for newly visible content
+      lucide.createIcons();
+    }
+    
+    // Get Started Modal
+    function showGetStarted() {
+      document.getElementById('get-started-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+    
+    function closeGetStarted() {
+      document.getElementById('get-started-modal').classList.add('hidden');
     }
     
     document.querySelectorAll('.forge-tab').forEach(btn => {
       btn.addEventListener('click', () => switchTab(btn.dataset.tab));
     });
+    
+    // Close modal on backdrop click
+    document.getElementById('get-started-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeGetStarted();
+    });
+    
+    // API Playground
+    async function testEndpoint(endpoint, resultId) {
+      const resultDiv = document.getElementById(resultId);
+      resultDiv.classList.remove('hidden');
+      resultDiv.innerHTML = '<span style="color: var(--bronze);">Testing...</span>';
+      
+      try {
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        resultDiv.innerHTML = `<span style="color: #4ade80;">✓ ${response.status}</span>\n` + JSON.stringify(data, null, 2);
+      } catch (error) {
+        resultDiv.innerHTML = `<span style="color: #ef4444;">✗ Error:</span> ${error.message}`;
+      }
+    }
   </script>
 </body>
 </html>
