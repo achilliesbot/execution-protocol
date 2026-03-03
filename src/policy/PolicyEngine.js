@@ -65,8 +65,9 @@ export function evaluateProposal(proposal, agentId) {
   
   const c = policy.constraints;
   
-  // Check allowed assets
-  if (!c.allowed_assets.includes(proposal.asset)) {
+  // Check allowed assets (wildcard "*" allows all assets)
+  const allowsAllAssets = c.allowed_assets.includes('*');
+  if (!allowsAllAssets && !c.allowed_assets.includes(proposal.asset)) {
     violations.push({
       type: 'unauthorized_asset',
       field: 'asset',
