@@ -1,41 +1,42 @@
 {
-  "id": "olympus-v1",
-  "version": "1.1.0",
-  "description": "Olympus Command Phase 2 Trading Policy \u2014 $100 Capital",
+  "id": "olympus-polymarket-v1",
+  "version": "1.0.0",
+  "description": "Olympus Polymarket Trading Policy - 200 Capital on Polygon",
   "effective_date": "2026-03-03",
   "capital": {
-    "total_usd": 100,
+    "total_usd": 200,
     "currency": "USDC",
-    "network": "base"
+    "network": "polygon"
   },
   "constraints": {
     "max_single_position": 25,
-    "max_single_position_pct": 25,
-    "max_daily_loss": 25,
+    "max_single_position_pct": 12.5,
+    "max_daily_loss": 50,
     "max_daily_loss_pct": 25,
-    "max_leverage": 2,
-    "max_slippage": 1,
+    "max_leverage": 1,
+    "max_slippage": 2,
     "max_slippage_unit": "percent",
-    "max_open_positions": 5,
+    "max_open_positions": 8,
     "stop_loss_required": true,
     "take_profit_required": true,
     "allowed_assets": [
       "*"
     ],
-    "autonomy_threshold": 10,
-    "approval_required_above": 10,
+    "intel_required": true,
+    "autonomy_threshold": 50,
+    "approval_required_above": 50,
     "approval_method": "telegram_commander"
   },
   "risk_levels": {
     "LOW": "Within all constraints",
     "MEDIUM": "1-2 minor violations",
     "HIGH": "3+ violations or oversized position",
-    "CRITICAL": "Missing stop loss or take profit"
+    "CRITICAL": "Missing stop loss or intel signal"
   },
   "metadata": {
     "policy_owner": "WolfofCurrency",
     "policy_author": "Achilles",
     "last_updated": "2026-03-03T00:00:00Z",
-    "decision_ref": "D_OLYMPUS_010"
+    "decision_ref": "D_OLYMPUS_011"
   }
 }

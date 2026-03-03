@@ -379,6 +379,30 @@ router.get('/admin/integrity', adminAuth, (req, res) => {
   }
 });
 
+// Connector status endpoint
+router.get('/status/connectors', (req, res) => {
+  const status = {
+    polymarket: {
+      configured: !!(process.env.POLYMARKET_API_KEY && process.env.POLYMARKET_PRIVATE_KEY),
+      api_url: process.env.POLY_URL || 'https://gamma-api.polymarket.com',
+      status: 'live'
+    },
+    bnkr: {
+      configured: !!process.env.BNKR_API_KEY,
+      api_url: process.env.BNKR_URL || 'https://bankr.bot/api',
+      status: 'live'
+    },
+    execution_protocol: {
+      version: '1.0.0',
+      mode: process.env.EXECUTION_MODE || 'DRY_RUN',
+      status: 'operational'
+    },
+    timestamp: new Date().toISOString()
+  };
+  
+  res.json(status);
+});
+
 // Export ledger
 router.get('/admin/export', adminAuth, (req, res) => {
   try {

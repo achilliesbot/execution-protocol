@@ -4,12 +4,11 @@ from .live_connectors import (
     PolymarketLiveConnector, 
     BNKRLiveConnector, 
     LiveExecutionResult, 
-    BaseLiveConnector,
-    get_connector
+    get_connector_status
 )
 
 __all__ = [
     'PolymarketExecutor', 'BNKRExecutor', 'ExecutionResult', 'BaseExecutor',
     'PolymarketLiveConnector', 'BNKRLiveConnector', 'LiveExecutionResult', 
-    'BaseLiveConnector', 'get_connector'
+    'get_connector_status'
 ]
