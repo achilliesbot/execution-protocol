@@ -337,9 +337,24 @@
     
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
-      console.log('Pantheon initialized');
+      console.log('✅ Pantheon JavaScript loaded');
+      
+      // Add visual indicator that JS is working
+      const statusIndicator = document.createElement('div');
+      statusIndicator.id = 'js-status';
+      statusIndicator.style.cssText = 'position:fixed;bottom:20px;right:20px;padding:8px 16px;background:rgba(16,185,129,0.2);border:1px solid var(--success);color:var(--success);font-family:"JetBrains Mono",monospace;font-size:11px;z-index:9999;border-radius:4px;';
+      statusIndicator.textContent = '⚡ JS ACTIVE';
+      document.body.appendChild(statusIndicator);
+      
+      // Load all data
       loadOverview();
       loadCombatLog();
+      
+      // Refresh data every 30 seconds
+      setInterval(() => {
+        console.log('Auto-refreshing data...');
+        loadOverview();
+      }, 30000);
     });
   </script>
 </body>
