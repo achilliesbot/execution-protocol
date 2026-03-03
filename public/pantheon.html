@@ -6,32 +6,32 @@
   <title>Execution Protocol — Pantheon</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>:root{--bg-obsidian:#050508;--bg-stone:#0c0c12;--bg-panel:#13131c;--bg-elevated:#1a1a28;--gold:#FFB000;--gold-bright:#FFC940;--ember:#FF5A1F;--cyan:#20E3FF;--text-primary:#f0f0f5;--text-secondary:#606070;--border-stone:#252538;--locked:#6366f1;--success:#10b981;}*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Rajdhani',sans-serif;background:var(--bg-obsidian);color:var(--text-primary);min-height:100vh;background-image:radial-gradient(circle at 20% 50%,rgba(255,176,0,0.03) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(255,90,31,0.03) 0%,transparent 50%),repeating-linear-gradient(0deg,transparent,transparent 4px,rgba(32,227,255,0.02) 4px,rgba(32,227,255,0.02) 5px),repeating-linear-gradient(90deg,transparent,transparent 4px,rgba(32,227,255,0.02) 4px,rgba(32,227,255,0.02) 5px);}nav{background:rgba(12,12,18,0.95);backdrop-filter:blur(20px);border-bottom:2px solid var(--border-stone);padding:0 24px;position:sticky;top:0;z-index:100;}nav::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);box-shadow:0 0 10px var(--gold);}.nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:70px;}.logo{display:flex;align-items:center;gap:12px;text-decoration:none;cursor:pointer;}.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,rgba(255,176,0,0.2) 0%,rgba(255,90,31,0.1) 100%);border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-size:1.3rem;box-shadow:0 0 30px rgba(255,176,0,0.3);}.text-gold{background:linear-gradient(180deg,var(--gold-bright),var(--gold),var(--ember));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(255,176,0,0.4));}.nav-tabs{display:flex;gap:8px;background:var(--bg-stone);padding:4px;border-radius:8px;border:1px solid var(--border-stone);}.nav-tab{padding:10px 18px;border-radius:6px;color:var(--text-secondary);text-decoration:none;font-family:'Orbitron',sans-serif;font-size:0.8rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;transition:all 0.3s;display:flex;align-items:center;gap:8px;cursor:pointer;border:none;background:transparent;}.nav-tab:hover{color:var(--gold);background:rgba(255,176,0,0.15);}.nav-tab.active{color:var(--gold);box-shadow:0 0 20px rgba(255,176,0,0.3);background:rgba(255,176,0,0.1);}.live-indicator{display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(16,185,129,0.15);border:1px solid var(--success);border-radius:20px;font-family:'Orbitron',sans-serif;font-size:0.7rem;font-weight:600;color:var(--success);text-transform:uppercase;letter-spacing:0.1em;}.live-dot{width:6px;height:6px;background:var(--success);border-radius:50%;animation:pulse 1.5s infinite;box-shadow:0 0 10px var(--success);}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}main{max-width:1400px;margin:0 auto;padding:32px 24px;}.page{display:none;animation:fadeIn 0.4s ease;}.page.active{display:block;}@keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}.stone-panel{background:linear-gradient(180deg,var(--bg-stone),var(--bg-panel));border:2px solid var(--border-stone);border-radius:12px;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,0.8);}.stone-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);box-shadow:0 0 10px var(--gold);}.panel-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border-stone);position:relative;z-index:1;}.panel-title{font-family:'Orbitron',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);}.panel-title::before{content:'◆ ';color:var(--cyan);}.hero-section{min-height:60vh;display:flex;align-items:center;padding:40px 24px;position:relative;}.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;max-width:1400px;margin:0 auto;width:100%;}.hero-title{font-family:'Orbitron',sans-serif;font-size:3.5rem;font-weight:900;line-height:1.1;margin-bottom:24px;}.hero-subtitle{font-size:1.2rem;color:var(--text-secondary);margin-bottom:32px;max-width:500px;line-height:1.6;}.hero-buttons{display:flex;gap:16px;margin-bottom:32px;}.btn-primary{background:linear-gradient(180deg,var(--gold) 0%,var(--ember) 100%);border:none;color:#000;font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;padding:16px 32px;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 20px rgba(255,90,31,0.4),inset 0 1px 0 rgba(255,255,255,0.3);clip-path:polygon(10% 0,100% 0,100% 70%,90% 100%,0 100%,0 30%);}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 30px rgba(255,90,31,0.6);filter:brightness(1.1);}.btn-secondary{background:transparent;border:2px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',sans-serif;font-weight:600;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;padding:14px 30px;cursor:pointer;transition:all 0.3s;box-shadow:0 0 20px rgba(32,227,255,0.2),inset 0 0 20px rgba(32,227,255,0.05);clip-path:polygon(10% 0,100% 0,100% 70%,90% 100%,0 100%,0 30%);text-decoration:none;display:inline-flex;align-items:center;}.btn-secondary:hover{background:rgba(32,227,255,0.1);box-shadow:0 0 30px rgba(32,227,255,0.4);text-shadow:0 0 20px var(--cyan);}.warrior-frame{position:relative;background:linear-gradient(135deg,rgba(255,176,0,0.1) 0%,rgba(32,227,255,0.05) 100%);border:2px solid var(--border-stone);border-radius:12px;box-shadow:0 0 60px rgba(255,176,0,0.15),inset 0 0 60px rgba(0,0,0,0.5);padding:60px;text-align:center;min-height:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;}.warrior-frame::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);box-shadow:0 0 10px var(--gold);}.warrior-icon{font-size:5rem;margin-bottom:24px;filter:drop-shadow(0 0 30px var(--gold));}.warrior-title{font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:700;color:var(--gold);margin-bottom:8px;}.warrior-subtitle{font-family:'JetBrains Mono',monospace;font-size:0.9rem;color:var(--cyan);}.frame-bar{height:4px;background:linear-gradient(90deg,transparent,var(--border-stone) 20%,var(--gold) 50%,var(--border-stone) 80%,transparent 100%);margin:40px 0;position:relative;}.frame-bar::before,.frame-bar::after{content:'◆';position:absolute;top:50%;transform:translateY(-50%);color:var(--gold);font-size:12px;text-shadow:0 0 10px var(--gold);}.frame-bar::before{left:20%;}.frame-bar::after{right:20%;}.section-header{text-align:center;margin-bottom:40px;}.section-title{font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:700;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;}.revenue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:32px;}.revenue-card{background:linear-gradient(180deg,var(--bg-stone) 0%,var(--bg-panel) 100%);border:2px solid var(--border-stone);border-radius:12px;padding:32px 24px;text-align:center;position:relative;overflow:hidden;transition:all 0.3s;}.revenue-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--ember),var(--gold));box-shadow:0 0 15px var(--gold);}.revenue-card:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 20px 40px rgba(0,0,0,0.6),0 0 30px rgba(255,176,0,0.2);}.revenue-label{font-family:'Orbitron',sans-serif;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-secondary);margin-bottom:12px;}.revenue-value{font-family:'Orbitron',sans-serif;font-size:2.5rem;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(180deg,var(--gold-bright) 0%,var(--gold) 50%,var(--ember) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(255,176,0,0.4));}.revenue-change{font-size:0.9rem;margin-top:8px;font-weight:600;font-family:'JetBrains Mono',monospace;}.revenue-change.positive{color:var(--success);}.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:24px;}.stream-list{padding:12px;}.stream-item{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--bg-elevated);border:1px solid var(--border-stone);margin-bottom:2px;cursor:pointer;transition:all 0.3s;position:relative;}.stream-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:all 0.3s;}.stream-item:hover{background:var(--bg-stone);border-color:var(--gold);transform:translateX(8px);}.stream-item:hover::before{background:var(--gold);box-shadow:0 0 10px var(--gold);}.stream-info{display:flex;align-items:center;gap:16px;}.stream-status{width:10px;height:10px;border-radius:50%;background:var(--success);box-shadow:0 0 12px var(--success);animation:pulse 2s infinite;}.stream-status.locked{background:var(--locked);box-shadow:0 0 12px var(--locked);animation:none;}.stream-name{font-family:'Orbitron',sans-serif;font-weight:600;font-size:1rem;letter-spacing:0.05em;}.stream-desc{font-size:0.85rem;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;text-transform:uppercase;}.stream-revenue{text-align:right;}.stream-amount{font-family:'Orbitron',sans-serif;font-weight:700;font-size:1.1rem;color:var(--gold);}.treasury-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:20px;}.treasury-item{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--bg-elevated);border:1px solid var(--border-stone);border-radius:8px;transition:all 0.2s;}.treasury-item:hover{border-color:var(--cyan);background:rgba(32,227,255,0.15);}.treasury-label{font-size:0.9rem;color:var(--text-secondary);font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:0.1em;}.treasury-value{font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--cyan);}.combat-log{padding:12px;max-height:280px;overflow-y:auto;}.combat-entry{display:flex;align-items:center;gap:16px;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);font-family:'JetBrains Mono',monospace;font-size:0.85rem;transition:all 0.2s;}.combat-entry:hover{background:rgba(255,255,255,0.03);}.combat-entry:last-child{border-bottom:none;}.combat-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);}.combat-dot.processing{background:var(--gold);box-shadow:0 0 8px var(--gold);animation:pulse 1s infinite;}.combat-time{color:var(--text-secondary);min-width:50px;}.combat-text{flex:1;}.combat-status{color:var(--cyan);}.combat-status.processing{color:var(--gold);}.artifact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px;padding:20px;}.artifact-card{background:linear-gradient(180deg,#161B22 0%,#0D1117 100%);border:2px solid var(--border-stone);border-radius:12px;overflow:hidden;position:relative;transition:all 0.3s;}.artifact-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--ember),var(--gold));box-shadow:0 0 15px var(--gold);}.artifact-card:hover{transform:translateY(-8px);border-color:var(--gold);box-shadow:0 20px 40px rgba(0,0,0,0.6),0 0 30px rgba(255,176,0,0.2);}.artifact-content{padding:24px;}.artifact-icon{width:60px;height:60px;background:linear-gradient(135deg,rgba(255,176,0,0.2) 0%,rgba(255,90,31,0.1) 100%);border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.5rem;box-shadow:0 0 20px rgba(255,176,0,0.3);}.artifact-title{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;text-align:center;color:var(--gold);margin-bottom:12px;letter-spacing:0.05em;}.artifact-desc{font-size:0.85rem;color:var(--text-secondary);text-align:center;line-height:1.5;}.artifact-footer{padding:12px;text-align:center;background:linear-gradient(90deg,rgba(255,90,31,0.2),rgba(255,176,0,0.2));border-top:1px solid rgba(255,176,0,0.3);font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--gold);letter-spacing:0.1em;}.capability-badge{display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(32,227,255,0.05);border:1px solid rgba(32,227,255,0.2);font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--cyan);transition:all 0.3s;}.capability-badge:hover{background:rgba(32,227,255,0.15);box-shadow:0 0 20px rgba(32,227,255,0.3);cursor:default;}.chart-container{position:relative;height:350px;padding:20px;}.phase-list{display:flex;flex-direction:column;gap:12px;padding:20px;}.phase-item{display:flex;align-items:center;gap:20px;padding:24px;background:var(--bg-elevated);border:1px solid var(--border-stone);border-radius:8px;transition:all 0.3s;position:relative;overflow:hidden;}.phase-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:transparent;}.phase-item.live{border-color:var(--success);background:rgba(16,185,129,0.15);}.phase-item.live::before{background:var(--success);box-shadow:0 0 10px var(--success);}.phase-item.locked{border-color:var(--locked);background:rgba(99,102,241,0.15);}.phase-item.locked::before{background:var(--locked);}.phase-number{width:56px;height:56px;background:var(--bg-stone);border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-family:'Orbitron',sans-serif;font-weight:800;font-size:1.2rem;color:var(--gold);box-shadow:0 0 20px rgba(255,176,0,0.3);}.phase-info{flex:1;}.phase-name{font-family:'Orbitron',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:4px;letter-spacing:0.05em;}.phase-desc{font-size:0.9rem;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;}.phase-status{padding:8px 16px;border-radius:20px;font-family:'Orbitron',sans-serif;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;}.phase-status.beta{background:rgba(255,176,0,0.15);border:1px solid var(--gold);color:var(--gold);}.phase-status.launch{background:rgba(16,185,129,0.15);border:1px solid var(--success);color:var(--success);}.phase-status.coming-soon{background:rgba(99,102,241,0.15);border:1px solid var(--locked);color:var(--locked);}pre{background:var(--bg-elevated);border:1px solid var(--border-stone);border-radius:8px;padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.6;margin:12px 20px 20px;color:var(--text-primary);}code{font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:0.9em;}@media(max-width:968px){.hero-grid{grid-template-columns:1fr;}.hero-title{font-size:2.5rem;}.warrior-frame{min-height:300px;padding:40px;}}@media(max-width:768px){.nav-tabs{display:none;}.revenue-grid{grid-template-columns:1fr;}.grid-2{grid-template-columns:1fr;}.treasury-grid{grid-template-columns:1fr;}.hero-buttons{flex-direction:column;}.btn-primary,.btn-secondary{width:100%;justify-content:center;}}</style>
+  <style>:root{--bg-obsidian:#050508;--bg-stone:#0c0c12;--bg-panel:#13131c;--bg-elevated:#1a1a28;--gold:#FFB000;--gold-bright:#FFC940;--ember:#FF5A1F;--cyan:#20E3FF;--text-primary:#f0f0f5;--text-secondary:#606070;--border-stone:#252538;--locked:#6366f1;--success:#10b981;}*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Rajdhani',sans-serif;background:var(--bg-obsidian);color:var(--text-primary);min-height:100vh;}nav{background:rgba(12,12,18,0.95);border-bottom:2px solid var(--border-stone);padding:0 24px;position:sticky;top:0;z-index:100;}nav::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);box-shadow:0 0 10px var(--gold);}.nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:70px;}.logo{display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none;}.logo-icon{width:40px;height:40px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-size:1.3rem;}.text-gold{background:linear-gradient(180deg,var(--gold-bright),var(--gold),var(--ember));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}.nav-tabs{display:flex;gap:8px;background:var(--bg-stone);padding:4px;border-radius:8px;border:1px solid var(--border-stone);}.nav-tab{padding:10px 18px;border-radius:6px;color:var(--text-secondary);text-decoration:none;font-family:'Orbitron',sans-serif;font-size:0.8rem;cursor:pointer;border:none;background:transparent;}.nav-tab.active{color:var(--gold);box-shadow:0 0 20px rgba(255,176,0,0.3);}.live-indicator{display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(16,185,129,0.15);border:1px solid var(--success);border-radius:20px;font-family:'Orbitron',sans-serif;font-size:0.7rem;color:var(--success);}.live-dot{width:6px;height:6px;background:var(--success);border-radius:50%;animation:pulse 1.5s infinite;}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}main{max-width:1400px;margin:0 auto;padding:32px 24px;}.tab-content{display:none;}.tab-content.active{display:block;animation:fadeIn 0.4s ease;}@keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}.stone-panel{background:linear-gradient(180deg,var(--bg-stone),var(--bg-panel));border:2px solid var(--border-stone);border-radius:12px;position:relative;}.stone-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}.panel-header{display:flex;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border-stone);}.panel-title{font-family:'Orbitron',sans-serif;font-size:0.85rem;color:var(--gold);}.hero-section{min-height:60vh;display:flex;align-items:center;padding:40px 24px;}.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;max-width:1400px;margin:0 auto;width:100%;}.hero-title{font-family:'Orbitron',sans-serif;font-size:3.5rem;font-weight:900;line-height:1.1;margin-bottom:24px;}.hero-subtitle{font-size:1.2rem;color:var(--text-secondary);margin-bottom:32px;}.btn-primary{background:linear-gradient(180deg,var(--gold),var(--ember));border:none;color:#000;font-family:'Orbitron',sans-serif;font-weight:700;padding:16px 32px;cursor:pointer;clip-path:polygon(10% 0,100% 0,100% 70%,90% 100%,0 100%,0 30%);}.btn-secondary{border:2px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',sans-serif;padding:14px 30px;text-decoration:none;display:inline-flex;cursor:pointer;background:transparent;}.warrior-frame{border:2px solid var(--border-stone);border-radius:12px;padding:60px;text-align:center;}.warrior-icon{font-size:5rem;margin-bottom:24px;}.frame-bar{height:4px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:40px 0;position:relative;}.frame-bar::before,.frame-bar::after{content:'◆';position:absolute;top:50%;transform:translateY(-50%);color:var(--gold);}.frame-bar::before{left:20%;}.frame-bar::after{right:20%;}.section-header{text-align:center;margin-bottom:40px;}.section-title{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--gold);}.revenue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:32px;}.revenue-card{background:var(--bg-stone);border:2px solid var(--border-stone);border-radius:12px;padding:32px;text-align:center;}.revenue-card::before{content:'';display:block;height:3px;background:linear-gradient(90deg,var(--gold),var(--ember));margin:-32px -24px 20px;}.revenue-value{font-family:'Orbitron',sans-serif;font-size:2.5rem;background:linear-gradient(var(--gold-bright),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:24px;}.stream-list{padding:12px;}.stream-item{display:flex;justify-content:space-between;padding:16px 20px;background:var(--bg-elevated);border:1px solid var(--border-stone);margin-bottom:2px;cursor:pointer;transition:all 0.3s;}.stream-item:hover{border-color:var(--gold);transform:translateX(8px);}.stream-status{width:10px;height:10px;border-radius:50%;background:var(--success);}.stream-status.locked{background:var(--locked);}.stream-amount{font-family:'Orbitron',sans-serif;color:var(--gold);}.treasury-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:20px;}.treasury-item{display:flex;justify-content:space-between;padding:16px;background:var(--bg-elevated);border:1px solid var(--border-stone);}.treasury-value{color:var(--cyan);font-family:'JetBrains Mono',monospace;}.combat-log{padding:12px;}.combat-entry{display:flex;gap:16px;padding:12px;border-bottom:1px solid rgba(255,255,255,0.05);font-family:'JetBrains Mono',monospace;}.combat-entry:hover{background:rgba(255,255,255,0.03);}.artifact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px;padding:20px;}.artifact-card{border:2px solid var(--border-stone);border-radius:12px;text-align:center;padding:24px;transition:all 0.3s;}.artifact-card:hover{transform:translateY(-8px);border-color:var(--gold);}.artifact-icon{font-size:3rem;margin-bottom:16px;}.artifact-title{font-family:'Orbitron',sans-serif;color:var(--gold);margin-bottom:8px;}.capability-badge{display:inline-flex;padding:8px 16px;border:1px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:11px;margin-right:8px;}.chart-container{height:350px;padding:20px;}.phase-list{padding:20px;}.phase-item{display:flex;align-items:center;gap:20px;padding:24px;background:var(--bg-elevated);border:1px solid var(--border-stone);margin-bottom:12px;border-radius:8px;}.phase-item.live{border-color:var(--success);}.phase-number{width:56px;height:56px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-family:'Orbitron',sans-serif;font-weight:800;color:var(--gold);}.phase-name{font-family:'Orbitron',sans-serif;font-weight:700;}.phase-desc{color:var(--text-secondary);font-family:'JetBrains Mono',monospace;}.phase-status{padding:8px 16px;border-radius:20px;font-family:'Orbitron',sans-serif;font-size:0.65rem;}.phase-status.beta{background:rgba(255,176,0,0.15);border:1px solid var(--gold);color:var(--gold);}.phase-status.launch{background:rgba(16,185,129,0.15);border:1px solid var(--success);color:var(--success);}pre{background:var(--bg-elevated);border:1px solid var(--border-stone);border-radius:8px;padding:20px;font-family:'JetBrains Mono',monospace;margin:20px;overflow-x:auto;}code{color:var(--cyan);}.updated-at{text-align:center;color:var(--text-secondary);margin-top:48px;padding-top:24px;border-top:1px solid var(--border-stone);font-family:'JetBrains Mono',monospace;}@media(max-width:968px){.hero-grid{grid-template-columns:1fr;}.hero-title{font-size:2.5rem;}}</style>
 </head>
 <body>
-  <nav><div class="nav-inner"><a href="#" class="logo" onclick="showTab('overview');return false;"><div class="logo-icon">⚔️</div><span class="text-gold" style="font-family:'Orbitron',sans-serif;font-weight:700;font-size:1.25rem;letter-spacing:0.05em;">PANTHEON</span></a><div class="nav-tabs"><button class="nav-tab active" data-tab="overview" onclick="showTab('overview')">⚔️ Overview</button><button class="nav-tab" data-tab="streams" onclick="showTab('streams')">💰 Streams</button><button class="nav-tab" data-tab="income" onclick="showTab('income')">📈 Income</button><button class="nav-tab" data-tab="integrate" onclick="showTab('integrate')">🗝️ Integrate</button><button class="nav-tab" data-tab="vault" onclick="showTab('vault')">🏛️ Vault</button></div><div class="live-indicator"><div class="live-dot"></div>OPERATIONAL</div></div></nav>
+  <nav><div class="nav-inner"><a href="#" class="logo" onclick="switchTab('overview');return false;"><div class="logo-icon">⚔️</div><span class="text-gold" style="font-family:'Orbitron',sans-serif;font-weight:700;">PANTHEON</span></a><div class="nav-tabs"><button class="nav-tab active" data-tab="overview" onclick="switchTab('overview')">⚔️ Overview</button><button class="nav-tab" data-tab="streams" onclick="switchTab('streams')">💰 Streams</button><button class="nav-tab" data-tab="income" onclick="switchTab('income')">📈 Income</button><button class="nav-tab" data-tab="integrate" onclick="switchTab('integrate')">🗝️ Integrate</button><button class="nav-tab" data-tab="vault" onclick="switchTab('vault')">🏛️ Vault</button></div><div class="live-indicator"><div class="live-dot"></div>OPERATIONAL</div></div></nav>
 
   <main>
-    <!-- HERO SECTION -->
-    <section class="hero-section" id="hero">
+    <!-- HERO -->
+    <section class="hero-section" id="hero-section">
       <div class="hero-grid">
         <div>
           <h1 class="hero-title text-gold">Forge Decisions<br>At Battle Speed.</h1>
           <p class="hero-subtitle">Mythic-grade intelligence, cybernetic execution. Built for operators who demand deterministic validation.</p>
-          <div class="hero-buttons">
+          <div style="display:flex;gap:16px;margin-bottom:32px;">
             <button class="btn-primary" onclick="enterPantheon()">Enter Pantheon</button>
-            <button class="btn-secondary" onclick="showTab('integrate')">API Docs</button>
+            <button class="btn-secondary" onclick="switchTab('integrate')">API Docs</button>
           </div>
           <div style="display:flex;gap:12px;flex-wrap:wrap;">
-            <div class="capability-badge">🔒 Secure</div>
-            <div class="capability-badge">👁️ Auditable</div>
-            <div class="capability-badge">⚡ Deterministic</div>
+            <span class="capability-badge">🔒 SECURE</span>
+            <span class="capability-badge">👁️ AUDITABLE</span>
+            <span class="capability-badge">⚡ DETERMINISTIC</span>
           </div>
         </div>
         <div class="warrior-frame">
           <div class="warrior-icon">⚔️</div>
-          <div class="warrior-title">The Shield Holds</div>
-          <div class="warrior-subtitle">Deterministic • Verifiable • Unstoppable</div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--gold);margin-bottom:8px;">The Shield Holds</div>
+          <div style="font-family:'JetBrains Mono',monospace;color:var(--cyan);">Deterministic • Verifiable • Unstoppable</div>
         </div>
       </div>
     </section>
@@ -40,135 +40,47 @@
 
     <!-- METRICS SECTION -->
     <section id="metrics-section">
-      <div class="section-header">
-        <div class="section-title">⚔️ Pantheon Overview</div>
-      </div>
-
+      <div class="section-header"><div class="section-title">⚔️ Pantheon Overview</div></div>
       <div class="revenue-grid">
-        <div class="revenue-card">
-          <div class="revenue-label">Revenue 7d</div>
-          <div class="revenue-value" id="rev-7d">—</div>
-          <div class="revenue-change positive" id="rev-7d-change">+12.5% vs last week</div>
-        </div>
-        <div class="revenue-card">
-          <div class="revenue-label">Revenue 30d</div>
-          <div class="revenue-value" id="rev-30d">—</div>
-          <div class="revenue-change positive" id="rev-30d-change">+8.3% vs last month</div>
-        </div>
-        <div class="revenue-card">
-          <div class="revenue-label">Revenue All Time</div>
-          <div class="revenue-value" id="rev-all">—</div>
-          <div class="revenue-change" style="color:var(--text-secondary);">Since inception</div>
-        </div>
+        <div class="revenue-card"><div style="font-family:'Orbitron',sans-serif;font-size:0.75rem;color:var(--text-secondary);margin-bottom:12px;">REVENUE 7D</div><div class="revenue-value" id="rev-7d">—</div><div style="color:var(--success);font-family:'JetBrains Mono',monospace;font-size:0.9rem;margin-top:8px;">+12.5% vs last week</div></div>
+        <div class="revenue-card"><div style="font-family:'Orbitron',sans-serif;font-size:0.75rem;color:var(--text-secondary);margin-bottom:12px;">REVENUE 30D</div><div class="revenue-value" id="rev-30d">—</div><div style="color:var(--success);font-family:'JetBrains Mono',monospace;font-size:0.9rem;margin-top:8px;">+8.3% vs last month</div></div>
+        <div class="revenue-card"><div style="font-family:'Orbitron',sans-serif;font-size:0.75rem;color:var(--text-secondary);margin-bottom:12px;">REVENUE ALL TIME</div><div class="revenue-value" id="rev-all">—</div><div style="color:var(--text-secondary);font-family:'JetBrains Mono',monospace;font-size:0.9rem;margin-top:8px;">Since inception</div></div>
       </div>
 
       <div class="grid-2">
-        <div class="stone-panel">
-          <div class="panel-header">
-            <span class="panel-title">Revenue by Stream</span>
-            <span style="color:var(--cyan);">◆</span>
-          </div>
-          <div class="stream-list" id="stream-revenue"></div>
-        </div>
-        <div class="stone-panel">
-          <div class="panel-header">
-            <span class="panel-title">Treasury Snapshot</span>
-            <span style="color:var(--cyan);">◆</span>
-          </div>
-          <div class="treasury-grid" id="treasury"></div>
-        </div>
+        <div class="stone-panel"><div class="panel-header"><span class="panel-title">◆ REVENUE BY STREAM</span></div><div class="stream-list" id="stream-revenue"><div style="padding:40px;text-align:center;color:var(--text-secondary);">Loading...</div></div></div>
+        <div class="stone-panel"><div class="panel-header"><span class="panel-title">◆ TREASURY SNAPSHOT</span></div><div class="treasury-grid" id="treasury"><div style="padding:40px;text-align:center;color:var(--text-secondary);">Loading...</div></div></div>
       </div>
     </section>
 
     <div class="frame-bar"></div>
 
-    <!-- TAB PAGES -->
-    <div id="overview" class="page active">
-      <div class="section-header">
-        <div class="section-title">◆ The War Console</div>
-      </div>
+    <!-- TAB: OVERVIEW (War Console) -->
+    <div id="overview" class="tab-content active">
+      <div class="section-header"><div class="section-title">◆ THE WAR CONSOLE</div></div>
       <div class="grid-2">
-        <div class="stone-panel">
-          <div class="panel-header">
-            <span class="panel-title">Combat Log</span>
-            <div class="live-indicator" style="padding:4px 8px;font-size:0.6rem;">
-              <div class="live-dot"></div>
-              LIVE
-            </div>
-          </div>
-          <div class="combat-log" id="combat-log">
-            <div class="combat-entry"><span class="combat-dot"></span><span class="combat-time">14:32</span><span class="combat-text">Polymarket order filled</span><span class="combat-status">Complete</span></div>
-            <div class="combat-entry"><span class="combat-dot"></span><span class="combat-time">14:28</span><span class="combat-text">BNKR validation passed</span><span class="combat-status">Complete</span></div>
-            <div class="combat-entry"><span class="combat-dot processing"></span><span class="combat-time">14:25</span><span class="combat-text">Entropy detection scan</span><span class="combat-status processing">Processing</span></div>
-            <div class="combat-entry"><span class="combat-dot"></span><span class="combat-time">14:20</span><span class="combat-text">BasePay tribute received</span><span class="combat-status" style="color:var(--gold);">0.10 USDC</span></div>
-            <div class="combat-entry"><span class="combat-dot"></span><span class="combat-time">14:15</span><span class="combat-text">Ledger hash chain verified</span><span class="combat-status">Complete</span></div>
-          </div>
-        </div>
-        <div class="stone-panel" style="border-left:3px solid var(--cyan);box-shadow:-5px 0 20px rgba(32,227,255,0.2);">
-          <div class="panel-header">
-            <span class="panel-title">Oracle Output</span>
-            <span style="color:var(--cyan);font-size:1.2rem;">✦</span>
-          </div>
-          <div style="padding:20px;">
-            <div style="margin-bottom:16px;">
-              <div style="font-size:0.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">System Status</div>
-              <p style="font-size:0.9rem;line-height:1.6;">All streams operational. Hash chain integrity verified. <span style="color:var(--cyan);text-shadow:0 0 10px var(--cyan);">PANTHEON</span> ready for combat.</p>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-              <div style="padding:16px;background:rgba(32,227,255,0.05);border:1px solid rgba(32,227,255,0.2);border-radius:8px;">
-                <div style="font-size:0.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Signal Confidence</div>
-                <div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:700;color:var(--cyan);text-shadow:0 0 20px rgba(32,227,255,0.4);">94.7%</div>
-              </div>
-              <div style="padding:16px;background:rgba(255,176,0,0.05);border:1px solid rgba(255,176,0,0.2);border-radius:8px;">
-                <div style="font-size:0.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Expected PnL</div>
-                <div class="text-gold" style="font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:700;">+12.4%</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div class="stone-panel"><div class="panel-header"><span class="panel-title">◆ COMBAT LOG</span><div class="live-indicator" style="padding:4px 8px;font-size:0.6rem;"><div class="live-dot"></div>LIVE</div></div><div class="combat-log" id="combat-log"></div></div>
+        <div class="stone-panel" style="border-left:3px solid var(--cyan);"><div class="panel-header"><span class="panel-title">◆ ORACLE OUTPUT</span></div><div style="padding:20px;"><p style="margin-bottom:16px;">All streams operational. Hash chain integrity verified. <span style="color:var(--cyan);">PANTHEON</span> ready for combat.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;"><div style="padding:16px;border:1px solid rgba(32,227,255,0.2);"><div style="font-size:0.75rem;color:var(--text-secondary);">SIGNAL CONFIDENCE</div><div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--cyan);">94.7%</div></div><div style="padding:16px;border:1px solid rgba(255,176,0,0.2);"><div style="font-size:0.75rem;color:var(--text-secondary);">EXPECTED PnL</div><div class="text-gold" style="font-family:'Orbitron',sans-serif;font-size:1.5rem;">+12.4%</div></div></div></div></div>
       </div>
     </div>
 
-    <div id="streams" class="page">
-      <div class="section-header">
-        <div class="section-title">◆ Active Streams</div>
-      </div>
-      <div class="stone-panel">
-        <div class="panel-header">
-          <span class="panel-title">Stream Status</span>
-          <span style="color:var(--cyan);">◆</span>
-        </div>
-        <div class="stream-list" id="streams-list"></div>
-      </div>
+    <!-- TAB: STREAMS -->
+    <div id="streams" class="tab-content">
+      <div class="section-header"><div class="section-title">◆ ACTIVE STREAMS</div></div>
+      <div class="stone-panel"><div class="panel-header"><span class="panel-title">◆ STREAM STATUS</span></div><div class="stream-list" id="streams-list"><div style="padding:40px;text-align:center;color:var(--text-secondary);">Loading streams...</div></div></div>
     </div>
 
-    <div id="income" class="page">
-      <div class="section-header">
-        <div class="section-title">◆ 30 Day Combat Log</div>
-      </div>
-      <div class="stone-panel">
-        <div class="panel-header">
-          <span class="panel-title">Daily Income</span>
-          <span style="color:var(--cyan);">◆</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="incomeChart"></canvas>
-        </div>
-      </div>
+    <!-- TAB: INCOME -->
+    <div id="income" class="tab-content">
+      <div class="section-header"><div class="section-title">◆ 30 DAY COMBAT LOG</div></div>
+      <div class="stone-panel"><div class="panel-header"><span class="panel-title">◆ DAILY INCOME</span></div><div class="chart-container"><canvas id="incomeChart"></canvas></div></div>
     </div>
 
-    <div id="integrate" class="page">
-      <div class="section-header">
-        <div class="section-title">◆ Integration</div>
-      </div>
+    <!-- TAB: INTEGRATE -->
+    <div id="integrate" class="tab-content">
+      <div class="section-header"><div class="section-title">◆ INTEGRATION</div></div>
       <div class="grid-2">
-        <div class="stone-panel">
-          <div class="panel-header">
-            <span class="panel-title">Quick Start</span>
-            <span style="color:var(--cyan);">◆</span>
-          </div>
-          <p style="margin:12px 20px;color:var(--text-secondary);">Validate an execution proposal:</p>
-          <pre><code>curl -X POST https://execution-protocol.onrender.com/ep/validate \
+        <div class="stone-panel"><div class="panel-header"><span class="panel-title">◆ QUICK START</span></div><p style="margin:20px;color:var(--text-secondary);">Validate an execution proposal:</p><pre><code>curl -X POST https://execution-protocol.onrender.com/ep/validate \
   -H "Content-Type: application/json" \
   -H "X-Agent-Key: your_key_here" \
   -d '{
@@ -179,100 +91,27 @@
     "entry_price": 0.042,
     "stop_loss": 0.038,
     "take_profit": 0.05
-  }'</code></pre>
-        </div>
-        <div class="stone-panel">
-          <div class="panel-header">
-            <span class="panel-title">API Endpoints</span>
-            <span style="color:var(--cyan);">◆</span>
-          </div>
-          <div class="stream-list" style="padding-top:0;">
-            <div class="stream-item" style="cursor:default;">
-              <div class="stream-info">
-                <span style="color:var(--success);font-family:'JetBrains Mono',monospace;font-size:0.85rem;">GET</span>
-                <span>/pantheon/overview</span>
-              </div>
-              <span style="color:var(--text-secondary);font-size:0.85rem;">No auth</span>
-            </div>
-            <div class="stream-item" style="cursor:default;">
-              <div class="stream-info">
-                <span style="color:var(--success);font-family:'JetBrains Mono',monospace;font-size:0.85rem;">GET</span>
-                <span>/pantheon/streams</span>
-              </div>
-              <span style="color:var(--text-secondary);font-size:0.85rem;">No auth</span>
-            </div>
-            <div class="stream-item" style="cursor:default;">
-              <div class="stream-info">
-                <span style="color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:0.85rem;">POST</span>
-                <span>/ep/validate</span>
-              </div>
-              <span style="color:var(--text-secondary);font-size:0.85rem;">X-Agent-Key</span>
-            </div>
-            <div class="stream-item" style="cursor:default;">
-              <div class="stream-info">
-                <span style="color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:0.85rem;">POST</span>
-                <span>/ep/simulate</span>
-              </div>
-              <span style="color:var(--text-secondary);font-size:0.85rem;">X-Agent-Key</span>
-            </div>
-          </div>
-        </div>
+  }'</code></pre></div>
+        <div class="stone-panel"><div class="panel-header"><span class="panel-title">◆ API ENDPOINTS</span></div><div class="stream-list" style="padding:12px;"><div class="stream-item" style="cursor:default;"><div style="display:flex;align-items:center;gap:12px;"><span style="color:var(--success);font-family:'JetBrains Mono',monospace;">GET</span><span>/pantheon/overview</span></div><span style="color:var(--text-secondary);font-size:0.85rem;">No auth</span></div><div class="stream-item" style="cursor:default;"><div style="display:flex;align-items:center;gap:12px;"><span style="color:var(--success);font-family:'JetBrains Mono',monospace;">GET</span><span>/pantheon/streams</span></div><span style="color:var(--text-secondary);font-size:0.85rem;">No auth</span></div><div class="stream-item" style="cursor:default;"><div style="display:flex;align-items:center;gap:12px;"><span style="color:var(--gold);font-family:'JetBrains Mono',monospace;">POST</span><span>/ep/validate</span></div><span style="color:var(--text-secondary);font-size:0.85rem;">X-Agent-Key</span></div><div class="stream-item" style="cursor:default;"><div style="display:flex;align-items:center;gap:12px;"><span style="color:var(--gold);font-family:'JetBrains Mono',monospace;">POST</span><span>/ep/simulate</span></div><span style="color:var(--text-secondary);font-size:0.85rem;">X-Agent-Key</span></div></div></div>
       </div>
     </div>
 
-    <div id="vault" class="page">
-      <div class="section-header">
-        <div class="section-title">◆ Development Phases</div>
-      </div>
-      <div class="stone-panel">
-        <div class="panel-header">
-          <span class="panel-title">Phase Status</span>
-          <span style="color:var(--cyan);">◆</span>
-        </div>
-        <div class="phase-list" id="phases"></div>
-      </div>
+    <!-- TAB: VAULT -->
+    <div id="vault" class="tab-content">
+      <div class="section-header"><div class="section-title">◆ DEVELOPMENT PHASES</div></div>
+      <div class="stone-panel"><div class="panel-header"><span class="panel-title">◆ PHASE STATUS</span></div><div class="phase-list" id="phases"><div style="padding:40px;text-align:center;color:var(--text-secondary);">Loading phases...</div></div></div>
     </div>
 
     <div class="frame-bar"></div>
 
-    <!-- ARTIFACTS SECTION -->
+    <!-- ARTIFACTS -->
     <section>
-      <div class="section-header">
-        <div class="section-title">◆ Train Your Army of Artifacts</div>
-      </div>
+      <div class="section-header"><div class="section-title">◆ TRAIN YOUR ARMY OF ARTIFACTS</div></div>
       <div class="artifact-grid">
-        <div class="artifact-card">
-          <div class="artifact-content">
-            <div class="artifact-icon">👁️</div>
-            <div class="artifact-title">ARTIFACT OF INSIGHT</div>
-            <div class="artifact-desc">Adaptive vision systems. Execute on clarity with mythic-grade precision.</div>
-          </div>
-          <div class="artifact-footer">LATENCY 247MS</div>
-        </div>
-        <div class="artifact-card">
-          <div class="artifact-content">
-            <div class="artifact-icon">📜</div>
-            <div class="artifact-title">ARTIFACT OF PROOF</div>
-            <div class="artifact-desc">Chain-first storage. Zero-trust validation with cryptographic certainty.</div>
-          </div>
-          <div class="artifact-footer">ACCURACY 99.9%</div>
-        </div>
-        <div class="artifact-card">
-          <div class="artifact-content">
-            <div class="artifact-icon">⚡</div>
-            <div class="artifact-title">ARTIFACT OF SPEED</div>
-            <div class="artifact-desc">Sub-100ms response. Execute across 16 cores with parallel precision.</div>
-          </div>
-          <div class="artifact-footer">COST PER $0.025</div>
-        </div>
-        <div class="artifact-card">
-          <div class="artifact-content">
-            <div class="artifact-icon">🛡️</div>
-            <div class="artifact-title">ARTIFACT OF CONTROL</div>
-            <div class="artifact-desc">Deterministic execution. Separate signal from noise in live combat.</div>
-          </div>
-          <div class="artifact-footer">98,921 OPS</div>
-        </div>
+        <div class="artifact-card"><div class="artifact-icon">👁️</div><div class="artifact-title">ARTIFACT OF INSIGHT</div><div style="color:var(--text-secondary);font-size:0.85rem;">Adaptive vision systems. Execute on clarity.</div></div>
+        <div class="artifact-card"><div class="artifact-icon">📜</div><div class="artifact-title">ARTIFACT OF PROOF</div><div style="color:var(--text-secondary);font-size:0.85rem;">Chain-first storage. Zero-trust validation.</div></div>
+        <div class="artifact-card"><div class="artifact-icon">⚡</div><div class="artifact-title">ARTIFACT OF SPEED</div><div style="color:var(--text-secondary);font-size:0.85rem;">Sub-100ms response. Execute across 16 cores.</div></div>
+        <div class="artifact-card"><div class="artifact-icon">🛡️</div><div class="artifact-title">ARTIFACT OF CONTROL</div><div style="color:var(--text-secondary);font-size:0.85rem;">Deterministic execution. Signal from noise.</div></div>
       </div>
     </section>
 
@@ -281,160 +120,131 @@
   </main>
 
   <script>
-    // Global state
-    let currentTab = 'overview';
-    let incomeChart = null;
-
-    // Format currency
-    const formatUSD = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
-
-    // Tab switching logic
-    function showTab(tabName) {
-      currentTab = tabName;
+    // Tab switching - FIXED
+    function switchTab(tabName) {
+      console.log('Switching to tab:', tabName);
       
-      // Hide all pages
-      document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
       });
       
-      // Show selected page
-      const selectedPage = document.getElementById(tabName);
-      if (selectedPage) {
-        selectedPage.classList.add('active');
+      // Show selected tab
+      const selectedTab = document.getElementById(tabName);
+      if (selectedTab) {
+        selectedTab.classList.add('active');
       }
       
-      // Update nav tabs
+      // Update nav buttons
       document.querySelectorAll('.nav-tab').forEach(tab => {
         tab.classList.remove('active');
-        if (tab.dataset.tab === tabName) {
+        if (tab.getAttribute('data-tab') === tabName) {
           tab.classList.add('active');
         }
       });
       
-      // Scroll to top smoothly
+      // Scroll to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
-      // Load data for the tab
-      if (tabName === 'overview') loadOverview();
+      // Load data for tab
+      if (tabName === 'overview' || tabName === 'streams') loadOverview();
       if (tabName === 'streams') loadStreams();
       if (tabName === 'income') loadIncome();
       if (tabName === 'vault') loadVault();
+      
+      return false;
     }
-
+    
     // Enter Pantheon from hero
     function enterPantheon() {
-      // Scroll to metrics section
       document.getElementById('metrics-section').scrollIntoView({ behavior: 'smooth' });
-      // Then show overview tab
-      setTimeout(() => showTab('overview'), 500);
+      setTimeout(() => switchTab('overview'), 500);
     }
-
+    
+    // Format currency
+    const formatUSD = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+    
     // Load overview data
     async function loadOverview() {
       try {
         const res = await fetch('/pantheon/overview');
-        if (!res.ok) throw new Error('Failed to fetch overview');
         const data = await res.json();
         
-        // Update revenue cards
         document.getElementById('rev-7d').textContent = formatUSD(data.revenue['7d']);
         document.getElementById('rev-30d').textContent = formatUSD(data.revenue['30d']);
         document.getElementById('rev-all').textContent = formatUSD(data.revenue.all_time);
         
-        // Update stream revenue list
-        const streamList = document.getElementById('stream-revenue');
-        if (streamList && data.streams) {
-          streamList.innerHTML = data.streams.map(s => `
+        // Stream revenue list
+        if (data.streams) {
+          document.getElementById('stream-revenue').innerHTML = data.streams.map(s => `
             <div class="stream-item" onclick="showStreamDetail('${s.id}')">
-              <div class="stream-info">
+              <div style="display:flex;align-items:center;gap:16px;">
                 <div class="stream-status ${s.status === 'locked' ? 'locked' : ''}"></div>
                 <div>
-                  <div class="stream-name">${s.name}</div>
-                  <div class="stream-desc">${s.status === 'active' ? 'ACTIVE' : 'LOCKED'}</div>
+                  <div style="font-family:'Orbitron',sans-serif;">${s.name}</div>
+                  <div style="color:var(--text-secondary);font-size:0.85rem;">${s.status === 'active' ? 'ACTIVE' : 'LOCKED'}</div>
                 </div>
               </div>
-              <div class="stream-revenue">
-                <div class="stream-amount">${formatUSD(s.revenue_7d)}</div>
-              </div>
+              <div class="stream-amount">${formatUSD(s.revenue_7d)}</div>
             </div>
           `).join('');
         }
         
-        // Update treasury
-        const treasury = document.getElementById('treasury');
-        if (treasury && data.treasury) {
-          treasury.innerHTML = `
-            <div class="treasury-item">
-              <span class="treasury-label">Total</span>
-              <span class="treasury-value">${formatUSD(data.treasury.total_usd)}</span>
-            </div>
-            <div class="treasury-item">
-              <span class="treasury-label">Polymarket</span>
-              <span class="treasury-value">${formatUSD(data.treasury.polymarket_allocation)}</span>
-            </div>
-            <div class="treasury-item">
-              <span class="treasury-label">BNKR</span>
-              <span class="treasury-value">${formatUSD(data.treasury.bnkr_allocation)}</span>
-            </div>
-            <div class="treasury-item">
-              <span class="treasury-label">Yield</span>
-              <span class="treasury-value">${formatUSD(data.treasury.yield_allocation)}</span>
-            </div>
+        // Treasury
+        if (data.treasury) {
+          document.getElementById('treasury').innerHTML = `
+            <div class="treasury-item"><span style="color:var(--text-secondary);font-family:'Orbitron',sans-serif;">TOTAL</span><span class="treasury-value">${formatUSD(data.treasury.total_usd)}</span></div>
+            <div class="treasury-item"><span style="color:var(--text-secondary);font-family:'Orbitron',sans-serif;">POLYMARKET</span><span class="treasury-value">${formatUSD(data.treasury.polymarket_allocation)}</span></div>
+            <div class="treasury-item"><span style="color:var(--text-secondary);font-family:'Orbitron',sans-serif;">BNKR</span><span class="treasury-value">${formatUSD(data.treasury.bnkr_allocation)}</span></div>
+            <div class="treasury-item"><span style="color:var(--text-secondary);font-family:'Orbitron',sans-serif;">YIELD</span><span class="treasury-value">${formatUSD(data.treasury.yield_allocation)}</span></div>
           `;
         }
         
         // Update timestamp
-        const updatedAt = document.getElementById('updated-at');
-        if (updatedAt && data.updated_at) {
-          updatedAt.textContent = `◆ Updated ${new Date(data.updated_at).toLocaleString()} ◆`;
+        if (data.updated_at) {
+          document.getElementById('updated-at').textContent = `◆ Updated ${new Date(data.updated_at).toLocaleString()} ◆`;
         }
+        
       } catch (err) {
         console.error('Failed to load overview:', err);
-        showError('Failed to load overview data');
       }
     }
-
-    // Load streams data
+    
+    // Load streams
     async function loadStreams() {
       try {
         const res = await fetch('/pantheon/streams');
-        if (!res.ok) throw new Error('Failed to fetch streams');
         const data = await res.json();
         
-        const streamsList = document.getElementById('streams-list');
-        if (streamsList && data.streams) {
-          streamsList.innerHTML = data.streams.map(s => `
-            <div class="stream-item" onclick="showStreamDetail('${s.id}')">
-              <div class="stream-info">
+        if (data.streams) {
+          document.getElementById('streams-list').innerHTML = data.streams.map(s => `
+            <div class="stream-item">
+              <div style="display:flex;align-items:center;gap:16px;">
                 <div class="stream-status ${s.status === 'locked' ? 'locked' : ''}"></div>
                 <div>
-                  <div class="stream-name">${s.name}</div>
-                  <div class="stream-desc">${s.description || 'No description'}</div>
+                  <div style="font-family:'Orbitron',sans-serif;">${s.name}</div>
+                  <div style="color:var(--text-secondary);font-size:0.85rem;">${s.description || ''}</div>
                 </div>
               </div>
-              <div class="stream-revenue">
-                <div class="stream-amount">${formatUSD(s.revenue['7d'])}</div>
-              </div>
+              <div class="stream-amount">${formatUSD(s.revenue['7d'])}</div>
             </div>
           `).join('');
         }
       } catch (err) {
         console.error('Failed to load streams:', err);
-        showError('Failed to load streams data');
       }
     }
-
+    
     // Load income chart
+    let incomeChart = null;
     async function loadIncome() {
       try {
-        // Destroy existing chart if any
         if (incomeChart) {
           incomeChart.destroy();
           incomeChart = null;
         }
         
         const res = await fetch('/pantheon/income');
-        if (!res.ok) throw new Error('Failed to fetch income');
         const data = await res.json();
         
         const ctx = document.getElementById('incomeChart');
@@ -444,82 +254,43 @@
             data: {
               labels: data.daily.map(d => d.date.slice(5)),
               datasets: [{
-                label: 'Daily Revenue',
                 data: data.daily.map(d => d.total),
                 borderColor: '#FFB000',
                 backgroundColor: 'rgba(255, 176, 0, 0.1)',
                 borderWidth: 2,
                 fill: true,
-                tension: 0.4,
-                pointRadius: 3,
-                pointBackgroundColor: '#FFB000',
-                pointBorderColor: '#FFB000',
-                pointHoverRadius: 5
+                tension: 0.4
               }]
             },
             options: {
               responsive: true,
               maintainAspectRatio: false,
-              interaction: {
-                intersect: false,
-                mode: 'index'
-              },
-              plugins: {
-                legend: { display: false },
-                tooltip: {
-                  backgroundColor: '#0c0c12',
-                  titleColor: '#f0f0f5',
-                  bodyColor: '#f0f0f5',
-                  borderColor: '#252538',
-                  borderWidth: 1,
-                  padding: 12,
-                  displayColors: false,
-                  callbacks: {
-                    label: function(context) {
-                      return '$' + context.parsed.y.toFixed(2);
-                    }
-                  }
-                }
-              },
+              plugins: { legend: { display: false } },
               scales: {
-                x: {
-                  grid: { color: '#252538', drawBorder: false },
-                  ticks: { color: '#606070', maxTicksLimit: 10 }
-                },
-                y: {
-                  grid: { color: '#252538', drawBorder: false },
-                  ticks: {
-                    color: '#606070',
-                    callback: function(value) {
-                      return '$' + value.toFixed(0);
-                    }
-                  }
-                }
+                x: { grid: { color: '#252538' }, ticks: { color: '#606070' } },
+                y: { grid: { color: '#252538' }, ticks: { color: '#606070' } }
               }
             }
           });
         }
       } catch (err) {
         console.error('Failed to load income:', err);
-        showError('Failed to load income data');
       }
     }
-
+    
     // Load vault phases
     async function loadVault() {
       try {
         const res = await fetch('/pantheon/vault');
-        if (!res.ok) throw new Error('Failed to fetch vault');
         const data = await res.json();
         
-        const phases = document.getElementById('phases');
-        if (phases && data.phases) {
-          phases.innerHTML = data.phases.map(p => `
-            <div class="phase-item ${p.live ? 'live' : 'locked'}">
+        if (data.phases) {
+          document.getElementById('phases').innerHTML = data.phases.map(p => `
+            <div class="phase-item ${p.live ? 'live' : ''}">
               <div class="phase-number">${p.phase}</div>
-              <div class="phase-info">
+              <div style="flex:1;">
                 <div class="phase-name">${p.name}</div>
-                <div class="phase-desc">${p.description}${p.service_name ? ` • ${p.service_name}` : ''}</div>
+                <div class="phase-desc">${p.description}${p.service_name ? ' • ' + p.service_name : ''}</div>
               </div>
               <span class="phase-status ${p.status}">${p.status.replace('-', ' ')}</span>
             </div>
@@ -527,31 +298,43 @@
         }
       } catch (err) {
         console.error('Failed to load vault:', err);
-        showError('Failed to load vault data');
       }
     }
-
-    // Show stream detail (placeholder for future expansion)
+    
+    // Load combat log
+    function loadCombatLog() {
+      const entries = [
+        { time: '14:32', text: 'Polymarket order filled', status: 'Complete', processing: false },
+        { time: '14:28', text: 'BNKR validation passed', status: 'Complete', processing: false },
+        { time: '14:25', text: 'Entropy detection scan', status: 'Processing', processing: true },
+        { time: '14:20', text: 'BasePay tribute received', status: '0.10 USDC', processing: false, gold: true },
+        { time: '14:15', text: 'Ledger hash chain verified', status: 'Complete', processing: false },
+        { time: '14:10', text: 'Yield harvest executed', status: 'Complete', processing: false },
+        { time: '14:05', text: 'Risk check passed', status: 'Complete', processing: false },
+        { time: '14:00', text: 'Polymarket signal detected', status: 'Processing', processing: true }
+      ];
+      
+      document.getElementById('combat-log').innerHTML = entries.map(e => `
+        <div class="combat-entry">
+          <span style="color:${e.processing ? 'var(--gold)' : 'var(--cyan)'};">●</span>
+          <span style="color:var(--text-secondary);">${e.time}</span>
+          <span>${e.text}</span>
+          <span style="color:${e.gold ? 'var(--gold)' : e.processing ? 'var(--gold)' : 'var(--cyan)'};margin-left:auto;">${e.status}</span>
+        </div>
+      `).join('');
+    }
+    
+    // Show stream detail
     function showStreamDetail(streamId) {
       console.log('Stream selected:', streamId);
-      // Future: open modal or navigate to stream detail
+      alert('Stream: ' + streamId + '\nReal-time data connection active');
     }
-
-    // Show error message
-    function showError(message) {
-      console.error(message);
-      // Could add toast notification here
-    }
-
-    // Auto-refresh data every 30 seconds when tab is active
-    setInterval(() => {
-      if (currentTab === 'overview') loadOverview();
-      if (currentTab === 'streams') loadStreams();
-    }, 30000);
-
-    // Load initial data
+    
+    // Initialize
     document.addEventListener('DOMContentLoaded', () => {
+      console.log('Pantheon initialized');
       loadOverview();
+      loadCombatLog();
     });
   </script>
 </body>
