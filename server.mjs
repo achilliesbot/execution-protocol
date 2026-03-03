@@ -195,8 +195,8 @@ app.get('/overview', (req, res) => {
   res.redirect('/pantheon.html#overview');
 });
 
-app.get('/trading', (req, res) => {
-  res.redirect('/pantheon.html#trading');
+app.get('/trades', (req, res) => {
+  res.redirect('/pantheon.html#trades');
 });
 
 app.get('/streams', (req, res) => {
