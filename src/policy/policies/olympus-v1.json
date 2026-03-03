@@ -24,7 +24,18 @@
     ],
     "autonomy_threshold": 10,
     "approval_required_above": 10,
-    "approval_method": "telegram_commander"
+    "approval_method": "telegram_commander",
+    "price_validation": {
+      "require_real_market_price": true,
+      "price_source": "bankr_api",
+      "max_price_deviation_pct": 5,
+      "stop_loss_calculation": "percentage_below_entry",
+      "take_profit_calculation": "percentage_above_entry",
+      "default_stop_loss_pct": 13,
+      "default_take_profit_pct": 20,
+      "min_stop_loss_pct": 5,
+      "max_stop_loss_pct": 25
+    }
   },
   "risk_levels": {
     "LOW": "Within all constraints",
