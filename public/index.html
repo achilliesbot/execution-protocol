@@ -167,8 +167,12 @@
     // Load overview data
     async function loadOverview() {
       try {
+        console.log('Fetching overview data...');
         const res = await fetch('/pantheon/overview');
+        console.log('Overview response status:', res.status);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+        console.log('Overview data received:', data);
         
         document.getElementById('rev-7d').textContent = formatUSD(data.revenue['7d']);
         document.getElementById('rev-30d').textContent = formatUSD(data.revenue['30d']);
@@ -207,6 +211,7 @@
         
       } catch (err) {
         console.error('Failed to load overview:', err);
+        document.getElementById('stream-revenue').innerHTML = `<div style="padding:20px;color:var(--gold);text-align:center;">⚠️ Connection Error: ${err.message}</div>`;
       }
     }
     
