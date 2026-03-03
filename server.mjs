@@ -186,9 +186,33 @@ app.get('/ep/session/:id', authRateLimiter, sessionRoute);
 // Pantheon UI Routes (public dashboard + admin)
 app.use('/pantheon', pantheonRoutes);
 
-// Redirect root to Pantheon UI
+// Page routes for each tab
 app.get('/', (req, res) => {
   res.redirect('/pantheon.html');
+});
+
+app.get('/overview', (req, res) => {
+  res.redirect('/pantheon.html#overview');
+});
+
+app.get('/trading', (req, res) => {
+  res.redirect('/pantheon.html#trading');
+});
+
+app.get('/streams', (req, res) => {
+  res.redirect('/pantheon.html#streams');
+});
+
+app.get('/income', (req, res) => {
+  res.redirect('/pantheon.html#income');
+});
+
+app.get('/integrate', (req, res) => {
+  res.redirect('/pantheon.html#integrate');
+});
+
+app.get('/vault', (req, res) => {
+  res.redirect('/pantheon.html#vault');
 });
 
 // 404 handler
