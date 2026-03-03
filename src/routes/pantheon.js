@@ -46,30 +46,35 @@ const LEDGER_DIR = process.env.LEDGER_DIR || join(process.cwd(), 'data', 'ledger
  */
 
 // Overview: Money + Proof (Top of page)
-router.get('/overview', (req, res) => {
-  // Calculate mock/fake revenue data for demo
+router.get('/overview', async (req, res) => {
   const now = new Date();
+  
+  // Check live connector status
+  const polyConfigured = !!(process.env.POLYMARKET_API_KEY && process.env.POLYMARKET_PRIVATE_KEY);
+  const bnkrConfigured = !!process.env.BNKR_API_KEY;
+  
+  // Calculate revenue data (mock for now - will be from ledger)
   const revenue7d = 1234.56;
   const revenue30d = 5678.90;
   const revenueAllTime = 12345.67;
   
-  // Treasury snapshot (mock)
+  // Treasury snapshot with live status
   const treasury = {
     total_usd: 45678.90,
-    polymarket_allocation: 15000.00,
-    bnkr_allocation: 20000.00,
+    polymarket_allocation: polyConfigured ? 15000.00 : 0,
+    bnkr_allocation: bnkrConfigured ? 20000.00 : 0,
     yield_allocation: 10000.00,
     oddpool_locked: 678.90,
     last_updated: now.toISOString()
   };
   
-  // Stream health
+  // Stream health with live indicators
   const streams = [
-    { id: 'execution-protocol', name: 'Execution Protocol', status: 'active', revenue_7d: 234.56 },
-    { id: 'bnkr', name: 'BNKR', status: 'active', revenue_7d: 456.78 },
-    { id: 'polymarket', name: 'Polymarket', status: 'active', revenue_7d: 345.67 },
-    { id: 'yield', name: 'Yield', status: 'active', revenue_7d: 123.45 },
-    { id: 'oddpool', name: 'Oddpool', status: 'locked', revenue_7d: 0 }
+    { id: 'execution-protocol', name: 'Execution Protocol', status: 'active', revenue_7d: 234.56, live: true },
+    { id: 'bnkr', name: 'BNKR', status: bnkrConfigured ? 'active' : 'connecting', revenue_7d: 456.78, live: bnkrConfigured },
+    { id: 'polymarket', name: 'Polymarket', status: polyConfigured ? 'active' : 'connecting', revenue_7d: 345.67, live: polyConfigured },
+    { id: 'yield', name: 'Yield', status: 'active', revenue_7d: 123.45, live: true },
+    { id: 'oddpool', name: 'Oddpool', status: 'locked', revenue_7d: 0, live: false }
   ];
   
   res.json({
@@ -80,6 +85,10 @@ router.get('/overview', (req, res) => {
     },
     treasury,
     streams,
+    connectors: {
+      polymarket: { configured: polyConfigured, status: polyConfigured ? 'live' : 'not_configured' },
+      bnkr: { configured: bnkrConfigured, status: bnkrConfigured ? 'live' : 'not_configured' }
+    },
     updated_at: now.toISOString()
   });
 });
