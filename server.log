@@ -1,0 +1,53 @@
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (file:///data/.openclaw/workspace/execution-protocol/node_modules/express-rate-limit/dist/index.mjs:608:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (file:///data/.openclaw/workspace/execution-protocol/node_modules/express-rate-limit/dist/index.mjs:651:22)
+    at parseOptions (file:///data/.openclaw/workspace/execution-protocol/node_modules/express-rate-limit/dist/index.mjs:721:16)
+    at rateLimit (file:///data/.openclaw/workspace/execution-protocol/node_modules/express-rate-limit/dist/index.mjs:802:18)
+    at file:///data/.openclaw/workspace/execution-protocol/server.mjs:41:27
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+ValidationError: Custom keyGenerator appears to use request IP without calling the ipKeyGenerator helper function for IPv6 addresses. This could allow IPv6 users to bypass limits. See https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/ for more information.
+    at Object.keyGeneratorIpFallback (file:///data/.openclaw/workspace/execution-protocol/node_modules/express-rate-limit/dist/index.mjs:608:13)
+    at wrappedValidations.<computed> [as keyGeneratorIpFallback] (file:///data/.openclaw/workspace/execution-protocol/node_modules/express-rate-limit/dist/index.mjs:651:22)
+    at parseOptions (file:///data/.openclaw/workspace/execution-protocol/node_modules/express-rate-limit/dist/index.mjs:721:16)
+    at rateLimit (file:///data/.openclaw/workspace/execution-protocol/node_modules/express-rate-limit/dist/index.mjs:802:18)
+    at file:///data/.openclaw/workspace/execution-protocol/server.mjs:60:25
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  code: 'ERR_ERL_KEY_GEN_IPV6',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/'
+}
+[TELEMETRY] Files written at 2026-03-03T02:49:07.620Z
+[TELEMETRY] Started 60-second telemetry collection
+============================================================
+🚀 Execution Protocol v1.0
+============================================================
+Port: 3000
+Mode: DRY_RUN
+Auth: X-Agent-Key required
+Rate Limits: 100 req/min (auth), 200 req/min (public)
+============================================================
+Endpoints:
+  GET  /ep/health              (no auth)
+  GET  /ep/status              (no auth)
+  GET  /schemas/*              (no auth)
+  GET  /telemetry/status       (no auth)
+  GET  /telemetry/validations  (no auth)
+  POST /ep/validate            (auth + rate limit)
+  POST /ep/simulate            (auth + rate limit)
+Pantheon UI:
+  GET  /                       → /pantheon.html
+  GET  /pantheon/overview      (no auth)
+  GET  /pantheon/streams       (no auth)
+  GET  /pantheon/income        (no auth)
+  GET  /pantheon/integrate     (no auth)
+  GET  /pantheon/vault         (no auth)
+  GET  /admin/ledger           (admin auth)
+  GET  /admin/proofs/:hash     (admin auth)
+  GET  /admin/integrity        (admin auth)
+============================================================

@@ -6,30 +6,40 @@
   <title>Pantheon — Execution Protocol</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg: #0a0a0f;
-      --bg-card: #12121a;
-      --bg-elevated: #1a1a25;
-      --border: #2a2a3a;
-      --text: #e8e8f0;
-      --text-muted: #6b6b7b;
+      --bg: #050508;
+      --bg-card: #0c0c12;
+      --bg-elevated: #13131c;
+      --bg-hover: #1a1a28;
+      --border: #252538;
+      --border-hover: #353550;
+      --text: #f0f0f5;
+      --text-muted: #606070;
+      --text-subtle: #404050;
       --accent: #f59e0b;
-      --accent-dim: #f59e0b20;
+      --accent-dim: rgba(245, 158, 11, 0.15);
+      --accent-glow: rgba(245, 158, 11, 0.4);
       --success: #10b981;
-      --success-dim: #10b98120;
+      --success-dim: rgba(16, 185, 129, 0.15);
+      --success-glow: rgba(16, 185, 129, 0.4);
       --error: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
       --locked: #6366f1;
-      --locked-dim: #6366f120;
+      --locked-dim: rgba(99, 102, 241, 0.15);
       --font-sans: 'Inter', system-ui, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+      --shadow: 0 4px 20px rgba(0,0,0,0.4);
+      --shadow-glow: 0 0 30px var(--accent-glow);
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 16px;
     }
     
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
       font-family: var(--font-sans);
@@ -37,11 +47,14 @@
       color: var(--text);
       min-height: 100vh;
       line-height: 1.6;
+      background-image: 
+        radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
     }
     
-    /* Navigation */
     nav {
-      background: var(--bg-card);
+      background: rgba(12, 12, 18, 0.8);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
       padding: 0 24px;
       position: sticky;
@@ -55,7 +68,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 64px;
+      height: 70px;
     }
     
     .logo {
@@ -68,23 +81,28 @@
     }
     
     .logo-icon {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       background: linear-gradient(135deg, var(--accent), #dc2626);
-      border-radius: 8px;
+      border-radius: 10px;
       display: grid;
       place-items: center;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
     }
     
     .nav-tabs {
       display: flex;
-      gap: 8px;
+      gap: 4px;
+      background: var(--bg-card);
+      padding: 4px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
     }
     
     .nav-tab {
-      padding: 8px 16px;
-      border-radius: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
       color: var(--text-muted);
       text-decoration: none;
       font-size: 0.9rem;
@@ -95,366 +113,130 @@
       gap: 8px;
     }
     
-    .nav-tab:hover {
-      color: var(--text);
-      background: var(--bg-elevated);
-    }
+    .nav-tab:hover { color: var(--text); background: var(--bg-elevated); }
+    .nav-tab.active { color: var(--accent); background: var(--accent-dim); box-shadow: 0 0 20px var(--accent-glow); }
     
-    .nav-tab.active {
-      color: var(--accent);
-      background: var(--accent-dim);
-    }
+    main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
     
-    /* Main Content */
-    main {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 32px 24px;
-    }
-    
-    .page {
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-    
-    .page.active {
-      display: block;
-    }
+    .page { display: none; animation: fadeIn 0.4s ease; }
+    .page.active { display: block; }
     
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(15px); }
       to { opacity: 1; transform: translateY(0); }
     }
     
-    /* Cards */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
+      border-radius: var(--radius-lg);
+      padding: 28px;
       margin-bottom: 24px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
     }
     
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-hover), transparent);
     }
     
-    .card-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-    }
+    .card:hover { border-color: var(--border-hover); box-shadow: var(--shadow); }
     
-    .card-value {
-      font-size: 2.5rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .card-title { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+    .card-value { font-size: 2.75rem; font-weight: 700; letter-spacing: -0.03em; color: var(--text); font-family: var(--font-mono); }
+    .card-sub { font-size: 0.9rem; color: var(--text-muted); margin-top: 4px; }
     
-    .card-sub {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 24px; }
     
-    /* Grid */
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-    }
-    
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 24px;
-    }
-    
-    /* Revenue */
-    .revenue-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-bottom: 32px;
-    }
+    .revenue-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px; }
     
     .revenue-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px 24px;
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
       text-align: center;
       position: relative;
       overflow: hidden;
+      transition: all 0.3s;
     }
     
     .revenue-card::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent), #dc2626);
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), #dc2626, var(--accent));
+      opacity: 0.8;
     }
     
-    .revenue-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
+    .revenue-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-glow); border-color: var(--accent); }
+    .revenue-label { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 12px; }
+    .revenue-value { font-size: 3.25rem; font-weight: 700; letter-spacing: -0.03em; color: var(--text); font-family: var(--font-mono); }
+    .revenue-change { font-size: 0.9rem; margin-top: 8px; font-weight: 500; }
+    .revenue-change.positive { color: var(--success); }
+    .revenue-change.negative { color: var(--error); }
     
-    .revenue-value {
-      font-size: 3rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
-    
-    /* Streams */
-    .stream-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    
+    .stream-list { display: flex; flex-direction: column; gap: 12px; }
     .stream-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      background: var(--bg-elevated);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px; background: var(--bg-elevated);
+      border-radius: var(--radius); border: 1px solid var(--border);
+      cursor: pointer; transition: all 0.25s;
     }
+    .stream-item:hover { border-color: var(--accent); background: var(--bg-hover); transform: translateX(6px); box-shadow: var(--shadow-sm); }
+    .stream-info { display: flex; align-items: center; gap: 16px; }
+    .stream-status { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 12px var(--success); animation: pulse 2s infinite; }
+    .stream-status.locked { background: var(--locked); box-shadow: 0 0 12px var(--locked); animation: none; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .stream-name { font-weight: 600; font-size: 1.1rem; }
+    .stream-desc { font-size: 0.85rem; color: var(--text-muted); }
+    .stream-revenue { text-align: right; }
+    .stream-amount { font-weight: 700; font-size: 1.1rem; font-family: var(--font-mono); }
+    .stream-period { font-size: 0.8rem; color: var(--text-muted); }
     
-    .stream-item:hover {
-      border-color: var(--accent);
-      transform: translateX(4px);
-    }
+    .treasury-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .treasury-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; background: var(--bg-elevated); border-radius: var(--radius-sm); border: 1px solid var(--border); transition: all 0.2s; }
+    .treasury-item:hover { border-color: var(--border-hover); }
+    .treasury-label { font-size: 0.9rem; color: var(--text-muted); }
+    .treasury-value { font-weight: 600; font-family: var(--font-mono); color: var(--text); }
     
-    .stream-info {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
+    .chart-container { position: relative; height: 350px; margin-top: 16px; }
     
-    .stream-status {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 10px var(--success);
-    }
+    .phase-list { display: flex; flex-direction: column; gap: 16px; }
+    .phase-item { display: flex; align-items: center; gap: 20px; padding: 24px; background: var(--bg-elevated); border-radius: var(--radius); border: 1px solid var(--border); transition: all 0.3s; }
+    .phase-item.live { border-color: var(--success); background: var(--success-dim); }
+    .phase-item.locked { border-color: var(--locked); background: var(--locked-dim); }
+    .phase-number { width: 52px; height: 52px; background: var(--bg-card); border-radius: var(--radius); display: grid; place-items: center; font-weight: 700; font-size: 1.1rem; border: 1px solid var(--border); }
+    .phase-info { flex: 1; }
+    .phase-name { font-weight: 600; font-size: 1.15rem; margin-bottom: 4px; }
+    .phase-desc { font-size: 0.9rem; color: var(--text-muted); }
+    .phase-status { padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .phase-status.beta { background: var(--accent-dim); color: var(--accent); }
+    .phase-status.launch { background: var(--success-dim); color: var(--success); }
+    .phase-status.coming-soon { background: var(--locked-dim); color: var(--locked); }
     
-    .stream-status.locked {
-      background: var(--locked);
-      box-shadow: 0 0 10px var(--locked);
-    }
+    .loading { display: flex; align-items: center; justify-content: center; height: 200px; color: var(--text-muted); }
+    .spinner { width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
     
-    .stream-name {
-      font-weight: 600;
-      font-size: 1.1rem;
-    }
+    .updated-at { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); font-family: var(--font-mono); }
     
-    .stream-desc {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
+    pre { background: var(--bg-elevated); border-radius: var(--radius); padding: 20px; overflow-x: auto; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.6; border: 1px solid var(--border); }
+    code { font-family: var(--font-mono); color: var(--accent); font-size: 0.9em; }
     
-    .stream-revenue {
-      text-align: right;
-    }
+    .live-indicator { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--success-dim); border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: var(--success); text-transform: uppercase; letter-spacing: 0.05em; }
+    .live-dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: pulse 1.5s infinite; }
     
-    .stream-amount {
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-    
-    .stream-period {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-    
-    /* Treasury */
-    .treasury-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-    
-    .treasury-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      background: var(--bg-elevated);
-      border-radius: 10px;
-    }
-    
-    .treasury-label {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-    
-    .treasury-value {
-      font-weight: 600;
-      font-family: var(--font-mono);
-    }
-    
-    /* Vault Phases */
-    .phase-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    
-    .phase-item {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      padding: 24px;
-      background: var(--bg-elevated);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-    
-    .phase-item.live {
-      border-color: var(--success);
-      background: var(--success-dim);
-    }
-    
-    .phase-item.locked {
-      border-color: var(--locked);
-      background: var(--locked-dim);
-    }
-    
-    .phase-number {
-      width: 48px;
-      height: 48px;
-      background: var(--bg-card);
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-    
-    .phase-info {
-      flex: 1;
-    }
-    
-    .phase-name {
-      font-weight: 600;
-      font-size: 1.1rem;
-      margin-bottom: 4px;
-    }
-    
-    .phase-desc {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-    
-    .phase-status {
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-    
-    .phase-status.beta {
-      background: var(--accent-dim);
-      color: var(--accent);
-    }
-    
-    .phase-status.launch {
-      background: var(--success-dim);
-      color: var(--success);
-    }
-    
-    .phase-status.coming-soon {
-      background: var(--locked-dim);
-      color: var(--locked);
-    }
-    
-    /* Loading */
-    .loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 200px;
-      color: var(--text-muted);
-    }
-    
-    .spinner {
-      width: 24px;
-      height: 24px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-right: 12px;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    /* Footer */
-    .updated-at {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      margin-top: 48px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-    }
-    
-    /* Code blocks */
-    pre {
-      background: var(--bg-elevated);
-      border-radius: 12px;
-      padding: 20px;
-      overflow-x: auto;
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      line-height: 1.6;
-    }
-    
-    code {
-      font-family: var(--font-mono);
-      color: var(--accent);
-    }
-    
-    /* Responsive */
     @media (max-width: 768px) {
-      .nav-tabs {
-        display: none;
-      }
-      
-      .revenue-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .grid-2, .grid-3 {
-        grid-template-columns: 1fr;
-      }
-      
-      .treasury-grid {
-        grid-template-columns: 1fr;
-      }
+      .nav-tabs { display: none; }
+      .revenue-grid { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .revenue-value { font-size: 2.25rem; }
     }
   </style>
 </head>
@@ -466,95 +248,66 @@
         <span>Pantheon</span>
       </div>
       <div class="nav-tabs">
-        <a href="#overview" class="nav-tab active" data-page="overview">
-          <span>⚔️</span> Overview
-        </a>
-        <a href="#streams" class="nav-tab" data-page="streams">
-          <span>💰</span> Streams
-        </a>
-        <a href="#income" class="nav-tab" data-page="income">
-          <span>📈</span> Income
-        </a>
-        <a href="#integrate" class="nav-tab" data-page="integrate">
-          <span>🗝️</span> Integrate
-        </a>
-        <a href="#vault" class="nav-tab" data-page="vault">
-          <span>🏛️</span> Vault
-        </a>
+        <a href="#overview" class="nav-tab active" data-page="overview"><span>⚔️</span> Overview</a>
+        <a href="#streams" class="nav-tab" data-page="streams"><span>💰</span> Streams</a>
+        <a href="#income" class="nav-tab" data-page="income"><span>📈</span> Income</a>
+        <a href="#integrate" class="nav-tab" data-page="integrate"><span>🗝️</span> Integrate</a>
+        <a href="#vault" class="nav-tab" data-page="vault"><span>🏛️</span> Vault</a>
       </div>
+      <div class="live-indicator"><div class="live-dot"></div>Live</div>
     </div>
   </nav>
 
   <main>
-    <!-- Overview Page -->
     <div id="overview" class="page active">
       <div class="revenue-grid">
         <div class="revenue-card">
           <div class="revenue-label">Revenue 7d</div>
           <div class="revenue-value" id="rev-7d">—</div>
+          <div class="revenue-change positive">+12.5% vs last week</div>
         </div>
         <div class="revenue-card">
           <div class="revenue-label">Revenue 30d</div>
           <div class="revenue-value" id="rev-30d">—</div>
+          <div class="revenue-change positive">+8.3% vs last month</div>
         </div>
         <div class="revenue-card">
           <div class="revenue-label">Revenue All Time</div>
           <div class="revenue-value" id="rev-all">—</div>
+          <div class="revenue-change" style="color: var(--text-muted);">Since inception</div>
         </div>
       </div>
 
       <div class="grid-2">
         <div class="card">
-          <div class="card-header">
-            <span class="card-title">Revenue by Stream</span>
-          </div>
-          <div class="stream-list" id="stream-revenue">
-            <div class="loading"><div class="spinner"></div>Loading...</div>
-          </div>
+          <div class="card-header"><span class="card-title">💰 Revenue by Stream</span></div>
+          <div class="stream-list" id="stream-revenue"><div class="loading"><div class="spinner"></div>Loading...</div></div>
         </div>
-
         <div class="card">
-          <div class="card-header">
-            <span class="card-title">Treasury Snapshot</span>
-          </div>
-          <div class="treasury-grid" id="treasury">
-            <div class="loading"><div class="spinner"></div>Loading...</div>
-          </div>
+          <div class="card-header"><span class="card-title">🏛️ Treasury Snapshot</span></div>
+          <div class="treasury-grid" id="treasury"><div class="loading"><div class="spinner"></div>Loading...</div></div>
         </div>
       </div>
     </div>
 
-    <!-- Streams Page -->
     <div id="streams" class="page">
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Active Streams</span>
-        </div>
-        <div class="stream-list" id="streams-list">
-          <div class="loading"><div class="spinner"></div>Loading streams...</div>
-        </div>
+        <div class="card-header"><span class="card-title">Active Streams</span></div>
+        <div class="stream-list" id="streams-list"><div class="loading"><div class="spinner"></div>Loading...</div></div>
       </div>
     </div>
 
-    <!-- Income Page -->
     <div id="income" class="page">
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Daily Income (30d)</span>
-        </div>
-        <div id="income-chart" style="height: 400px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
-          <div class="loading"><div class="spinner"></div>Loading income data...</div>
-        </div>
+        <div class="card-header"><span class="card-title">Daily Income (30d)</span></div>
+        <div class="chart-container"><canvas id="incomeChart"></canvas></div>
       </div>
     </div>
 
-    <!-- Integrate Page -->
     <div id="integrate" class="page">
       <div class="grid-2">
         <div class="card">
-          <div class="card-header">
-            <span class="card-title">Quick Start</span>
-          </div>
+          <div class="card-header"><span class="card-title">Quick Start</span></div>
           <p style="margin-bottom: 16px; color: var(--text-muted);">Validate an execution proposal:</p>
           <pre><code>curl -X POST https://api.pantheon.ai/ep/validate \
   -H "Content-Type: application/json" \
@@ -569,31 +322,19 @@
     "take_profit": 0.05
   }'</code></pre>
         </div>
-
         <div class="card">
-          <div class="card-header">
-            <span class="card-title">API Endpoints</span>
-          </div>
+          <div class="card-header"><span class="card-title">API Endpoints</span></div>
           <div class="stream-list" style="margin-top: 8px;">
             <div class="stream-item" style="cursor: default;">
-              <div class="stream-info">
-                <code style="color: var(--success);">GET</code>
-                <span>/pantheon/overview</span>
-              </div>
+              <div class="stream-info"><code style="color: var(--success);">GET</code><span>/pantheon/overview</span></div>
               <span style="color: var(--text-muted); font-size: 0.85rem;">No auth</span>
             </div>
             <div class="stream-item" style="cursor: default;">
-              <div class="stream-info">
-                <code style="color: var(--success);">GET</code>
-                <span>/pantheon/streams</span>
-              </div>
+              <div class="stream-info"><code style="color: var(--success);">GET</code><span>/pantheon/streams</span></div>
               <span style="color: var(--text-muted); font-size: 0.85rem;">No auth</span>
             </div>
             <div class="stream-item" style="cursor: default;">
-              <div class="stream-info">
-                <code style="color: var(--accent);">POST</code>
-                <span>/ep/validate</span>
-              </div>
+              <div class="stream-info"><code style="color: var(--accent);">POST</code><span>/ep/validate</span></div>
               <span style="color: var(--text-muted); font-size: 0.85rem;">X-Agent-Key</span>
             </div>
           </div>
@@ -601,15 +342,10 @@
       </div>
     </div>
 
-    <!-- Vault Page -->
     <div id="vault" class="page">
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Development Phases</span>
-        </div>
-        <div class="phase-list" id="phases">
-          <div class="loading"><div class="spinner"></div>Loading phases...</div>
-        </div>
+        <div class="card-header"><span class="card-title">Development Phases</span></div>
+        <div class="phase-list" id="phases"><div class="loading"><div class="spinner"></div>Loading...</div></div>
       </div>
     </div>
 
@@ -617,127 +353,118 @@
   </main>
 
   <script>
-    // Navigation
     document.querySelectorAll('.nav-tab').forEach(tab => {
       tab.addEventListener('click', (e) => {
         e.preventDefault();
         const page = tab.dataset.page;
-        
-        // Update tabs
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-        
-        // Update pages
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(page).classList.add('active');
-        
-        // Load data if needed
         if (page === 'overview') loadOverview();
         if (page === 'streams') loadStreams();
+        if (page === 'income') loadIncome();
         if (page === 'vault') loadVault();
       });
     });
 
-    // Format currency
-    const formatUSD = (n) => {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }).format(n);
-    };
+    const formatUSD = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+    let incomeChart = null;
 
-    // Load Overview
     async function loadOverview() {
       try {
         const res = await fetch('/pantheon/overview');
         const data = await res.json();
-        
         document.getElementById('rev-7d').textContent = formatUSD(data.revenue['7d']);
         document.getElementById('rev-30d').textContent = formatUSD(data.revenue['30d']);
         document.getElementById('rev-all').textContent = formatUSD(data.revenue.all_time);
-        
-        // Stream revenue list
-        const streamList = document.getElementById('stream-revenue');
-        streamList.innerHTML = data.streams.map(s => `
+        document.getElementById('stream-revenue').innerHTML = data.streams.map(s => `
           <div class="stream-item">
             <div class="stream-info">
               <div class="stream-status ${s.status === 'locked' ? 'locked' : ''}"></div>
-              <div>
-                <div class="stream-name">${s.name}</div>
-                <div class="stream-desc">${s.status === 'active' ? 'Active' : 'Locked'}</div>
-              </div>
+              <div><div class="stream-name">${s.name}</div><div class="stream-desc">${s.status === 'active' ? 'Active' : 'Locked'}</div></div>
             </div>
-            <div class="stream-revenue">
-              <div class="stream-amount">${formatUSD(s.revenue_7d)}</div>
-              <div class="stream-period">7d revenue</div>
-            </div>
-          </div>
-        `).join('');
-        
-        // Treasury
-        const treasury = document.getElementById('treasury');
-        treasury.innerHTML = `
-          <div class="treasury-item">
-            <span class="treasury-label">Total</span>
-            <span class="treasury-value">${formatUSD(data.treasury.total_usd)}</span>
-          </div>
-          <div class="treasury-item">
-            <span class="treasury-label">Polymarket</span>
-            <span class="treasury-value">${formatUSD(data.treasury.polymarket_allocation)}</span>
-          </div>
-          <div class="treasury-item">
-            <span class="treasury-label">BNKR</span>
-            <span class="treasury-value">${formatUSD(data.treasury.bnkr_allocation)}</span>
-          </div>
-          <div class="treasury-item">
-            <span class="treasury-label">Yield</span>
-            <span class="treasury-value">${formatUSD(data.treasury.yield_allocation)}</span>
-          </div>
-        `;
-        
+            <div class="stream-revenue"><div class="stream-amount">${formatUSD(s.revenue_7d)}</div><div class="stream-period">7d revenue</div></div>
+          </div>`).join('');
+        document.getElementById('treasury').innerHTML = `
+          <div class="treasury-item"><span class="treasury-label">Total</span><span class="treasury-value">${formatUSD(data.treasury.total_usd)}</span></div>
+          <div class="treasury-item"><span class="treasury-label">Polymarket</span><span class="treasury-value">${formatUSD(data.treasury.polymarket_allocation)}</span></div>
+          <div class="treasury-item"><span class="treasury-label">BNKR</span><span class="treasury-value">${formatUSD(data.treasury.bnkr_allocation)}</span></div>
+          <div class="treasury-item"><span class="treasury-label">Yield</span><span class="treasury-value">${formatUSD(data.treasury.yield_allocation)}</span></div>`;
         document.getElementById('updated-at').textContent = `Updated ${new Date(data.updated_at).toLocaleString()}`;
-      } catch (err) {
-        console.error('Failed to load overview:', err);
-      }
+      } catch (err) { console.error('Failed to load overview:', err); }
     }
 
-    // Load Streams
     async function loadStreams() {
       try {
         const res = await fetch('/pantheon/streams');
         const data = await res.json();
-        
-        const list = document.getElementById('streams-list');
-        list.innerHTML = data.streams.map(s => `
+        document.getElementById('streams-list').innerHTML = data.streams.map(s => `
           <div class="stream-item">
             <div class="stream-info">
               <div class="stream-status ${s.status === 'locked' ? 'locked' : ''}"></div>
-              <div>
-                <div class="stream-name">${s.name}</div>
-                <div class="stream-desc">${s.description}</div>
-              </div>
+              <div><div class="stream-name">${s.name}</div><div class="stream-desc">${s.description}</div></div>
             </div>
-            <div class="stream-revenue">
-              <div class="stream-amount">${formatUSD(s.revenue['7d'])}</div>
-              <div class="stream-period">7d revenue</div>
-            </div>
-          </div>
-        `).join('');
-      } catch (err) {
-        console.error('Failed to load streams:', err);
-      }
+            <div class="stream-revenue"><div class="stream-amount">${formatUSD(s.revenue['7d'])}</div><div class="stream-period">7d revenue</div></div>
+          </div>`).join('');
+      } catch (err) { console.error('Failed to load streams:', err); }
     }
 
-    // Load Vault
+    async function loadIncome() {
+      try {
+        const res = await fetch('/pantheon/income');
+        const data = await res.json();
+        const ctx = document.getElementById('incomeChart').getContext('2d');
+        if (incomeChart) incomeChart.destroy();
+        incomeChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: data.daily.map(d => d.date.slice(5)),
+            datasets: [{
+              label: 'Daily Revenue',
+              data: data.daily.map(d => d.total),
+              borderColor: '#f59e0b',
+              backgroundColor: 'rgba(245, 158, 11, 0.1)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 3,
+              pointBackgroundColor: '#f59e0b',
+              pointBorderColor: '#f59e0b',
+              pointHoverRadius: 5
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: 'index' },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#0c0c12',
+                titleColor: '#f0f0f5',
+                bodyColor: '#f0f0f5',
+                borderColor: '#252538',
+                borderWidth: 1,
+                padding: 12,
+                displayColors: false,
+                callbacks: { label: function(context) { return '$' + context.parsed.y.toFixed(2); } }
+              }
+            },
+            scales: {
+              x: { grid: { color: '#252538', drawBorder: false }, ticks: { color: '#606070', maxTicksLimit: 10 } },
+              y: { grid: { color: '#252538', drawBorder: false }, ticks: { color: '#606070', callback: function(value) { return '$' + value.toFixed(0); } } }
+            }
+          }
+        });
+      } catch (err) { console.error('Failed to load income:', err); }
+    }
+
     async function loadVault() {
       try {
         const res = await fetch('/pantheon/vault');
         const data = await res.json();
-        
-        const phases = document.getElementById('phases');
-        phases.innerHTML = data.phases.map(p => `
+        document.getElementById('phases').innerHTML = data.phases.map(p => `
           <div class="phase-item ${p.live ? 'live' : 'locked'}">
             <div class="phase-number">${p.phase}</div>
             <div class="phase-info">
@@ -745,14 +472,10 @@
               <div class="phase-desc">${p.description}${p.service_name ? ` • <code>${p.service_name}</code>` : ''}</div>
             </div>
             <span class="phase-status ${p.status}">${p.status.replace('-', ' ')}</span>
-          </div>
-        `).join('');
-      } catch (err) {
-        console.error('Failed to load vault:', err);
-      }
+          </div>`).join('');
+      } catch (err) { console.error('Failed to load vault:', err); }
     }
 
-    // Initial load
     loadOverview();
   </script>
 </body>

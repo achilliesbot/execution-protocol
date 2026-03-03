@@ -65,7 +65,12 @@ export function validateAgentKey(keyHeader) {
 export function agentAuthMiddleware(req, res, next) {
   // Skip auth for public endpoints
   const publicPaths = ['/ep/health', '/ep/status'];
-  const isPublicPath = publicPaths.includes(req.path) || req.path.startsWith('/schemas/') || req.path.startsWith('/telemetry/');
+  const isPublicPath = publicPaths.includes(req.path) 
+    || req.path.startsWith('/schemas/') 
+    || req.path.startsWith('/telemetry/')
+    || req.path.startsWith('/pantheon/')
+    || req.path === '/'
+    || req.path === '/pantheon.html';
   
   if (isPublicPath) {
     return next();
