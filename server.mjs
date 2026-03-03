@@ -126,7 +126,15 @@ async function basePayMiddleware(req, res, next) {
     }
 
     const agentId = req.agent?.id || 'unknown';
+    const agentTier = req.agent?.tier || 'external';
     const policySetId = req.body?.policy_set_id || 'unknown';
+
+    // INTERNAL AGENT WHITELIST: Skip BasePay for internal agents
+    if (agentTier === 'internal') {
+      console.log(`[BASE_PAY] Internal agent ${agentId} bypassed payment`);
+      recordPayment({ required: false, paid: true, fee_usdc_6dp: 0, bypass_reason: 'internal_agent' });
+      return next();
+    }
 
     const requestId = computeRequestId({ agentId, policySetId, proposal: req.body });
     req.basePay = { requestId };
