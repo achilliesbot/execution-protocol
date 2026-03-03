@@ -19,6 +19,7 @@ import { startTelemetry, getCurrentStatus, getCurrentValidationStats, getCurrent
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { computeRequestId, getBasePayConfig, verifyBasePay } from './src/payments/basePay.js';
+import pantheonRoutes from './src/routes/pantheon.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -174,6 +175,14 @@ app.post('/ep/simulate', authRateLimiter, simulateRoute);
 // app.get('/ep/proof/:hash', authRateLimiter, proofRoute);
 app.get('/ep/session/:id', authRateLimiter, sessionRoute);
 
+// Pantheon UI Routes (public dashboard + admin)
+app.use('/pantheon', pantheonRoutes);
+
+// Redirect root to Pantheon UI
+app.get('/', (req, res) => {
+  res.redirect('/pantheon.html');
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
@@ -239,5 +248,15 @@ app.listen(PORT, () => {
   console.log(`  GET  /telemetry/validations  (no auth)`);
   console.log(`  POST /ep/validate            (auth + rate limit)`);
   console.log(`  POST /ep/simulate            (auth + rate limit)`);
+  console.log('Pantheon UI:');
+  console.log(`  GET  /                       → /pantheon.html`);
+  console.log(`  GET  /pantheon/overview      (no auth)`);
+  console.log(`  GET  /pantheon/streams       (no auth)`);
+  console.log(`  GET  /pantheon/income        (no auth)`);
+  console.log(`  GET  /pantheon/integrate     (no auth)`);
+  console.log(`  GET  /pantheon/vault         (no auth)`);
+  console.log(`  GET  /admin/ledger           (admin auth)`);
+  console.log(`  GET  /admin/proofs/:hash     (admin auth)`);
+  console.log(`  GET  /admin/integrity        (admin auth)`);
   console.log('='.repeat(60));
 });
