@@ -6,515 +6,212 @@
     <title>Execution Protocol — Pantheon</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root{--bg:#050508;--bg-panel:#0c0c12;--gold:#FFB000;--gold-bright:#FFC940;--ember:#FF5A1F;--cyan:#20E3FF;--text:#f0f0f5;--text-muted:#606070;--border:#252538;--success:#10b981;--locked:#6366f1;}
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-        nav{background:var(--bg-panel);border-bottom:2px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100;}
-        nav::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-        .nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:70px;}
-        .logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text);}
-        .logo-icon{width:40px;height:40px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-size:1.3rem;}
-        .logo-text{font-family:'Orbitron',sans-serif;font-weight:700;font-size:1.25rem;background:linear-gradient(180deg,var(--gold-bright),var(--gold),var(--ember));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-        .nav-tabs{display:flex;gap:8px;background:#13131c;padding:4px;border-radius:8px;border:1px solid var(--border);}
-        .nav-tab{padding:10px 18px;border-radius:6px;color:var(--text-muted);text-decoration:none;font-family:'Orbitron',sans-serif;font-size:0.8rem;cursor:pointer;border:none;background:transparent;transition:all 0.3s;}
-        .nav-tab:hover,.nav-tab.active{color:var(--gold);background:rgba(255,176,0,0.1);}
-        .live-indicator{display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(16,185,129,0.15);border:1px solid var(--success);border-radius:20px;font-family:'Orbitron',sans-serif;font-size:0.7rem;color:var(--success);}
-        .live-dot{width:6px;height:6px;background:var(--success);border-radius:50%;animation:pulse 1.5s infinite;}
-        @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
-        main{max-width:1400px;margin:0 auto;padding:32px 24px;}
-        .section{display:none;}
-        .section.active{display:block;animation:fadeIn 0.4s ease;}
-        @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-        .hero{min-height:60vh;display:flex;align-items:center;padding:40px 0;}
-        .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
-        .hero-title{font-family:'Orbitron',sans-serif;font-size:3.5rem;font-weight:900;line-height:1.1;margin-bottom:24px;background:linear-gradient(180deg,var(--gold-bright),var(--gold),var(--ember));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-        .hero-subtitle{font-size:1.2rem;color:var(--text-muted);margin-bottom:32px;}
-        .btn-primary{background:linear-gradient(180deg,var(--gold),var(--ember));border:none;color:#000;font-family:'Orbitron',sans-serif;font-weight:700;padding:16px 32px;cursor:pointer;clip-path:polygon(10% 0,100% 0,100% 70%,90% 100%,0 100%,0 30%);margin-right:12px;}
-        .btn-secondary{border:2px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',sans-serif;padding:14px 30px;cursor:pointer;background:transparent;clip-path:polygon(10% 0,100% 0,100% 70%,90% 100%,0 100%,0 30%);}
-        .warrior-frame{border:2px solid var(--border);border-radius:12px;padding:60px;text-align:center;background:linear-gradient(135deg,rgba(255,176,0,0.1),rgba(32,227,255,0.05));}
-        .warrior-icon{font-size:5rem;margin-bottom:24px;}
-        .frame-bar{height:4px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:40px 0;position:relative;}
-        .frame-bar::before,.frame-bar::after{content:'◆';position:absolute;top:50%;transform:translateY(-50%);color:var(--gold);font-size:12px;}
-        .frame-bar::before{left:20%;}.frame-bar::after{right:20%;}
-        .section-header{text-align:center;margin-bottom:40px;}
-        .section-title{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--gold);}
-        .revenue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:32px;}
-        .revenue-card{background:var(--bg-panel);border:2px solid var(--border);border-radius:12px;padding:32px;text-align:center;position:relative;}
-        .revenue-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--ember));}
-        .revenue-label{font-family:'Orbitron',sans-serif;font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;}
-        .revenue-value{font-family:'Orbitron',sans-serif;font-size:2.5rem;font-weight:800;background:linear-gradient(180deg,var(--gold-bright),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-        .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:24px;}
-        .panel{background:var(--bg-panel);border:2px solid var(--border);border-radius:12px;position:relative;}
-        .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-        .panel-header{display:flex;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);font-family:'Orbitron',sans-serif;color:var(--gold);}
-        .panel-title::before{content:'◆ ';color:var(--cyan);}
-        .stream-list{padding:12px;}
-        .stream-item{display:flex;justify-content:space-between;padding:16px 20px;background:#1a1a28;border:1px solid var(--border);margin-bottom:2px;cursor:pointer;transition:all 0.3s;}
-        .stream-item:hover{border-color:var(--gold);transform:translateX(8px);}
-        .stream-status{width:10px;height:10px;border-radius:50%;background:var(--success);margin-right:12px;display:inline-block;}
-        .stream-status.locked{background:var(--locked);}
-        .stream-name{font-family:'Orbitron',sans-serif;}
-        .stream-amount{color:var(--gold);font-family:'Orbitron',sans-serif;}
-        .treasury-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:20px;}
-        .treasury-item{display:flex;justify-content:space-between;padding:16px;background:#1a1a28;border:1px solid var(--border);}
-        .treasury-value{color:var(--cyan);font-family:'JetBrains Mono',monospace;}
-        .combat-log{padding:12px;}
-        .combat-entry{display:flex;gap:16px;padding:12px;border-bottom:1px solid rgba(255,255,255,0.05);font-family:'JetBrains Mono',monospace;}
-        .artifact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px;padding:20px;}
-        .artifact-card{background:#0c0c12;border:2px solid var(--border);border-radius:12px;padding:24px;text-align:center;transition:all 0.3s;}
-        .artifact-card:hover{transform:translateY(-8px);border-color:var(--gold);}
-        .artifact-icon{font-size:3rem;margin-bottom:16px;}
-        .artifact-title{font-family:'Orbitron',sans-serif;color:var(--gold);margin-bottom:8px;}
-        pre{background:#1a1a28;border:1px solid var(--border);border-radius:8px;padding:20px;font-family:'JetBrains Mono',monospace;margin:20px;overflow-x:auto;}
-        code{color:var(--cyan);}
-        .updated-at{text-align:center;color:var(--text-muted);margin-top:48px;padding-top:24px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;}
-        .badge{display:inline-flex;padding:8px 16px;border:1px solid var(--cyan);color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:11px;margin-right:8px;}
-        .chart-container{height:350px;padding:20px;}
-        .phase-list{padding:20px;}
-        .phase-item{display:flex;align-items:center;gap:20px;padding:24px;background:#1a1a28;border:1px solid var(--border);margin-bottom:12px;border-radius:8px;}
-        .phase-item.live{border-color:var(--success);}
-        .phase-number{width:56px;height:56px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-family:'Orbitron',sans-serif;font-weight:800;color:var(--gold);}
-        .phase-name{font-family:'Orbitron',sans-serif;font-weight:700;}
-        .phase-desc{color:var(--text-muted);font-family:'JetBrains Mono',monospace;}
-        .phase-status{padding:8px 16px;border-radius:20px;font-family:'Orbitron',sans-serif;font-size:0.65rem;text-transform:uppercase;}
-        .phase-status.beta{background:rgba(255,176,0,0.15);border:1px solid var(--gold);color:var(--gold);}
-        .phase-status.launch{background:rgba(16,185,129,0.15);border:1px solid var(--success);color:var(--success);}
-        @media(max-width:968px){.hero-grid{grid-template-columns:1fr;}.hero-title{font-size:2.5rem;}}
-    </style>
+    <style>:root{--bg:#050508;--bg-panel:#0c0c12;--gold:#FFB000;--gold-bright:#FFC940;--ember:#FF5A1F;--cyan:#20E3FF;--text:#f0f0f5;--text-muted:#606070;--border:#252538;--success:#10b981;--danger:#ef4444;--locked:#6366f1;}*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}nav{background:var(--bg-panel);border-bottom:2px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100;}nav::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}.nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:70px;}.logo{display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none;}.logo-icon{width:40px;height:40px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-size:1.3rem;}.text-gold{background:linear-gradient(180deg,var(--gold-bright),var(--gold),var(--ember));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}.nav-tabs{display:flex;gap:4px;background:#13131c;padding:4px;border-radius:8px;border:1px solid var(--border);flex-wrap:wrap;}.nav-tab{padding:8px 14px;border-radius:6px;color:var(--text-muted);text-decoration:none;font-family:'Orbitron',sans-serif;font-size:0.75rem;cursor:pointer;border:none;background:transparent;}.nav-tab:hover,.nav-tab.active{color:var(--gold);background:rgba(255,176,0,0.1);}.live-indicator{display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(16,185,129,0.15);border:1px solid var(--success);border-radius:20px;font-family:'Orbitron',sans-serif;font-size:0.7rem;color:var(--success);}.live-dot{width:6px;height:6px;background:var(--success);border-radius:50%;animation:pulse 1.5s infinite;}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}main{max-width:1400px;margin:0 auto;padding:32px 24px;}.tab-content{display:none;}.tab-content.active{display:block;animation:fadeIn 0.4s ease;}@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}.stone-panel{background:linear-gradient(180deg,var(--bg-panel),#13131c);border:2px solid var(--border);border-radius:12px;position:relative;}.stone-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}.panel-header{display:flex;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);font-family:'Orbitron',sans-serif;color:var(--gold);}.section-header{text-align:center;margin-bottom:40px;}.section-title{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--gold);}.frame-bar{height:4px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:40px 0;position:relative;}.frame-bar::before,.frame-bar::after{content:'◆';position:absolute;top:50%;transform:translateY(-50%);color:var(--gold);}.frame-bar::before{left:20%;}.frame-bar::after{right:20%;}.badge{display:inline-flex;padding:6px 12px;border-radius:4px;font-family:'Orbitron',sans-serif;font-size:0.75rem;font-weight:700;text-transform:uppercase;}.badge-buy{background:rgba(16,185,129,0.2);border:1px solid var(--success);color:var(--success);}.badge-sell{background:rgba(239,68,68,0.2);border:1px solid var(--danger);color:var(--danger);}.badge-open{background:rgba(255,176,0,0.2);border:1px solid var(--gold);color:var(--gold);}.badge-closed{background:rgba(96,96,112,0.2);border:1px solid var(--text-muted);color:var(--text-muted);}.badge-win{background:rgba(16,185,129,0.3);border:1px solid var(--success);color:var(--success);}.badge-loss{background:rgba(239,68,68,0.3);border:1px solid var(--danger);color:var(--danger);}.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;}.stat-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;}.stat-label{font-family:'Orbitron',sans-serif;font-size:0.7rem;color:var(--text-muted);margin-bottom:8px;}.stat-value{font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:700;color:var(--gold);}.stat-value.success{color:var(--success);}.stat-value.danger{color:var(--danger);}.trades-table{width:100%;border-collapse:collapse;}.trades-table th{padding:12px 16px;text-align:left;font-family:'Orbitron',sans-serif;font-size:0.75rem;color:var(--text-muted);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:0.05em;}.trades-table td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);font-family:'JetBrains Mono',monospace;font-size:0.85rem;}.trades-table tr:hover{background:rgba(255,255,255,0.02);}.truncate{max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.order-id{font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:0.8rem;}.pnl-positive{color:var(--success);}.pnl-negative{color:var(--danger);}.loading{padding:40px;text-align:center;color:var(--text-muted);font-family:'Orbitron',sans-serif;}pre{background:#1a1a28;border:1px solid var(--border);border-radius:8px;padding:20px;font-family:'JetBrains Mono',monospace;margin:20px;overflow-x:auto;}code{color:var(--cyan);}.updated-at{text-align:center;color:var(--text-muted);margin-top:48px;padding-top:24px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;}@media(max-width:968px){.nav-tabs{flex-direction:column;}.trades-table{font-size:0.75rem;}.truncate{max-width:150px;}}</style>
 </head>
 <body>
-    <nav>
-        <div class="nav-inner">
-            <a href="#" class="logo" onclick="showSection('hero');return false;">
-                <div class="logo-icon">⚔️</div>
-                <span class="logo-text">PANTHEON</span>
-            </a>
-            <div class="nav-tabs">
-                <button class="nav-tab active" onclick="showSection('overview')">⚔️ Overview</button>
-                <button class="nav-tab" onclick="showSection('streams')">💰 Streams</button>
-                <button class="nav-tab" onclick="showSection('income')">📈 Income</button>
-                <button class="nav-tab" onclick="showSection('integrate')">🗝️ Integrate</button>
-                <button class="nav-tab" onclick="showSection('vault')">🏛️ Vault</button>
-            </div>
-            <div class="live-indicator">
-                <div class="live-dot"></div>
-                OPERATIONAL
-            </div>
-        </div>
-    </nav>
+    <nav><div class="nav-inner"><a href="#" class="logo" onclick="showSection('overview');return false;"><div class="logo-icon">⚔️</div><span class="text-gold" style="font-family:'Orbitron',sans-serif;font-weight:700;">PANTHEON</span></a><div class="nav-tabs"><button class="nav-tab active" onclick="showSection('overview')">⚔️ Overview</button><button class="nav-tab" onclick="showSection('trading')">📊 Trading</button><button class="nav-tab" onclick="showSection('streams')">💰 Streams</button><button class="nav-tab" onclick="showSection('income')">📈 Income</button><button class="nav-tab" onclick="showSection('integrate')">🗝️ Integrate</button><button class="nav-tab" onclick="showSection('vault')">🏛️ Vault</button></div><div class="live-indicator"><div class="live-dot"></div>OPERATIONAL</div></div></nav>
 
     <main>
-        <!-- HERO SECTION -->
-        <div id="hero" class="section active">
-            <div class="hero">
-                <div class="hero-grid">
-                    <div>
-                        <h1 class="hero-title">Forge Decisions<br>At Battle Speed.</h1>
-                        <p class="hero-subtitle">Mythic-grade intelligence, cybernetic execution. Built for operators who demand deterministic validation.</p>
-                        <div style="margin-bottom:32px;">
-                            <button class="btn-primary" onclick="enterPantheon()">Enter Pantheon</button>
-                            <button class="btn-secondary" onclick="showSection('integrate')">API Docs</button>
-                        </div>
-                        <div>
-                            <span class="badge">🔒 SECURE</span>
-                            <span class="badge">👁️ AUDITABLE</span>
-                            <span class="badge">⚡ DETERMINISTIC</span>
-                        </div>
-                    </div>
-                    <div class="warrior-frame">
-                        <div class="warrior-icon">⚔️</div>
-                        <div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--gold);margin-bottom:8px;">The Shield Holds</div>
-                        <div style="font-family:'JetBrains Mono',monospace;color:var(--cyan);">Deterministic • Verifiable • Unstoppable</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="frame-bar"></div>
-
-            <div class="section-header">
-                <div class="section-title">⚔️ Pantheon Overview</div>
-            </div>
-
-            <div class="revenue-grid">
-                <div class="revenue-card">
-                    <div class="revenue-label">REVENUE 7D</div>
-                    <div class="revenue-value" id="rev-7d">$0.00</div>
-                    <div style="color:var(--success);font-family:'JetBrains Mono',monospace;font-size:0.9rem;margin-top:8px;">+12.5% vs last week</div>
-                </div>
-                <div class="revenue-card">
-                    <div class="revenue-label">REVENUE 30D</div>
-                    <div class="revenue-value" id="rev-30d">$0.00</div>
-                    <div style="color:var(--success);font-family:'JetBrains Mono',monospace;font-size:0.9rem;margin-top:8px;">+8.3% vs last month</div>
-                </div>
-                <div class="revenue-card">
-                    <div class="revenue-label">REVENUE ALL TIME</div>
-                    <div class="revenue-value" id="rev-all">$0.00</div>
-                    <div style="color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:0.9rem;margin-top:8px;">Since inception</div>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="panel">
-                    <div class="panel-header">
-                        <span class="panel-title">Revenue by Stream</span>
-                    </div>
-                    <div class="stream-list" id="stream-revenue">
-                        <div style="padding:40px;text-align:center;color:var(--text-muted);">Loading...</div>
-                    </div>
-                </div>
-                <div class="panel">
-                    <div class="panel-header">
-                        <span class="panel-title">Treasury Snapshot</span>
-                    </div>
-                    <div class="treasury-grid" id="treasury">
-                        <div style="padding:40px;text-align:center;color:var(--text-muted);">Loading...</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- OVERVIEW TAB -->
-        <div id="overview" class="section">
-            <div class="section-header">
-                <div class="section-title">◆ The War Console</div>
+        <div id="overview" class="tab-content active">
+            <div class="section-header"><div class="section-title">⚔️ Pantheon Overview</div></div>
+            <div class="stats-bar" id="overview-stats">
+                <div class="stat-card"><div class="stat-label">Revenue 7d</div><div class="stat-value" id="rev-7d">$0.00</div></div>
+                <div class="stat-card"><div class="stat-label">Revenue 30d</div><div class="stat-value" id="rev-30d">$0.00</div></div>
+                <div class="stat-card"><div class="stat-label">Total Trades</div><div class="stat-value" id="total-trades">0</div></div>
             </div>
-            <div class="grid-2">
-                <div class="panel">
-                    <div class="panel-header">
-                        <span class="panel-title">Combat Log</span>
-                        <div class="live-indicator" style="padding:4px 8px;font-size:0.6rem;">
-                            <div class="live-dot"></div>
-                            LIVE
-                        </div>
-                    </div>
-                    <div class="combat-log" id="combat-log"></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:24px;">
+                <div class="stone-panel"><div class="panel-header"><span>◆ Active Streams</span></div><div id="stream-list" class="loading">Loading...</div></div>
+                <div class="stone-panel"><div class="panel-header"><span>◆ Recent Activity</span></div><div id="combat-log" style="padding:20px;"></div></div>
+            </div>
+        </div>
+
+        <!-- TRADING TAB -->
+        <div id="trading" class="tab-content">
+            <div class="section-header"><div class="section-title">📊 Live Trading</div></div>
+            
+            <!-- Stats Bar -->
+            <div class="stats-bar" id="trading-stats">
+                <div class="stat-card"><div class="stat-label">Total Deployed</div><div class="stat-value" id="stat-deployed">$0.00</div></div>
+                <div class="stat-card"><div class="stat-label">Open Positions</div><div class="stat-value" id="stat-open">0</div></div>
+                <div class="stat-card"><div class="stat-label">Win Rate</div><div class="stat-value success" id="stat-winrate">0%</div></div>
+                <div class="stat-card"><div class="stat-label">Total Trades</div><div class="stat-value" id="stat-total">0</div></div>
+                <div class="stat-card"><div class="stat-label">Realized P&L</div><div class="stat-value" id="stat-pnl">$0.00</div></div>
+            </div>
+
+            <!-- Active Positions -->
+            <div class="stone-panel" style="margin-bottom:24px;">
+                <div class="panel-header"><span>◆ ACTIVE POSITIONS</span><span style="color:var(--success);font-size:0.8rem;">● LIVE</span></div>
+                <div style="overflow-x:auto;">
+                    <table class="trades-table" id="active-positions-table">
+                        <thead><tr><th>Market</th><th>Direction</th><th>Entry Price</th><th>Position Size</th><th>Tokens</th><th>Order ID</th><th>Status</th><th>P&L</th></tr></thead>
+                        <tbody id="active-positions-body"><tr><td colspan="8" class="loading">Loading positions...</td></tr></tbody>
+                    </table>
                 </div>
-                <div class="panel" style="border-left:3px solid var(--cyan);">
-                    <div class="panel-header">
-                        <span class="panel-title">Oracle Output</span>
-                    </div>
-                    <div style="padding:20px;">
-                        <p style="margin-bottom:16px;">All streams operational. Hash chain integrity verified. <span style="color:var(--cyan);">PANTHEON</span> ready.</p>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                            <div style="padding:16px;border:1px solid rgba(32,227,255,0.2);">
-                                <div style="font-size:0.75rem;color:var(--text-muted);">SIGNAL CONFIDENCE</div>
-                                <div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--cyan);">94.7%</div>
-                            </div>
-                            <div style="padding:16px;border:1px solid rgba(255,176,0,0.2);">
-                                <div style="font-size:0.75rem;color:var(--text-muted);">EXPECTED PnL</div>
-                                <div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--gold);">+12.4%</div>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+
+            <!-- Trade History -->
+            <div class="stone-panel">
+                <div class="panel-header"><span>◆ TRADE HISTORY (Last 20)</span></div>
+                <div style="overflow-x:auto;">
+                    <table class="trades-table" id="trade-history-table">
+                        <thead><tr><th>Time</th><th>Market</th><th>Direction</th><th>Entry Price</th><th>Size ($)</th><th>Tokens</th><th>Order ID</th><th>Status</th><th>P&L</th></tr></thead>
+                        <tbody id="trade-history-body"><tr><td colspan="9" class="loading">Loading trade history...</td></tr></tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- STREAMS TAB -->
-        <div id="streams" class="section">
-            <div class="section-header">
-                <div class="section-title">◆ Active Streams</div>
-            </div>
-            <div class="panel">
-                <div class="panel-header">
-                    <span class="panel-title">Stream Status</span>
-                </div>
-                <div class="stream-list" id="streams-list">
-                    <div style="padding:40px;text-align:center;color:var(--text-muted);">Loading streams...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- INCOME TAB -->
-        <div id="income" class="section">
-            <div class="section-header">
-                <div class="section-title">◆ 30 Day Combat Log</div>
-            </div>
-            <div class="panel">
-                <div class="panel-header">
-                    <span class="panel-title">Daily Income</span>
-                </div>
-                <div class="chart-container">
-                    <canvas id="incomeChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- INTEGRATE TAB -->
-        <div id="integrate" class="section">
-            <div class="section-header">
-                <div class="section-title">◆ Integration</div>
-            </div>
-            <div class="grid-2">
-                <div class="panel">
-                    <div class="panel-header">
-                        <span class="panel-title">Quick Start</span>
-                    </div>
-                    <p style="margin:20px;color:var(--text-muted);">Validate an execution proposal:</p>
-                    <pre><code>curl -X POST https://execution-protocol.onrender.com/ep/validate \
-  -H "Content-Type: application/json" \
-  -H "X-Agent-Key: your_key_here" \
-  -d '{
-    "proposal_id": "prop_001",
-    "asset": "BNKR",
-    "direction": "buy",
-    "amount_usd": 100
-  }'</code></pre>
-                </div>
-                <div class="panel">
-                    <div class="panel-header">
-                        <span class="panel-title">API Endpoints</span>
-                    </div>
-                    <div class="stream-list" style="padding:12px;">
-                        <div class="stream-item">
-                            <div><span style="color:var(--success);font-family:'JetBrains Mono',monospace;">GET</span> /pantheon/overview</div>
-                            <span style="color:var(--text-muted);">No auth</span>
-                        </div>
-                        <div class="stream-item">
-                            <div><span style="color:var(--success);font-family:'JetBrains Mono',monospace;">GET</span> /pantheon/streams</div>
-                            <span style="color:var(--text-muted);">No auth</span>
-                        </div>
-                        <div class="stream-item">
-                            <div><span style="color:var(--gold);font-family:'JetBrains Mono',monospace;">POST</span> /ep/validate</div>
-                            <span style="color:var(--text-muted);">X-Agent-Key</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- VAULT TAB -->
-        <div id="vault" class="section">
-            <div class="section-header">
-                <div class="section-title">◆ Development Phases</div>
-            </div>
-            <div class="panel">
-                <div class="panel-header">
-                    <span class="panel-title">Phase Status</span>
-                </div>
-                <div class="phase-list" id="phases"></div>
-            </div>
-        </div>
-
-        <div class="frame-bar"></div>
-
-        <!-- ARTIFACTS -->
-        <div>
-            <div class="section-header">
-                <div class="section-title">◆ Train Your Army of Artifacts</div>
-            </div>
-            <div class="artifact-grid">
-                <div class="artifact-card">
-                    <div class="artifact-icon">👁️</div>
-                    <div class="artifact-title">ARTIFACT OF INSIGHT</div>
-                    <div style="color:var(--text-muted);font-size:0.85rem;">Adaptive vision systems</div>
-                </div>
-                <div class="artifact-card">
-                    <div class="artifact-icon">📜</div>
-                    <div class="artifact-title">ARTIFACT OF PROOF</div>
-                    <div style="color:var(--text-muted);font-size:0.85rem;">Chain-first storage</div>
-                </div>
-                <div class="artifact-card">
-                    <div class="artifact-icon">⚡</div>
-                    <div class="artifact-title">ARTIFACT OF SPEED</div>
-                    <div style="color:var(--text-muted);font-size:0.85rem;">Sub-100ms response</div>
-                </div>
-                <div class="artifact-card">
-                    <div class="artifact-icon">🛡️</div>
-                    <div class="artifact-title">ARTIFACT OF CONTROL</div>
-                    <div style="color:var(--text-muted);font-size:0.85rem;">Deterministic execution</div>
-                </div>
-            </div>
-        </div>
+        <!-- OTHER TABS -->
+        <div id="streams" class="tab-content"><div class="section-header"><div class="section-title">◆ Active Streams</div></div><div class="stone-panel"><div class="panel-header"><span>◆ Stream Status</span></div><div id="streams-list" class="loading">Loading...</div></div></div>
+        <div id="income" class="tab-content"><div class="section-header"><div class="section-title">◆ Income History</div></div><div class="stone-panel"><div class="panel-header"><span>◆ 30 Day Chart</span></div><div class="chart-container"><canvas id="incomeChart"></canvas></div></div></div>
+        <div id="integrate" class="tab-content"><div class="section-header"><div class="section-title">◆ Integration</div></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:24px;"><div class="stone-panel"><div class="panel-header"><span>◆ Quick Start</span></div><pre><code>curl -X POST /ep/validate \
+  -H "X-Agent-Key: your_key" \
+  -d '{"asset":"BNKR","amount":100}'</code></pre></div><div class="stone-panel"><div class="panel-header"><span>◆ Endpoints</span></div><div style="padding:20px;"><div style="display:flex;justify-content:space-between;padding:12px;border-bottom:1px solid var(--border);"><code style="color:var(--success);">GET</code><span>/pantheon/trades</span></div><div style="display:flex;justify-content:space-between;padding:12px;border-bottom:1px solid var(--border);"><code style="color:var(--success);">GET</code><span>/pantheon/overview</span></div><div style="display:flex;justify-content:space-between;padding:12px;"><code style="color:var(--gold);">POST</code><span>/ep/validate</span></div></div></div></div></div>
+        <div id="vault" class="tab-content"><div class="section-header"><div class="section-title">◆ Development Phases</div></div><div class="stone-panel"><div class="panel-header"><span>◆ Phase Status</span></div><div id="phases-list" style="padding:20px;"></div></div></div>
 
         <div class="frame-bar"></div>
         <div class="updated-at" id="updated-at">◆ PANTHEON OPERATIONAL ◆</div>
     </main>
 
     <script>
-        // Format currency
-        const formatUSD = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
-
-        // Show section
-        function showSection(sectionId) {
-            console.log('Switching to:', sectionId);
-            
-            // Hide all
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            
-            // Show target
-            const target = document.getElementById(sectionId);
-            if (target) target.classList.add('active');
-            
-            // Update nav
-            document.querySelectorAll('.nav-tab').forEach((tab, idx) => {
-                tab.classList.remove('active');
-                const sections = ['hero', 'overview', 'streams', 'income', 'integrate', 'vault'];
-                if (sections[idx + 1] === sectionId) tab.classList.add('active');
-                if (sectionId === 'hero' && idx === 0) tab.classList.add('active');
-            });
-            
-            // Scroll top
-            window.scrollTo(0, 0);
-            
-            // Load data
-            if (sectionId === 'hero' || sectionId === 'overview') loadOverview();
-            if (sectionId === 'streams') loadStreams();
-            if (sectionId === 'income') loadIncome();
-            if (sectionId === 'vault') loadVault();
+        const formatUSD=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n);
+        const formatTime=t=>new Date(t).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        
+        function showSection(id){
+            document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+            document.getElementById(id)?.classList.add('active');
+            document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+            event.target.classList.add('active');
+            window.scrollTo(0,0);
+            if(id==='overview')loadOverview();
+            if(id==='trading')loadTrading();
+            if(id==='streams')loadStreams();
+            if(id==='income')loadIncome();
+            if(id==='vault')loadVault();
         }
 
-        // Enter Pantheon
-        function enterPantheon() {
-            showSection('overview');
+        async function loadOverview(){
+            try{
+                const res=await fetch('/pantheon/overview');
+                const data=await res.json();
+                document.getElementById('rev-7d').textContent=formatUSD(data.revenue?.['7d']||0);
+                document.getElementById('rev-30d').textContent=formatUSD(data.revenue?.['30d']||0);
+            }catch(e){console.error(e);}
         }
 
-        // Load overview data
-        async function loadOverview() {
-            try {
-                console.log('Loading overview...');
-                const res = await fetch('/pantheon/overview');
-                const data = await res.json();
-                console.log('Data:', data);
+        async function loadTrading(){
+            try{
+                const res=await fetch('/pantheon/trades');
+                const data=await res.json();
                 
-                document.getElementById('rev-7d').textContent = formatUSD(data.revenue['7d']);
-                document.getElementById('rev-30d').textContent = formatUSD(data.revenue['30d']);
-                document.getElementById('rev-all').textContent = formatUSD(data.revenue.all_time);
+                // Update stats
+                document.getElementById('stat-deployed').textContent=formatUSD(data.stats?.totalDeployed||0);
+                document.getElementById('stat-open').textContent=data.stats?.openPositions||0;
+                document.getElementById('stat-winrate').textContent=(data.stats?.winRate||0)+'%';
+                document.getElementById('stat-total').textContent=data.stats?.totalTrades||0;
+                document.getElementById('stat-pnl').textContent=formatUSD(0); // TODO: Calculate real P&L
                 
-                if (data.streams) {
-                    document.getElementById('stream-revenue').innerHTML = data.streams.map(s => `
-                        <div class="stream-item">
-                            <div><span class="stream-status ${s.status === 'locked' ? 'locked' : ''}"></span><span class="stream-name">${s.name}</span></div>
-                            <span class="stream-amount">${formatUSD(s.revenue_7d)}</span>
-                        </div>
-                    `).join('');
+                // Active positions
+                const active=data.trades?.filter(t=>t.status==='executed'||t.status==='validated_pending_execution')||[];
+                const activeBody=document.getElementById('active-positions-body');
+                if(active.length===0){
+                    activeBody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No active positions</td></tr>';
+                }else{
+                    activeBody.innerHTML=active.map(t=>{
+                        const p=t.proposal||{};
+                        const o=t.clob_order||{};
+                        return `<tr>
+                            <td class="truncate" title="${p.asset||''}">${p.asset||'Unknown'}</td>
+                            <td><span class="badge badge-${p.direction}">${p.direction}</span></td>
+                            <td>${p.entry_price}</td>
+                            <td>${formatUSD(p.amount_usd)}</td>
+                            <td>${o.size||'-'}</td>
+                            <td class="order-id">${(o.order_id||'-').substring(0,10)}...</td>
+                            <td><span class="badge badge-open">OPEN</span></td>
+                            <td>-</td>
+                        </tr>`;
+                    }).join('');
                 }
                 
-                if (data.treasury) {
-                    document.getElementById('treasury').innerHTML = `
-                        <div class="treasury-item"><span style="color:var(--text-muted);font-family:'Orbitron',sans-serif;">TOTAL</span><span class="treasury-value">${formatUSD(data.treasury.total_usd)}</span></div>
-                        <div class="treasury-item"><span style="color:var(--text-muted);font-family:'Orbitron',sans-serif;">POLYMARKET</span><span class="treasury-value">${formatUSD(data.treasury.polymarket_allocation)}</span></div>
-                        <div class="treasury-item"><span style="color:var(--text-muted);font-family:'Orbitron',sans-serif;">BNKR</span><span class="treasury-value">${formatUSD(data.treasury.bnkr_allocation)}</span></div>
-                        <div class="treasury-item"><span style="color:var(--text-muted);font-family:'Orbitron',sans-serif;">YIELD</span><span class="treasury-value">${formatUSD(data.treasury.yield_allocation)}</span></div>
-                    `;
+                // Trade history (last 20)
+                const history=(data.trades||[]).slice(0,20);
+                const historyBody=document.getElementById('trade-history-body');
+                if(history.length===0){
+                    historyBody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">No trade history</td></tr>';
+                }else{
+                    historyBody.innerHTML=history.map(t=>{
+                        const p=t.proposal||{};
+                        const o=t.clob_order||{};
+                        const time=t.timestamp?formatTime(t.timestamp):'-';
+                        return `<tr>
+                            <td>${time}</td>
+                            <td class="truncate" title="${p.asset||''}">${p.asset||'Unknown'}</td>
+                            <td><span class="badge badge-${p.direction}">${p.direction}</span></td>
+                            <td>${p.entry_price}</td>
+                            <td>${formatUSD(p.amount_usd)}</td>
+                            <td>${o.size||'-'}</td>
+                            <td class="order-id">${(o.order_id||'-').substring(0,10)}...</td>
+                            <td><span class="badge badge-${t.status==='executed'?'open':'closed'}">${t.status}</span></td>
+                            <td>-</td>
+                        </tr>`;
+                    }).join('');
                 }
-                
-                if (data.updated_at) {
-                    document.getElementById('updated-at').textContent = `◆ Updated ${new Date(data.updated_at).toLocaleString()} ◆`;
-                }
-            } catch (err) {
-                console.error('Error:', err);
-                document.getElementById('stream-revenue').innerHTML = `<div style="padding:20px;color:var(--gold);text-align:center;">⚠️ ${err.message}</div>`;
+            }catch(e){
+                console.error('Trading load error:',e);
+                document.getElementById('active-positions-body').innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--danger);">Failed to load</td></tr>';
             }
         }
 
-        // Load streams
-        async function loadStreams() {
-            try {
-                const res = await fetch('/pantheon/streams');
-                const data = await res.json();
-                
-                if (data.streams) {
-                    document.getElementById('streams-list').innerHTML = data.streams.map(s => `
-                        <div class="stream-item">
-                            <div><span class="stream-status ${s.status === 'locked' ? 'locked' : ''}"></span><span class="stream-name">${s.name}</span><br><span style="color:var(--text-muted);font-size:0.85rem;">${s.description}</span></div>
-                            <span class="stream-amount">${formatUSD(s.revenue['7d'])}</span>
-                        </div>
-                    `).join('');
+        async function loadStreams(){
+            try{
+                const res=await fetch('/pantheon/streams');
+                const data=await res.json();
+                document.getElementById('streams-list').innerHTML=(data.streams||[]).map(s=>`
+                    <div style="display:flex;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);">
+                        <div><span style="display:inline-block;width:10px;height:10px;background:${s.status==='active'?'var(--success)':'var(--locked)'};border-radius:50%;margin-right:12px;"></span><span style="font-family:'Orbitron',sans-serif;">${s.name}</span></div>
+                        <span style="color:var(--gold);font-family:'Orbitron',sans-serif;">${formatUSD(s.revenue_7d||0)}</span>
+                    </div>
+                `).join('');
+            }catch(e){console.error(e);}
+        }
+
+        async function loadIncome(){
+            try{
+                const res=await fetch('/pantheon/income');
+                const data=await res.json();
+                const ctx=document.getElementById('incomeChart');
+                if(ctx&&data.daily){
+                    new Chart(ctx,{type:'line',data:{labels:data.daily.map(d=>d.date.slice(5)),datasets:[{data:data.daily.map(d=>d.total),borderColor:'#FFB000',backgroundColor:'rgba(255,176,0,0.1)',borderWidth:2,fill:true,tension:0.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#252538'},ticks:{color:'#606070'}},y:{grid:{color:'#252538'},ticks:{color:'#606070'}}}}});
                 }
-            } catch (err) {
-                console.error('Streams error:', err);
+            }catch(e){console.error(e);}
+        }
+
+        async function loadVault(){
+            try{
+                const res=await fetch('/pantheon/vault');
+                const data=await res.json();
+                document.getElementById('phases-list').innerHTML=(data.phases||[]).map(p=>`
+                    <div style="display:flex;align-items:center;gap:20px;padding:24px;background:#1a1a28;border:1px solid var(--border);margin-bottom:12px;border-radius:8px;${p.live?'border-color:var(--success)':''}">
+                        <div style="width:56px;height:56px;background:var(--bg-panel);border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-family:'Orbitron',sans-serif;font-weight:800;color:var(--gold);">${p.phase}</div>
+                        <div style="flex:1;"><div style="font-family:'Orbitron',sans-serif;font-weight:700;">${p.name}</div><div style="color:var(--text-muted);font-size:0.9rem;">${p.description}</div></div>
+                        <span class="badge badge-${p.status==='launch'?'buy':p.status==='beta'?'open':'closed'}">${p.status}</span>
+                    </div>
+                `).join('');
+            }catch(e){console.error(e);}
+        }
+
+        // Poll trading data every 30 seconds
+        setInterval(()=>{
+            const tradingTab=document.getElementById('trading');
+            if(tradingTab.classList.contains('active')){
+                loadTrading();
             }
-        }
+        },30000);
 
-        // Load income chart
-        async function loadIncome() {
-            try {
-                const res = await fetch('/pantheon/income');
-                const data = await res.json();
-                
-                const ctx = document.getElementById('incomeChart');
-                if (ctx && data.daily) {
-                    new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: data.daily.map(d => d.date.slice(5)),
-                            datasets: [{
-                                data: data.daily.map(d => d.total),
-                                borderColor: '#FFB000',
-                                backgroundColor: 'rgba(255,176,0,0.1)',
-                                borderWidth: 2,
-                                fill: true,
-                                tension: 0.4
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
-                            scales: {
-                                x: { grid: { color: '#252538' }, ticks: { color: '#606070' } },
-                                y: { grid: { color: '#252538' }, ticks: { color: '#606070' } }
-                            }
-                        }
-                    });
-                }
-            } catch (err) {
-                console.error('Income error:', err);
-            }
-        }
-
-        // Load vault
-        async function loadVault() {
-            try {
-                const res = await fetch('/pantheon/vault');
-                const data = await res.json();
-                
-                if (data.phases) {
-                    document.getElementById('phases').innerHTML = data.phases.map(p => `
-                        <div class="phase-item ${p.live ? 'live' : ''}">
-                            <div class="phase-number">${p.phase}</div>
-                            <div style="flex:1;">
-                                <div class="phase-name">${p.name}</div>
-                                <div class="phase-desc">${p.description}</div>
-                            </div>
-                            <span class="phase-status ${p.status}">${p.status.replace('-', ' ')}</span>
-                        </div>
-                    `).join('');
-                }
-            } catch (err) {
-                console.error('Vault error:', err);
-            }
-        }
-
-        // Load combat log
-        function loadCombatLog() {
-            const entries = [
-                {time:'14:32',text:'Polymarket order filled',status:'Complete'},
-                {time:'14:28',text:'BNKR validation passed',status:'Complete'},
-                {time:'14:25',text:'Entropy detection scan',status:'Processing',gold:true},
-                {time:'14:20',text:'BasePay tribute received',status:'0.10 USDC',gold:true},
-                {time:'14:15',text:'Ledger hash chain verified',status:'Complete'},
-                {time:'14:10',text:'Yield harvest executed',status:'Complete'},
-            ];
-            
-            document.getElementById('combat-log').innerHTML = entries.map(e => `
-                <div class="combat-entry">
-                    <span style="color:${e.gold ? 'var(--gold)' : 'var(--cyan)'};">●</span>
-                    <span style="color:var(--text-muted);">${e.time}</span>
-                    <span>${e.text}</span>
-                    <span style="color:${e.gold ? 'var(--gold)' : 'var(--cyan)'};margin-left:auto;">${e.status}</span>
-                </div>
-            `).join('');
-        }
-
-        // Init
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('✅ Pantheon loaded');
-            loadOverview();
-            loadCombatLog();
-        });
+        // Initial load
+        loadOverview();
+        document.getElementById('updated-at').textContent=`◆ Updated ${new Date().toLocaleString()} ◆`;
     </script>
 </body>
 </html>

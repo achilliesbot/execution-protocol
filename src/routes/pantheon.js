@@ -388,6 +388,54 @@ router.get('/admin/integrity', adminAuth, (req, res) => {
   }
 });
 
+// Trades endpoint - reads from polymarket-trader trades.jsonl
+router.get('/trades', (req, res) => {
+  try {
+    const tradesPath = '/home/ubuntu/polymarket-trader/trades.jsonl';
+    const fs = require('fs');
+    
+    if (!fs.existsSync(tradesPath)) {
+      return res.json({ trades: [], stats: {} });
+    }
+    
+    const content = fs.readFileSync(tradesPath, 'utf-8');
+    const lines = content.trim().split('\n').filter(Boolean);
+    
+    const trades = lines.map(line => {
+      try {
+        return JSON.parse(line);
+      } catch {
+        return null;
+      }
+    }).filter(Boolean);
+    
+    // Calculate stats
+    const totalTrades = trades.length;
+    const openPositions = trades.filter(t => t.status === 'executed' || t.status === 'validated_pending_execution').length;
+    const totalDeployed = trades.reduce((sum, t) => sum + (t.proposal?.amount_usd || 0), 0);
+    
+    // Simple win/loss tracking (would need actual P&L data)
+    const wins = trades.filter(t => t.status === 'won').length;
+    const losses = trades.filter(t => t.status === 'lost').length;
+    const completed = wins + losses;
+    const winRate = completed > 0 ? ((wins / completed) * 100).toFixed(1) : '0.0';
+    
+    res.json({
+      trades: trades.reverse(), // Most recent first
+      stats: {
+        totalTrades,
+        openPositions,
+        totalDeployed: totalDeployed.toFixed(2),
+        winRate,
+        wins,
+        losses
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to read trades', message: err.message });
+  }
+});
+
 // Connector status endpoint
 router.get('/status/connectors', (req, res) => {
   const status = {
