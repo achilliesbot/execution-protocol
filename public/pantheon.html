@@ -370,6 +370,19 @@
         function enterPantheon() {
             showSection('overview');
         }
+        
+        // Handle URL hash for direct tab access
+        function handleHash() {
+            const hash = window.location.hash.replace('#', '');
+            if (hash && ['overview', 'trades', 'streams', 'income', 'integrate', 'vault'].includes(hash)) {
+                showSection(hash);
+            } else {
+                showSection('overview');
+            }
+        }
+        
+        // Listen for hash changes
+        window.addEventListener('hashchange', handleHash);
 
         // Load overview data
         async function loadOverview() {
@@ -513,7 +526,7 @@
         // Init
         document.addEventListener('DOMContentLoaded', () => {
             console.log('✅ Pantheon loaded');
-            loadOverview();
+            handleHash();
             loadCombatLog();
         });
     </script>
