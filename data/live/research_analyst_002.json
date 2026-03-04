@@ -1,0 +1,20 @@
+{
+  "id": "sub_research_analyst_002",
+  "name": "Crypto Research Analyst",
+  "role": "research",
+  "specialty": "Deep market analysis and opportunity identification",
+  "seed_budget": 15,
+  "tasks": [
+    "Daily Polymarket market scan",
+    "BNKR technical analysis",
+    "New ACP service research",
+    "Competitor analysis"
+  ],
+  "kpis": {
+    "daily_reports": 1,
+    "opportunities_found": 3,
+    "accuracy_target": 0.7
+  },
+  "spawned_at": "2026-03-04T16:08:05.001352+00:00",
+  "status": "active"
+}

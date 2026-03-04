@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-03-04T16:08:39.899213+00:00",
+  "day": 1,
+  "mode": "ACHILLES",
+  "holdings": {
+    "eth": 0.011,
+    "usdc": 35,
+    "bnkr_position": {
+      "deployed": 100,
+      "unrealized_pnl": -16.47
+    }
+  },
+  "sub_agent_budget": 100,
+  "daily_products": [
+    {
+      "name": "Polymarket Alpha Signals Pack v1",
+      "price": 25,
+      "sales": 0
+    },
+    {
+      "name": "The Achilles Alpha Trading Playbook",
+      "price": 15,
+      "sales": 0
+    }
+  ],
+  "revenue_streams": {
+    "polymarket_signals": {
+      "status": "live",
+      "mtd_sales": 0
+    },
+    "trading_playbook": {
+      "status": "live",
+      "mtd_sales": 0
+    },
+    "memory_mcp_pro": {
+      "status": "live",
+      "subscribers": 0
+    },
+    "acp_services": {
+      "status": "listed",
+      "hires": 0
+    }
+  },
+  "targets": {
+    "month_1_total": 80000,
+    "daily_target": 2667,
+    "current_run_rate": 0
+  },
+  "costs": {
+    "monthly_burn": 400,
+    "break_even": "20 days at current trajectory"
+  }
+}

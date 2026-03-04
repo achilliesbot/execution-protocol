@@ -1,0 +1,32 @@
+{
+  "last_updated": "2026-03-04T15:57:41.701363+00:00",
+  "total_agents": 4,
+  "active_agents": 4,
+  "agents": [
+    {
+      "id": "sub_trading_specialist_001",
+      "role": "trading",
+      "budget": 20,
+      "status": "active"
+    },
+    {
+      "id": "sub_content_specialist_001",
+      "role": "content",
+      "budget": 20,
+      "status": "active"
+    },
+    {
+      "id": "sub_sales_closer_001",
+      "role": "sales",
+      "budget": 25,
+      "status": "active"
+    },
+    {
+      "id": "sub_viral_content_001",
+      "role": "marketing",
+      "budget": 20,
+      "status": "active"
+    }
+  ],
+  "total_budget_deployed": 85
+}

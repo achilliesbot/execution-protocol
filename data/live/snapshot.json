@@ -1,0 +1,66 @@
+{
+  "timestamp": "2026-03-04T16:23:00Z",
+  "mode": "ACHILLES",
+  "treasury": {
+    "eth": 0.011,
+    "usdc": 35,
+    "bnkr_deployed": 100,
+    "bnkr_unrealized_pnl": -16.47,
+    "total_usd": 135
+  },
+  "revenue": {
+    "7d": 0,
+    "30d": 0,
+    "all_time": 0
+  },
+  "trading": {
+    "bnkr": {
+      "trades": 1,
+      "realized_pnl": 0,
+      "unrealized_pnl": -16.47,
+      "positions": 0
+    },
+    "polymarket": {
+      "trades": 7,
+      "realized_pnl": 0,
+      "unrealized_pnl": 0,
+      "open_orders": 0
+    }
+  },
+  "sub_agents": {
+    "count": 5,
+    "total_budget": 100,
+    "agents": [
+      {"id": "sub_trading_specialist_001", "name": "Trading Specialist", "role": "trading", "budget": 20, "status": "active"},
+      {"id": "sub_content_specialist_001", "name": "Content Specialist", "role": "content", "budget": 20, "status": "active"},
+      {"id": "sub_sales_closer_001", "name": "Sales Closer", "role": "sales", "budget": 25, "status": "active"},
+      {"id": "sub_viral_content_001", "name": "Viral Content Creator", "role": "marketing", "budget": 20, "status": "active"},
+      {"id": "sub_research_analyst_002", "name": "Crypto Research Analyst", "role": "research", "budget": 15, "status": "active"}
+    ]
+  },
+  "memory_mcp": {
+    "total_memories": 87,
+    "skills": 87,
+    "status": "online"
+  },
+  "products": {
+    "count": 2,
+    "list": [
+      {"name": "Polymarket Alpha Signals Pack v1", "price": 25, "status": "live"},
+      {"name": "The Achilles Alpha Trading Playbook", "price": 15, "status": "live"}
+    ]
+  },
+  "targets": {
+    "month_1": 80000,
+    "daily": 2667,
+    "current_run_rate": 0
+  },
+  "streams": [
+    {"id": "execution-protocol", "name": "Execution Protocol", "status": "active", "revenue_7d": 0, "live": true},
+    {"id": "bnkr", "name": "BNKR Trading", "status": "active", "revenue_7d": 0, "unrealized": -16.47, "live": true, "trades": 1},
+    {"id": "polymarket", "name": "Polymarket", "status": "active", "revenue_7d": 0, "live": true, "trades": 7},
+    {"id": "memory-mcp", "name": "Memory-MCP", "status": "active", "revenue_7d": 0, "live": true, "subscribers": 0},
+    {"id": "acp-services", "name": "ACP Services", "status": "active", "revenue_7d": 0, "live": true, "hires": 0}
+  ],
+  "updated_at": "2026-03-04T16:23:00Z"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "sub_sales_closer_001",
+  "name": "Sales Closer",
+  "role": "sales",
+  "specialty": "Close ACP deals and convert leads",
+  "seed_budget": 25,
+  "tasks": [
+    "DM prospects who engage with X posts",
+    "Follow up on ACP marketplace inquiries",
+    "Offer limited-time discounts to close deals",
+    "Track conversion rates daily"
+  ],
+  "kpis": {
+    "daily_outreach": 10,
+    "target_close_rate": 0.15,
+    "revenue_target": 100
+  },
+  "spawned_at": "2026-03-04T15:57:41.701026+00:00",
+  "status": "active"
+}

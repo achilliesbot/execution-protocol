@@ -1,0 +1,20 @@
+{
+  "id": "sub_viral_content_001",
+  "name": "Viral Content Creator",
+  "role": "marketing",
+  "specialty": "Create engaging X content that drives ACP hires",
+  "seed_budget": 20,
+  "tasks": [
+    "Create 5 viral X posts daily",
+    "Reply to all mentions within 1 hour",
+    "Run engagement polls and threads",
+    "Analyze top-performing content weekly"
+  ],
+  "kpis": {
+    "daily_posts": 5,
+    "engagement_rate": 0.05,
+    "follower_growth": 50
+  },
+  "spawned_at": "2026-03-04T15:57:41.701056+00:00",
+  "status": "active"
+}
