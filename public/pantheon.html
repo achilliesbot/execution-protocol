@@ -22,7 +22,8 @@
         .live-indicator{display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(16,185,129,0.15);border:1px solid var(--success);border-radius:20px;font-family:'Orbitron',sans-serif;font-size:0.7rem;color:var(--success);}
         .live-dot{width:6px;height:6px;background:var(--success);border-radius:50%;animation:pulse 1.5s infinite;}
         @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
-        main{max-width:1400px;margin:0 auto;padding:32px 24px;}
+        main{max-width:100%;margin:0 auto;padding:32px 24px;}
+        .content-wrapper{max-width:1600px;margin:0 auto;width:100%;}
         .section{display:none;}
         .section.active{display:block;animation:fadeIn 0.4s ease;}
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
@@ -39,7 +40,8 @@
         .frame-bar::before{left:20%;}.frame-bar::after{right:20%;}
         .section-header{text-align:center;margin-bottom:40px;}
         .section-title{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--gold);}
-        .revenue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:32px;}
+        .revenue-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-bottom:32px;}
+        .income-streams-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-bottom:32px;}
         .revenue-card{background:var(--bg-panel);border:2px solid var(--border);border-radius:12px;padding:32px;text-align:center;position:relative;}
         .revenue-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--ember));}
         .revenue-label{font-family:'Orbitron',sans-serif;font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;}
@@ -108,6 +110,7 @@
     <main>
         <!-- HERO SECTION -->
         <div id="hero" class="section active">
+            <div class="content-wrapper">
             <div class="hero">
                 <div class="hero-grid">
                     <div>
@@ -173,14 +176,16 @@
                     </div>
                 </div>
             </div>
+            </div>
         </div>
 
         <!-- OVERVIEW TAB -->
         <div id="overview" class="section">
+            <div class="content-wrapper">
             <div class="section-header">
                 <div class="section-title">◆ The War Console</div>
             </div>
-            <div class="grid-2">
+            <div class="grid-2" style="grid-template-columns:repeat(auto-fit,minmax(500px,1fr));">
                 <div class="panel">
                     <div class="panel-header">
                         <span class="panel-title">Combat Log</span>
@@ -210,14 +215,16 @@
                     </div>
                 </div>
             </div>
+            </div>
         </div>
 
         <!-- STREAMS TAB -->
         <div id="streams" class="section">
+            <div class="content-wrapper">
             <div class="section-header">
                 <div class="section-title">◆ Active Streams</div>
             </div>
-            <div class="panel">
+            <div class="panel" style="max-width:100%;">
                 <div class="panel-header">
                     <span class="panel-title">Stream Status</span>
                 </div>
@@ -225,14 +232,16 @@
                     <div style="padding:40px;text-align:center;color:var(--text-muted);">Loading streams...</div>
                 </div>
             </div>
+            </div>
         </div>
 
         <!-- INCOME TAB -->
         <div id="income" class="section">
+            <div class="content-wrapper">
             <div class="section-header">
                 <div class="section-title">◆ 30 Day Combat Log</div>
             </div>
-            <div class="panel">
+            <div class="panel" style="max-width:100%;">
                 <div class="panel-header">
                     <span class="panel-title">Daily Income</span>
                 </div>
@@ -240,14 +249,16 @@
                     <canvas id="incomeChart"></canvas>
                 </div>
             </div>
+            </div>
         </div>
 
         <!-- INTEGRATE TAB -->
         <div id="integrate" class="section">
+            <div class="content-wrapper">
             <div class="section-header">
                 <div class="section-title">◆ Integration</div>
             </div>
-            <div class="grid-2">
+            <div class="grid-2" style="grid-template-columns:repeat(auto-fit,minmax(500px,1fr));">
                 <div class="panel">
                     <div class="panel-header">
                         <span class="panel-title">Quick Start</span>
@@ -283,10 +294,12 @@
                     </div>
                 </div>
             </div>
+            </div>
         </div>
 
         <!-- VAULT TAB -->
         <div id="vault" class="section">
+            <div class="content-wrapper">
             <div class="section-header">
                 <div class="section-title">◆ Development Phases</div>
             </div>
@@ -296,12 +309,13 @@
                 </div>
                 <div class="phase-list" id="phases"></div>
             </div>
+            </div>
         </div>
 
         <div class="frame-bar"></div>
 
         <!-- ARTIFACTS -->
-        <div>
+        <div class="content-wrapper">
             <div class="section-header">
                 <div class="section-title">◆ Train Your Army of Artifacts</div>
             </div>
@@ -327,6 +341,7 @@
                     <div style="color:var(--text-muted);font-size:0.85rem;">Deterministic execution</div>
                 </div>
             </div>
+        </div>
         </div>
 
         <div class="frame-bar"></div>
