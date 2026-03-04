@@ -1,133 +1,333 @@
 /**
- * Secure Agent Spawner Routes
- * FIXED: No command injection, input validation, no information disclosure
+ * Agent Spawner API - SECURE VERSION
+ * Allows AI agents to spawn specialized sub-agents
+ * 
+ * Security fixes:
+ * - No user input passed to spawn()
+ * - Input validation for all parameters
+ * - File-based data retrieval only
+ * - Generic error messages
  */
 
 import { Router } from 'express';
+import { readFile } from 'fs/promises';
+import path from 'path';
 
 const router = Router();
 
-// Input validation
-const validateSpawnInput = (data) => {
+// Validation constants
+const AGENT_ID_REGEX = /^[a-zA-Z0-9_-]{1,50}$/;
+const URL_MAX_LENGTH = 500;
+const VALID_SPECIALTIES = ['general', 'fintech', 'crypto', 'saas', 'enterprise', 'healthcare', 'ecommerce'];
+const MIN_BUDGET = 1;
+const MAX_BUDGET = 1000;
+
+/**
+ * Validate URL format and length
+ * @param {string} url - URL to validate
+ * @returns {boolean} - True if valid
+ */
+function isValidUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  if (url.length > URL_MAX_LENGTH) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Validate agent ID format
+ * @param {string} id - Agent ID to validate
+ * @returns {boolean} - True if valid
+ */
+function isValidAgentId(id) {
+  return typeof id === 'string' && AGENT_ID_REGEX.test(id);
+}
+
+/**
+ * Get spawner data from file (no command execution)
+ * @returns {Promise<Object>} - Spawner data
+ */
+async function getSpawnerData() {
+  const dataPath = path.join(process.cwd(), 'data', 'live', 'spawner_data.json');
+  try {
+    const data = await readFile(dataPath, 'utf-8');
+    return JSON.parse(data);
+  } catch (error) {
+    // Return default structure if file doesn't exist
+    return {
+      spawned_agents: [],
+      total_active: 0,
+      total_leads: 0,
+      total_calls: 0,
+      last_updated: new Date().toISOString()
+    };
+  }
+}
+
+/**
+ * Save spawner data to file
+ * @param {Object} data - Data to save
+ */
+async function saveSpawnerData(data) {
+  const dataPath = path.join(process.cwd(), 'data', 'live', 'spawner_data.json');
+  const fs = await import('fs/promises');
+  await fs.mkdir(path.dirname(dataPath), { recursive: true });
+  await fs.writeFile(dataPath, JSON.stringify(data, null, 2));
+}
+
+// Spawn new GTM agent
+router.post('/spawn', async (req, res) => {
+  const { parent_agent_id, target_url, specialty, budget } = req.body;
+  
+  // Validation
   const errors = [];
   
-  if (!data.parent_agent_id) {
-    errors.push('parent_agent_id required');
-  } else if (!/^[a-zA-Z0-9_-]{1,50}$/.test(data.parent_agent_id)) {
-    errors.push('Invalid parent_agent_id format');
+  if (!parent_agent_id) {
+    errors.push('parent_agent_id is required');
+  } else if (!isValidAgentId(parent_agent_id)) {
+    errors.push('parent_agent_id must be 1-50 alphanumeric characters (a-z, A-Z, 0-9, _, -)');
   }
   
-  if (!data.target_url) {
-    errors.push('target_url required');
-  } else {
-    try {
-      new URL(data.target_url);
-    } catch {
-      errors.push('Invalid URL format');
-    }
-    if (data.target_url.length > 500) {
-      errors.push('URL too long (max 500 chars)');
-    }
+  if (!target_url) {
+    errors.push('target_url is required');
+  } else if (!isValidUrl(target_url)) {
+    errors.push('target_url must be a valid HTTP/HTTPS URL (max 500 chars)');
   }
   
-  if (data.specialty && data.specialty.length > 50) {
-    errors.push('Specialty too long');
+  const validatedSpecialty = specialty || 'general';
+  if (!VALID_SPECIALTIES.includes(validatedSpecialty)) {
+    errors.push(`specialty must be one of: ${VALID_SPECIALTIES.join(', ')}`);
   }
   
-  if (data.budget !== undefined) {
-    const budget = parseInt(data.budget);
-    if (isNaN(budget) || budget < 1 || budget > 1000) {
-      errors.push('Budget must be $1-1000');
-    }
+  const validatedBudget = parseInt(budget) || 50;
+  if (isNaN(validatedBudget) || validatedBudget < MIN_BUDGET || validatedBudget > MAX_BUDGET) {
+    errors.push(`budget must be a number between ${MIN_BUDGET} and ${MAX_BUDGET}`);
   }
   
-  return errors.length > 0 ? { valid: false, errors } : { valid: true };
-};
-
-// POST /spawner/spawn - SECURE VERSION
-router.post('/spawn', async (req, res) => {
+  if (errors.length > 0) {
+    return res.status(400).json({
+      error: 'Validation failed',
+      errors,
+      timestamp: new Date().toISOString()
+    });
+  }
+  
   try {
-    // Validate all inputs
-    const validation = validateSpawnInput(req.body);
-    if (!validation.valid) {
-      return res.status(400).json({ 
-        error: 'Invalid input', 
-        details: validation.errors 
-      });
-    }
+    // Generate agent ID (no command execution)
+    const agentId = `gtm_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 4)}`;
     
-    const { parent_agent_id, target_url, specialty, budget } = req.body;
+    // Create agent record
+    const newAgent = {
+      id: agentId,
+      type: 'gtm_specialist',
+      specialty: validatedSpecialty,
+      parent: parent_agent_id,
+      status: 'active',
+      target: target_url,
+      budget: validatedBudget,
+      leads: 0,
+      calls: 0,
+      created_at: new Date().toISOString()
+    };
     
-    // Generate safe agent ID
-    const agentId = `gtm_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 5)}`;
+    // Read current data and append
+    const data = await getSpawnerData();
+    data.spawned_agents.push(newAgent);
+    data.total_active = data.spawned_agents.filter(a => a.status === 'active').length;
+    data.last_updated = new Date().toISOString();
+    await saveSpawnerData(data);
     
-    // NO COMMAND EXECUTION - just return confirmation
     res.json({
       status: 'spawned',
       agent_id: agentId,
       parent: parent_agent_id,
       target: target_url,
-      specialty: specialty || 'general',
-      budget: budget || 50,
+      specialty: validatedSpecialty,
+      budget: validatedBudget,
       message: 'GTM sub-agent spawned successfully',
       dashboard: 'https://execution-protocol.onrender.com/#gtm',
       timestamp: new Date().toISOString()
     });
-    
   } catch (error) {
-    // Log internally, generic message to client
-    console.error('Spawn error:', error);
-    res.status(500).json({ error: 'Spawn request failed' });
+    // Log detailed error internally
+    console.error('[SPAWNER] Spawn error:', error);
+    
+    // Return generic error to client
+    res.status(500).json({
+      error: 'Spawn failed',
+      message: 'An internal error occurred while spawning the agent',
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
-// GET /spawner/spawned - SECURE VERSION
+// List spawned agents
 router.get('/spawned', async (req, res) => {
+  const { parent } = req.query;
+  
+  // Validate parent parameter if provided
+  if (parent && !isValidAgentId(parent)) {
+    return res.status(400).json({
+      error: 'Invalid parent parameter',
+      message: 'parent must be 1-50 alphanumeric characters (a-z, A-Z, 0-9, _, -)',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
   try {
-    const { parent } = req.query;
+    const data = await getSpawnerData();
+    let agents = data.spawned_agents || [];
     
-    // Validate parent param if provided
-    if (parent && !/^[a-zA-Z0-9_-]{1,50}$/.test(parent)) {
-      return res.status(400).json({ error: 'Invalid parent parameter' });
+    // Filter by parent if specified
+    if (parent) {
+      agents = agents.filter(a => a.parent === parent);
     }
     
     res.json({
       status: 'live',
-      spawned_agents: [
-        {
-          id: 'gtm_a1b2c3d4',
-          type: 'gtm_specialist',
-          specialty: 'fintech',
-          parent: 'sub_trading_specialist_001',
-          status: 'active',
-          target: 'https://example-crypto-hedge-fund.com',
-          budget: 75,
-          leads: 0,
-          calls: 0
-        }
-      ],
-      total_active: 1,
-      total_leads: 0,
-      total_calls: 0
+      spawned_agents: agents,
+      total_active: agents.filter(a => a.status === 'active').length,
+      total_leads: agents.reduce((sum, a) => sum + (a.leads || 0), 0),
+      total_calls: agents.reduce((sum, a) => sum + (a.calls || 0), 0),
+      timestamp: new Date().toISOString()
     });
-    
   } catch (error) {
-    console.error('Spawned list error:', error);
-    res.status(500).json({ error: 'List retrieval failed' });
+    console.error('[SPAWNER] List error:', error);
+    res.status(500).json({
+      error: 'Failed to retrieve spawned agents',
+      message: 'An internal error occurred',
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
-// GET /spawner/spawn-stats
-router.get('/spawn-stats', (req, res) => {
-  res.json({
-    status: 'live',
-    spawning_capacity: 'unlimited',
-    active_agents: 1,
-    total_spawned: 1,
-    total_leads_generated: 0,
-    total_calls_booked: 0,
-    total_revenue: 0
-  });
+// Get spawn stats
+router.get('/spawn-stats', async (req, res) => {
+  try {
+    const data = await getSpawnerData();
+    const agents = data.spawned_agents || [];
+    
+    res.json({
+      status: 'live',
+      spawning_capacity: 'unlimited',
+      active_agents: agents.filter(a => a.status === 'active').length,
+      total_spawned: agents.length,
+      total_leads_generated: agents.reduce((sum, a) => sum + (a.leads || 0), 0),
+      total_calls_booked: agents.reduce((sum, a) => sum + (a.calls || 0), 0),
+      total_revenue: agents.reduce((sum, a) => sum + (a.revenue || 0), 0),
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[SPAWNER] Stats error:', error);
+    res.status(500).json({
+      error: 'Failed to retrieve stats',
+      message: 'An internal error occurred',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Get single agent details
+router.get('/spawned/:agentId', async (req, res) => {
+  const { agentId } = req.params;
+  
+  if (!isValidAgentId(agentId)) {
+    return res.status(400).json({
+      error: 'Invalid agent ID',
+      message: 'agentId must be 1-50 alphanumeric characters',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  try {
+    const data = await getSpawnerData();
+    const agent = data.spawned_agents?.find(a => a.id === agentId);
+    
+    if (!agent) {
+      return res.status(404).json({
+        error: 'Agent not found',
+        message: `No agent found with ID: ${agentId}`,
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    res.json({
+      status: 'success',
+      agent,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[SPAWNER] Get agent error:', error);
+    res.status(500).json({
+      error: 'Failed to retrieve agent',
+      message: 'An internal error occurred',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Update agent status (for internal use)
+router.patch('/spawned/:agentId', async (req, res) => {
+  const { agentId } = req.params;
+  const { status, leads, calls, revenue } = req.body;
+  
+  if (!isValidAgentId(agentId)) {
+    return res.status(400).json({
+      error: 'Invalid agent ID',
+      message: 'agentId must be 1-50 alphanumeric characters',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  try {
+    const data = await getSpawnerData();
+    const agentIndex = data.spawned_agents?.findIndex(a => a.id === agentId);
+    
+    if (agentIndex === -1 || agentIndex === undefined) {
+      return res.status(404).json({
+        error: 'Agent not found',
+        message: `No agent found with ID: ${agentId}`,
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    // Update fields
+    if (status && ['active', 'paused', 'completed', 'failed'].includes(status)) {
+      data.spawned_agents[agentIndex].status = status;
+    }
+    if (typeof leads === 'number') {
+      data.spawned_agents[agentIndex].leads = leads;
+    }
+    if (typeof calls === 'number') {
+      data.spawned_agents[agentIndex].calls = calls;
+    }
+    if (typeof revenue === 'number') {
+      data.spawned_agents[agentIndex].revenue = revenue;
+    }
+    
+    data.spawned_agents[agentIndex].updated_at = new Date().toISOString();
+    data.total_active = data.spawned_agents.filter(a => a.status === 'active').length;
+    data.last_updated = new Date().toISOString();
+    
+    await saveSpawnerData(data);
+    
+    res.json({
+      status: 'updated',
+      agent: data.spawned_agents[agentIndex],
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[SPAWNER] Update error:', error);
+    res.status(500).json({
+      error: 'Failed to update agent',
+      message: 'An internal error occurred',
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 export default router;

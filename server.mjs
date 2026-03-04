@@ -108,6 +108,44 @@ const authRateLimiter = rateLimit({
   }
 });
 
+// Rate limiter for GTM endpoints — 100 req/min per agent
+const gtmLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => (req.agent?.id ? req.agent.id : req.ip),
+  handler: (req, res) => {
+    res.set('Retry-After', '60');
+    res.status(429).json({
+      code: 'RATE_LIMITED',
+      error: 'Rate limit exceeded',
+      message: 'Too many requests for this agent. Please try again later.',
+      retry_after: 60,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Rate limiter for spawner endpoints — 20 req/min per agent (stricter)
+const spawnLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => (req.agent?.id ? req.agent.id : req.ip),
+  handler: (req, res) => {
+    res.set('Retry-After', '60');
+    res.status(429).json({
+      code: 'RATE_LIMITED',
+      error: 'Rate limit exceeded',
+      message: 'Spawning rate limit exceeded. Please try again later.',
+      retry_after: 60,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Auth middleware (excludes /ep/health, /ep/status, /schemas/* internally)
 app.use(agentAuthMiddleware);
 
