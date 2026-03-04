@@ -19,7 +19,7 @@ import { startTelemetry, getCurrentStatus, getCurrentValidationStats, getCurrent
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { computeRequestId, getBasePayConfig, verifyBasePay } from './src/payments/basePay.js';
-import pantheonRoutes from './src/routes/pantheon.js';
+import pantheonRoutes from './src/routes/pantheon-live.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
