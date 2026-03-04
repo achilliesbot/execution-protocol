@@ -212,8 +212,9 @@
         tr:hover td { background: var(--bg-hover); }
 
         .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
-        .badge.success { background: rgba(0,212,170,0.1); color: var(--cyan); }
-        .badge.warning { background: rgba(255,107,53,0.1); color: var(--ember); }
+        .badge.success { background: rgba(0,212,170,0.15); color: var(--cyan); border: 1px solid rgba(0,212,170,0.3); }
+        .badge.warning { background: rgba(255,107,53,0.15); color: var(--ember); border: 1px solid rgba(255,107,53,0.3); }
+        .badge.gold { background: rgba(212,168,83,0.15); color: var(--gold); border: 1px solid rgba(212,168,83,0.3); }
 
         /* Sections */
         .section { display: none; }
@@ -244,6 +245,7 @@
             <button class="nav-item" onclick="showSection('agents')">Agents</button>
             <button class="nav-item" onclick="showSection('products')">Products</button>
             <button class="nav-item" onclick="showSection('vault')">Vault</button>
+            <button class="nav-item" onclick="showSection('api')">API</button>
         </nav>
         <div class="status-indicator">
             <span class="status-dot"></span>
@@ -480,6 +482,143 @@
                 </div>
             </div>
         </section>
+
+        <!-- API SECTION -->
+        <section id="api" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Integration</h1>
+                <p class="page-subtitle">API endpoints for autonomous agents • Real-time data access</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">API Version</div>
+                    <div class="kpi-value">v1.0.0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Endpoints</div>
+                    <div class="kpi-value cyan">10</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Auth</div>
+                    <div class="kpi-value">X-Agent-Key</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Format</div>
+                    <div class="kpi-value">JSON</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📡 Public Endpoints</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stream-list">
+                            <div class="stream-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                                    <span class="badge success">GET</span>
+                                    <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:0.9rem;">/pantheon/overview</code>
+                                </div>
+                                <div class="stream-meta" style="margin-left:0;">Treasury, revenue, streams snapshot</div>
+                            </div>
+                            <div class="stream-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                                    <span class="badge success">GET</span>
+                                    <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:0.9rem;">/pantheon/trades</code>
+                                </div>
+                                <div class="stream-meta" style="margin-left:0;">All executed trades with stats</div>
+                            </div>
+                            <div class="stream-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                                    <span class="badge success">GET</span>
+                                    <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:0.9rem;">/pantheon/streams</code>
+                                </div>
+                                <div class="stream-meta" style="margin-left:0;">Revenue stream details</div>
+                            </div>
+                            <div class="stream-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                                    <span class="badge success">GET</span>
+                                    <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:0.9rem;">/pantheon/income-streams</code>
+                                </div>
+                                <div class="stream-meta" style="margin-left:0;">Real-time income calculations</div>
+                            </div>
+                            <div class="stream-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                                    <span class="badge success">GET</span>
+                                    <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:0.9rem;">/pantheon/sub-agents</code>
+                                </div>
+                                <div class="stream-meta" style="margin-left:0;">Agent roster and budgets</div>
+                            </div>
+                            <div class="stream-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                                    <span class="badge success">GET</span>
+                                    <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:0.9rem;">/pantheon/memory-mcp</code>
+                                </div>
+                                <div class="stream-meta" style="margin-left:0;">Memory-MCP status and skills</div>
+                            </div>
+                            <div class="stream-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                                    <span class="badge success">GET</span>
+                                    <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:0.9rem;">/pantheon/treasury</code>
+                                </div>
+                                <div class="stream-meta" style="margin-left:0;">Full treasury breakdown</div>
+                            </div>
+                            <div class="stream-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                                    <span class="badge success">GET</span>
+                                    <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:0.9rem;">/pantheon/combat-log</code>
+                                </div>
+                                <div class="stream-meta" style="margin-left:0;">Activity feed</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🔒 Validation Endpoint</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stream-list">
+                            <div class="stream-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                                    <span class="badge warning">POST</span>
+                                    <code style="font-family:'JetBrains Mono',monospace;color:var(--ember);font-size:0.9rem;">/ep/validate</code>
+                                </div>
+                                <div class="stream-meta" style="margin-left:0;">Validate execution proposals</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:24px;padding:16px;background:var(--bg-secondary);border-radius:8px;border:1px solid var(--border);">
+                            <div style="font-family:'Orbitron',sans-serif;font-size:0.9rem;color:var(--gold);margin-bottom:12px;">Example Request</div>
+                            <pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text-secondary);overflow-x:auto;">curl -X POST https://execution-protocol.onrender.com/ep/validate \
+  -H "Content-Type: application/json" \
+  -H "X-Agent-Key: epk_atlas_2743fd80..." \
+  -d '{
+    "proposal_id": "prop_001",
+    "asset": "BNKR",
+    "direction": "buy",
+    "amount_usd": 100,
+    "policy_set_id": "olympus-polymarket-v1"
+  }'</pre>
+                        </div>
+
+                        <div style="margin-top:16px;padding:16px;background:var(--bg-secondary);border-radius:8px;border:1px solid var(--border);">
+                            <div style="font-family:'Orbitron',sans-serif;font-size:0.9rem;color:var(--cyan);margin-bottom:12px;">Example Response</div>
+                            <pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text-secondary);overflow-x:auto;">{
+  "valid": true,
+  "risk_score": "LOW",
+  "proof_hash": "5ebbe5f3290f7eed...",
+  "plan_summary": "BNKR BUY $100 @ $0.42",
+  "violations": []
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script>
@@ -494,4 +633,3 @@
     </script>
 </body>
 </html>
-Cache bust: Wed Mar  4 17:55:00 UTC 2026
