@@ -48,27 +48,27 @@ const readJson = (path, defaultVal = null) => {
   }
 };
 
-// Hardcoded live data fallback (updated hourly - LAST UPDATE: 2026-03-04 18:20 UTC)
-// CORRECTED: $150 Poly (6 trades) + $100 BNKR + $60 cash = $310.75 total
+// Hardcoded live data fallback (updated hourly - LAST UPDATE: 2026-03-04 20:20 UTC)
+// CAPITAL DEPLOYED: $200 Poly (8 trades) + $100 BNKR + $35 cash = $310.75 total
 const LIVE_DATA_FALLBACK = {
-  timestamp: "2026-03-04T18:20:00Z",
+  timestamp: "2026-03-04T20:20:00Z",
   mode: "ACHILLES",
   treasury: { 
     eth: 0.011, 
-    usdc_cash: 35, 
-    polymarket_deployed: 150,  // 6 unique trades
+    usdc_cash: 10, 
+    polymarket_deployed: 200,  // 8 unique trades (INCREASED)
     bnkr_deployed: 100,  // 1 trade
     bnkr_realized_pnl: 0.75, 
     bnkr_unrealized_pnl: 0, 
     bnkr_total_pnl: 0.75, 
-    total_deployed: 250,  // 150 + 100
-    total_cash: 60,  // 35 USDC + 25 ETH
-    total_usd: 310.75  // 250 + 60 + 0.75 profit
+    total_deployed: 300,  // 200 + 100
+    total_cash: 35,  // 10 USDC + 25 ETH
+    total_usd: 310.75  // 300 + 35 + 0.75 profit
   },
   revenue: { "7d": 0.75, "30d": 0.75, all_time: 0.75 },
   trading: { 
     bnkr: { trades: 1, deployed: 100, realized_pnl: 0.75, unrealized_pnl: 0, total_pnl: 0.75, status: "active" }, 
-    polymarket: { trades: 14, deployed: 300, open_orders: 0, validated_pending: 0, realized_pnl: 0, unrealized_pnl: 0, status: "active" } 
+    polymarket: { trades: 8, deployed: 200, open_orders: 0, validated_pending: 2, realized_pnl: 0, unrealized_pnl: 0, status: "active" } 
   },
   sub_agents: {
     count: 5,
@@ -84,7 +84,7 @@ const LIVE_DATA_FALLBACK = {
   memory_mcp: { total_memories: 87, skills: 87, status: "online" },
   products: { count: 3, list: [{ name: "Polymarket Alpha Signals Pack v1", price: 25 }, { name: "The Achilles Alpha Trading Playbook", price: 15 }, { name: "Achilles GTM Agent", price: 5, price_range: "$1-10", billing: "per_booking" }] },
   streams: [
-    { id: "polymarket", name: "Polymarket", status: "active", revenue_7d: 0, trades: 6, deployed: 150, live: true },
+    { id: "polymarket", name: "Polymarket", status: "active", revenue_7d: 0, trades: 8, deployed: 200, live: true },
     { id: "bnkr", name: "BNKR Trading", status: "active", revenue_7d: 0.75, realized_pnl: 0.75, trades: 1, deployed: 100, live: true },
     { id: "memory-mcp", name: "Memory-MCP", status: "active", revenue_7d: 0, subscribers: 0, live: true },
     { id: "acp-services", name: "ACP Services", status: "active", revenue_7d: 0, hires: 0, live: true }
