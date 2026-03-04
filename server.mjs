@@ -20,6 +20,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { computeRequestId, getBasePayConfig, verifyBasePay } from './src/payments/basePay.js';
 import pantheonRoutes from './src/routes/pantheon-live.js';
+import gtmRoutes from './src/routes/gtm.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -216,6 +217,9 @@ app.get('/ep/session/:id', authRateLimiter, sessionRoute);
 
 // Pantheon UI Routes (public dashboard + admin)
 app.use('/pantheon', pantheonRoutes);
+
+// Achilles GTM Agent Routes
+app.use('/gtm', gtmRoutes);
 
 // 404 handler
 app.use((req, res) => {
