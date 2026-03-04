@@ -770,6 +770,49 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card" style="margin-top:24px;">
+                <div class="card-header">
+                    <h3 class="card-title">🤖 Agent Spawner</h3>
+                </div>
+                <div class="card-body">
+                    <p style="color:var(--text-secondary);margin-bottom:16px;">AI agents can spawn specialized GTM sub-agents autonomously.</p>
+                    <div class="stream-list">
+                        <div class="stream-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                            <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                                <span class="badge warning">POST</span>
+                                <code style="font-family:'JetBrains Mono',monospace;color:var(--ember);font-size:0.9rem;">/spawner/spawn</code>
+                            </div>
+                            <div class="stream-meta" style="margin-left:0;">Spawn new GTM sub-agent • Requires parent_agent_id, target_url</div>
+                        </div>
+                        <div class="stream-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                            <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                                <span class="badge success">GET</span>
+                                <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:0.9rem;">/spawner/spawned</code>
+                            </div>
+                            <div class="stream-meta" style="margin-left:0;">List all spawned agents • Filter by parent</div>
+                        </div>
+                        <div class="stream-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                            <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                                <span class="badge success">GET</span>
+                                <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:0.9rem;">/spawner/spawn-stats</code>
+                            </div>
+                            <div class="stream-meta" style="margin-left:0;">Fleet statistics • Active agents • Total leads/calls</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:24px;padding:16px;background:var(--bg-secondary);border-radius:8px;border:1px solid var(--border);">
+                        <div style="font-family:'Orbitron',sans-serif;font-size:0.9rem;color:var(--gold);margin-bottom:12px;">Example: Spawn GTM Agent</div>
+                        <pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--text-secondary);overflow-x:auto;">curl -X POST https://execution-protocol.onrender.com/spawner/spawn \
+  -H "Content-Type: application/json" \
+  -d '{
+    "parent_agent_id": "sub_trading_specialist_001",
+    "target_url": "https://crypto-hedge-fund.com",
+    "specialty": "fintech",
+    "budget": 75
+  }'</pre>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 
