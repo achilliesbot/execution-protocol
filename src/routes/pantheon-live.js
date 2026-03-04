@@ -48,13 +48,17 @@ const readJson = (path, defaultVal = null) => {
   }
 };
 
-// Hardcoded live data fallback (updated daily)
+// Hardcoded live data fallback (updated hourly - LAST UPDATE: 2026-03-04 16:55 UTC)
+// BNKR: User confirmed +$0.75 profit | Polymarket: Scanning for opportunities
 const LIVE_DATA_FALLBACK = {
-  timestamp: "2026-03-04T16:25:00Z",
+  timestamp: "2026-03-04T16:55:00Z",
   mode: "ACHILLES",
-  treasury: { eth: 0.011, usdc: 35, bnkr_deployed: 100, bnkr_unrealized_pnl: -16.47, total_usd: 135 },
-  revenue: { "7d": 0, "30d": 0, all_time: 0 },
-  trading: { bnkr: { trades: 1, realized_pnl: 0, unrealized_pnl: -16.47 }, polymarket: { trades: 7, realized_pnl: 0, unrealized_pnl: 0 } },
+  treasury: { eth: 0.011, usdc: 35, bnkr_deployed: 100, bnkr_realized_pnl: 0.75, bnkr_unrealized_pnl: 0, bnkr_total_pnl: 0.75, total_usd: 135.75 },
+  revenue: { "7d": 0.75, "30d": 0.75, all_time: 0.75 },
+  trading: { 
+    bnkr: { trades: 1, positions: 1, realized_pnl: 0.75, unrealized_pnl: 0, total_pnl: 0.75, status: "active" }, 
+    polymarket: { trades: 0, open_orders: 0, validated_pending: 2, realized_pnl: 0, unrealized_pnl: 0, status: "scanning" } 
+  },
   sub_agents: {
     count: 5,
     total_budget: 100,
@@ -70,8 +74,8 @@ const LIVE_DATA_FALLBACK = {
   products: { count: 2, list: [{ name: "Polymarket Alpha Signals Pack v1", price: 25 }, { name: "The Achilles Alpha Trading Playbook", price: 15 }] },
   streams: [
     { id: "execution-protocol", name: "Execution Protocol", status: "active", revenue_7d: 0, live: true },
-    { id: "bnkr", name: "BNKR Trading", status: "active", revenue_7d: 0, unrealized: -16.47, live: true, trades: 1 },
-    { id: "polymarket", name: "Polymarket", status: "active", revenue_7d: 0, live: true, trades: 7 },
+    { id: "bnkr", name: "BNKR Trading", status: "active", revenue_7d: 0.75, realized_pnl: 0.75, live: true, trades: 1, positions: 1 },
+    { id: "polymarket", name: "Polymarket", status: "active", revenue_7d: 0, live: true, trades: 0, validated_pending: 2 },
     { id: "memory-mcp", name: "Memory-MCP", status: "active", revenue_7d: 0, live: true, subscribers: 0 },
     { id: "acp-services", name: "ACP Services", status: "active", revenue_7d: 0, live: true, hires: 0 }
   ]
