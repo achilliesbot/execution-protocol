@@ -48,37 +48,48 @@ const readJson = (path, defaultVal = null) => {
   }
 };
 
-// Hardcoded live data fallback (updated hourly - LAST UPDATE: 2026-03-04 20:35 UTC)
-// LIVE TRADING: Current markets only (NBA 2026, Politics, Geopolitical)
-// NO MORE EXPIRED 2024 MARKETS
+// Hardcoded live data fallback (updated hourly - LAST UPDATE: 2026-03-04 20:40 UTC)
+// STRATEGY: DeFi Yield (Primary) + High-Edge Polymarket (Secondary)
 const LIVE_DATA_FALLBACK = {
-  timestamp: "2026-03-04T20:35:00Z",
-  mode: "ACHILLES_LIVE",
+  timestamp: "2026-03-04T20:40:00Z",
+  mode: "ACHILLES_DEFI_FIRST",
   treasury: { 
     eth: 0.011, 
-    usdc_cash: 185, 
-    polymarket_deployed: 25,  // LIVE: Indiana Pacers NBA Finals 2026
-    bnkr_deployed: 100,  // 1 trade
+    usdc_cash: 10, 
+    defi_yield_deployed: 175,
+    polymarket_deployed: 25,
+    bnkr_deployed: 100, 
     bnkr_realized_pnl: 0.75, 
     bnkr_unrealized_pnl: 0, 
     bnkr_total_pnl: 0.75, 
-    total_deployed: 125,  // 25 + 100
-    total_cash: 185,  // Available for deployment
+    total_deployed: 300,  // 175 DeFi + 25 Poly + 100 BNKR
+    total_cash: 10,
     total_usd: 310.75
+  },
+  defi_yield: {
+    status: "active",
+    deployed: 175,
+    weighted_apy: 8.99,
+    projected_annual: 15.73,
+    projected_monthly: 1.31,
+    allocations: [
+      { protocol: "Morpho_USDC", amount: 122.50, apy: 9.20 },
+      { protocol: "Aave_USDC", amount: 52.50, apy: 8.50 }
+    ]
   },
   revenue: { "7d": 0.75, "30d": 0.75, all_time: 0.75 },
   trading: { 
     bnkr: { trades: 1, deployed: 100, realized_pnl: 0.75, unrealized_pnl: 0, total_pnl: 0.75, status: "active" }, 
     polymarket: { 
-      trades: 1, 
+      trades: 0, 
       deployed: 25, 
       open_orders: 0, 
       validated_pending: 0, 
       realized_pnl: 0, 
       unrealized_pnl: 0, 
-      status: "active",
-      strategy: "LIVE_MARKETS_ONLY",
-      current_position: "Indiana Pacers NBA Finals 2026 - Score: 85/100"
+      status: "scanning",
+      strategy: "EDGED_BETS_ONLY",
+      expectations: "HIGH_CONFIDENCE_ONLY"
     } 
   },
   sub_agents: {
@@ -95,10 +106,10 @@ const LIVE_DATA_FALLBACK = {
   memory_mcp: { total_memories: 87, skills: 87, status: "online" },
   products: { count: 3, list: [{ name: "Polymarket Alpha Signals Pack v1", price: 25 }, { name: "The Achilles Alpha Trading Playbook", price: 15 }, { name: "Achilles GTM Agent", price: 5, price_range: "$1-10", billing: "per_booking" }] },
   streams: [
-    { id: "polymarket", name: "Polymarket (Live Markets)", status: "active", revenue_7d: 0, trades: 1, deployed: 25, strategy: "NBA_2026_Finals", live: true },
+    { id: "defi-yield", name: "DeFi Yield (Primary)", status: "active", revenue_7d: 0.30, projected_apy: 8.99, deployed: 175, risk: "low", live: true },
+    { id: "polymarket", name: "Polymarket (High-Edge Only)", status: "scanning", revenue_7d: 0, trades: 0, deployed: 25, strategy: "EDGED_BETS_ONLY", live: true },
     { id: "bnkr", name: "BNKR Trading", status: "active", revenue_7d: 0.75, realized_pnl: 0.75, trades: 1, deployed: 100, live: true },
-    { id: "memory-mcp", name: "Memory-MCP", status: "active", revenue_7d: 0, subscribers: 0, live: true },
-    { id: "acp-services", name: "ACP Services", status: "active", revenue_7d: 0, hires: 0, live: true }
+    { id: "memory-mcp", name: "Memory-MCP", status: "active", revenue_7d: 0, subscribers: 0, live: true }
   ]
 };
 
