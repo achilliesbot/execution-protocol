@@ -48,22 +48,22 @@ const readJson = (path, defaultVal = null) => {
   }
 };
 
-// Hardcoded live data fallback (updated hourly - LAST UPDATE: 2026-03-04 18:10 UTC)
-// CORRECTED: $300 Polygon + $100 BNKR + $60 cash = $460.75 total
+// Hardcoded live data fallback (updated hourly - LAST UPDATE: 2026-03-04 18:20 UTC)
+// CORRECTED: $150 Poly (6 trades) + $100 BNKR + $60 cash = $310.75 total
 const LIVE_DATA_FALLBACK = {
-  timestamp: "2026-03-04T18:10:00Z",
+  timestamp: "2026-03-04T18:20:00Z",
   mode: "ACHILLES",
   treasury: { 
     eth: 0.011, 
     usdc_cash: 35, 
-    polymarket_deployed: 300,  // 14 trades
+    polymarket_deployed: 150,  // 6 unique trades
     bnkr_deployed: 100,  // 1 trade
     bnkr_realized_pnl: 0.75, 
     bnkr_unrealized_pnl: 0, 
     bnkr_total_pnl: 0.75, 
-    total_deployed: 400,  // 300 + 100
+    total_deployed: 250,  // 150 + 100
     total_cash: 60,  // 35 USDC + 25 ETH
-    total_usd: 460.75  // 400 + 60 + 0.75 profit
+    total_usd: 310.75  // 250 + 60 + 0.75 profit
   },
   revenue: { "7d": 0.75, "30d": 0.75, all_time: 0.75 },
   trading: { 
@@ -84,7 +84,7 @@ const LIVE_DATA_FALLBACK = {
   memory_mcp: { total_memories: 87, skills: 87, status: "online" },
   products: { count: 2, list: [{ name: "Polymarket Alpha Signals Pack v1", price: 25 }, { name: "The Achilles Alpha Trading Playbook", price: 15 }] },
   streams: [
-    { id: "polymarket", name: "Polymarket", status: "active", revenue_7d: 0, trades: 14, deployed: 300, live: true },
+    { id: "polymarket", name: "Polymarket", status: "active", revenue_7d: 0, trades: 6, deployed: 150, live: true },
     { id: "bnkr", name: "BNKR Trading", status: "active", revenue_7d: 0.75, realized_pnl: 0.75, trades: 1, deployed: 100, live: true },
     { id: "memory-mcp", name: "Memory-MCP", status: "active", revenue_7d: 0, subscribers: 0, live: true },
     { id: "acp-services", name: "ACP Services", status: "active", revenue_7d: 0, hires: 0, live: true }
@@ -154,9 +154,14 @@ router.get('/overview', async (req, res) => {
     treasury: {
       total_usd: treasury.total_usd,
       eth: treasury.eth,
-      usdc: treasury.usdc,
-      bnkr_allocation: treasury.bnkr_deployed,
-      bnkr_unrealized: treasury.bnkr_unrealized_pnl,
+      usdc: treasury.usdc || treasury.usdc_cash || 35,
+      usdc_cash: treasury.usdc_cash || 35,
+      polymarket_deployed: treasury.polymarket_deployed || 0,
+      bnkr_deployed: treasury.bnkr_deployed || 0,
+      bnkr_allocation: treasury.bnkr_deployed || 0,
+      bnkr_unrealized: treasury.bnkr_unrealized_pnl || 0,
+      total_deployed: treasury.total_deployed || 0,
+      total_cash: treasury.total_cash || 60,
       last_updated: now.toISOString()
     },
     streams,
