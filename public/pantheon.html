@@ -279,11 +279,47 @@
             <div class="content-wrapper">
                 <div class="section-header">
                     <div class="section-title">⚔️ Pantheon Overview</div>
+                    <div class="live-indicator" style="margin-top:12px;">
+                        <div class="live-dot"></div>
+                        LIVE INCOME FEED
+                    </div>
                 </div>
-            <div class="grid-2" style="grid-template-columns:repeat(auto-fit,minmax(500px,1fr));">
-                <div class="panel">
+                
+                <!-- INCOME STREAMS GRID -->
+                <div class="revenue-grid" id="overview-income-streams" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
+                    <div class="revenue-card">
+                        <div class="revenue-label">BNKR TRADING</div>
+                        <div class="revenue-value" id="income-bnkr">$0.00</div>
+                        <div style="color:var(--success);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;" id="bnkr-count">0 trades</div>
+                    </div>
+                    <div class="revenue-card">
+                        <div class="revenue-label">POLYMARKET TRADING</div>
+                        <div class="revenue-value" id="income-polymarket">$0.00</div>
+                        <div style="color:var(--success);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;" id="polymarket-count">0 trades</div>
+                    </div>
+                    <div class="revenue-card">
+                        <div class="revenue-label">EXECUTION PROTOCOL</div>
+                        <div class="revenue-value" id="income-ep">$0.00</div>
+                        <div style="color:var(--cyan);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;" id="ep-count">0 validations</div>
+                    </div>
+                    <div class="revenue-card" style="border-color:var(--gold);background:linear-gradient(135deg,rgba(255,176,0,0.05),transparent);">
+                        <div class="revenue-label">TOTAL TRANSACTIONS</div>
+                        <div class="revenue-value" id="total-transactions" style="font-size:2rem;">0</div>
+                        <div style="color:var(--text-muted);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;">All time</div>
+                    </div>
+                    <div class="revenue-card" style="border-color:var(--ember);background:linear-gradient(135deg,rgba(255,90,31,0.05),transparent);">
+                        <div class="revenue-label">TOTAL EARNINGS</div>
+                        <div class="revenue-value" id="total-earnings" style="background:linear-gradient(180deg,var(--gold-bright),var(--ember));-webkit-background-clip:text;">$0.00</div>
+                        <div style="color:var(--gold);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;">Combined income</div>
+                    </div>
+                </div>
+                
+                <div class="frame-bar"></div>
+                
+                <!-- COMBAT LOG PANEL -->
+                <div class="panel" style="max-width:100%;">
                     <div class="panel-header">
-                        <span class="panel-title">Combat Log</span>
+                        <span class="panel-title">Live Combat Log</span>
                         <div class="live-indicator" style="padding:4px 8px;font-size:0.6rem;">
                             <div class="live-dot"></div>
                             LIVE
@@ -291,25 +327,6 @@
                     </div>
                     <div class="combat-log" id="combat-log"></div>
                 </div>
-                <div class="panel" style="border-left:3px solid var(--cyan);">
-                    <div class="panel-header">
-                        <span class="panel-title">Oracle Output</span>
-                    </div>
-                    <div style="padding:20px;">
-                        <p style="margin-bottom:16px;">All streams operational. Hash chain integrity verified. <span style="color:var(--cyan);">PANTHEON</span> ready.</p>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                            <div style="padding:16px;border:1px solid rgba(32,227,255,0.2);">
-                                <div style="font-size:0.75rem;color:var(--text-muted);">SIGNAL CONFIDENCE</div>
-                                <div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--cyan);">94.7%</div>
-                            </div>
-                            <div style="padding:16px;border:1px solid rgba(255,176,0,0.2);">
-                                <div style="font-size:0.75rem;color:var(--text-muted);">EXPECTED PnL</div>
-                                <div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--gold);">+12.4%</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             </div>
         </div>
 
@@ -544,16 +561,55 @@
         async function loadOverview() {
             try {
                 console.log('Loading overview...');
-                const res = await fetch('/pantheon/overview');
-                const data = await res.json();
-                console.log('Data:', data);
                 
-                document.getElementById('rev-7d').textContent = formatUSD(data.revenue['7d']);
-                document.getElementById('rev-30d').textContent = formatUSD(data.revenue['30d']);
-                document.getElementById('rev-all').textContent = formatUSD(data.revenue.all_time);
+                // Fetch both overview and income streams
+                const [overviewRes, incomeRes, tradesRes] = await Promise.all([
+                    fetch('/pantheon/overview'),
+                    fetch('/pantheon/income-streams'),
+                    fetch('/pantheon/trades')
+                ]);
                 
-                if (data.streams) {
-                    document.getElementById('stream-revenue').innerHTML = data.streams.map(s => `
+                const overviewData = await overviewRes.json();
+                const incomeData = await incomeRes.json();
+                const tradesData = await tradesRes.json();
+                
+                console.log('Overview:', overviewData);
+                console.log('Income:', incomeData);
+                console.log('Trades:', tradesData);
+                
+                // Update legacy elements if they exist
+                const rev7d = document.getElementById('rev-7d');
+                const rev30d = document.getElementById('rev-30d');
+                const revAll = document.getElementById('rev-all');
+                if (rev7d) rev7d.textContent = formatUSD(overviewData.revenue?.['7d'] || 0);
+                if (rev30d) rev30d.textContent = formatUSD(overviewData.revenue?.['30d'] || 0);
+                if (revAll) revAll.textContent = formatUSD(overviewData.revenue?.all_time || 0);
+                
+                // Update INCOME STREAMS boxes
+                if (incomeData.bnk) {
+                    document.getElementById('income-bnkr').textContent = formatUSD(incomeData.bnk.total || 0);
+                    document.getElementById('bnkr-count').textContent = `${incomeData.bnk.trades || 0} trades`;
+                }
+                if (incomeData.polymarket) {
+                    document.getElementById('income-polymarket').textContent = formatUSD(incomeData.polymarket.total || 0);
+                    document.getElementById('polymarket-count').textContent = `${incomeData.polymarket.trades || 0} trades`;
+                }
+                if (incomeData.ep) {
+                    document.getElementById('income-ep').textContent = formatUSD(incomeData.ep.total || 0);
+                    document.getElementById('ep-count').textContent = `${incomeData.ep.validations || 0} validations`;
+                }
+                
+                // Calculate and update TOTALS
+                const totalTrades = (incomeData.bnk?.trades || 0) + (incomeData.polymarket?.trades || 0) + (incomeData.ep?.validations || 0);
+                const totalEarnings = (incomeData.bnk?.total || 0) + (incomeData.polymarket?.total || 0) + (incomeData.ep?.total || 0);
+                
+                document.getElementById('total-transactions').textContent = totalTrades.toLocaleString();
+                document.getElementById('total-earnings').textContent = formatUSD(totalEarnings);
+                
+                // Update legacy streams if element exists
+                const streamRevenue = document.getElementById('stream-revenue');
+                if (streamRevenue && overviewData.streams) {
+                    streamRevenue.innerHTML = overviewData.streams.map(s => `
                         <div class="stream-item">
                             <div><span class="stream-status ${s.status === 'locked' ? 'locked' : ''}"></span><span class="stream-name">${s.name}</span></div>
                             <span class="stream-amount">${formatUSD(s.revenue_7d)}</span>
@@ -561,21 +617,23 @@
                     `).join('');
                 }
                 
-                if (data.treasury) {
-                    document.getElementById('treasury').innerHTML = `
-                        <div class="treasury-item"><span style="color:var(--text-muted);font-family:'Orbitron',sans-serif;">TOTAL</span><span class="treasury-value">${formatUSD(data.treasury.total_usd)}</span></div>
-                        <div class="treasury-item"><span style="color:var(--text-muted);font-family:'Orbitron',sans-serif;">POLYMARKET</span><span class="treasury-value">${formatUSD(data.treasury.polymarket_allocation)}</span></div>
-                        <div class="treasury-item"><span style="color:var(--text-muted);font-family:'Orbitron',sans-serif;">BNKR</span><span class="treasury-value">${formatUSD(data.treasury.bnkr_allocation)}</span></div>
-                        <div class="treasury-item"><span style="color:var(--text-muted);font-family:'Orbitron',sans-serif;">YIELD</span><span class="treasury-value">${formatUSD(data.treasury.yield_allocation)}</span></div>
-                    `;
+                if (overviewData.treasury) {
+                    const treasury = document.getElementById('treasury');
+                    if (treasury) {
+                        treasury.innerHTML = `
+                            <div class="treasury-item"><span style="color:var(--text-muted);font-family:'Orbitron',sans-serif;">TOTAL</span><span class="treasury-value">${formatUSD(overviewData.treasury.total_usd)}</span></div>
+                            <div class="treasury-item"><span style="color:var(--text-muted);font-family:'Orbitron',sans-serif;">POLYMARKET</span><span class="treasury-value">${formatUSD(overviewData.treasury.polymarket_allocation)}</span></div>
+                            <div class="treasury-item"><span style="color:var(--text-muted);font-family:'Orbitron',sans-serif;">BNKR</span><span class="treasury-value">${formatUSD(overviewData.treasury.bnkr_allocation)}</span></div>
+                            <div class="treasury-item"><span style="color:var(--text-muted);font-family:'Orbitron',sans-serif;">YIELD</span><span class="treasury-value">${formatUSD(overviewData.treasury.yield_allocation)}</span></div>
+                        `;
+                    }
                 }
                 
-                if (data.updated_at) {
-                    document.getElementById('updated-at').textContent = `◆ Updated ${new Date(data.updated_at).toLocaleString()} ◆`;
+                if (overviewData.updated_at) {
+                    document.getElementById('updated-at').textContent = `◆ Updated ${new Date(overviewData.updated_at).toLocaleString()} ◆`;
                 }
             } catch (err) {
-                console.error('Error:', err);
-                document.getElementById('stream-revenue').innerHTML = `<div style="padding:20px;color:var(--gold);text-align:center;">⚠️ ${err.message}</div>`;
+                console.error('Error loading overview:', err);
             }
         }
 
