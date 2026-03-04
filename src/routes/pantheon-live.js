@@ -77,11 +77,6 @@ const LIVE_DATA_FALLBACK = {
   ]
 };
 
-const getSnapshot = () => {
-  const fromFile = readJson(SNAPSHOT_PATH, null);
-  return fromFile || LIVE_DATA_FALLBACK;
-};
-
 // Load live snapshot - try multiple paths for different environments
 const SNAPSHOT_PATHS = [
   join(__dirname, '../../data/live/snapshot.json'),
@@ -97,6 +92,11 @@ const getSnapshotPath = () => {
 };
 
 const SNAPSHOT_PATH = getSnapshotPath();
+
+const getSnapshot = () => {
+  const fromFile = readJson(SNAPSHOT_PATH, null);
+  return fromFile || LIVE_DATA_FALLBACK;
+};
 
 // Helper: Read JSONL file
 const readJsonl = (path) => {
