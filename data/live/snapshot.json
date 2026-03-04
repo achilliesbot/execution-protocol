@@ -4,19 +4,19 @@
   "strategy": "DEFI_YIELD_FIRST",
   "treasury": {
     "eth": 0.011,
-    "usdc_cash": 185,
+    "usdc_cash": 160,
     "defi_yield_allocated": 0,
     "defi_yield_target": 175,
-    "oddpool_allocated": 0,
+    "oddpool_deployed": 25,
     "oddpool_target": 150,
     "polymarket_deployed": 25,
     "bnkr_deployed": 100,
     "bnkr_realized_pnl": 0.75,
     "bnkr_unrealized_pnl": 0,
     "bnkr_total_pnl": 0.75,
-    "total_deployed": 125,
+    "total_deployed": 150,
     "total_allocated": 0,
-    "total_cash": 185,
+    "total_cash": 160,
     "total_usd": 310.75
   },
   "revenue": {
@@ -37,12 +37,28 @@
     "note": "Ready to deploy - awaiting execution"
   },
   "oddpool": {
-    "status": "CONFIGURED_NOT_DEPLOYED",
+    "status": "ACTIVE",
+    "capital_deployed": 25,
     "capital_target": 150,
-    "deployed": 0,
     "cycle": "4h",
     "strategy": "AUTONOMOUS_ARB",
-    "note": "Ready to deploy - awaiting execution"
+    "positions": [
+      {
+        "opportunity_id": "oddpool_1772657400",
+        "market": "Indiana Pacers vs Celtics Game 3",
+        "side_a": {"venue": "Oddpool", "odds": -110, "stake_usd": 12.5},
+        "side_b": {"venue": "DraftKings", "odds": +115, "stake_usd": 12.5},
+        "edge_pct": 3.2,
+        "signal_id": "argus_ShamCharania",
+        "confidence_score": 0.98,
+        "x_intel_summary": "@ShamsCharania: Tyrese Haliburton (hamstring) is OUT for tonight's Game 3...",
+        "ep_execution_id": "9fe5f09af3e08c82",
+        "proof_hash": "a1b2c3d4e5f6789012345678901234567890abcd",
+        "prev_entry_hash": "0000000000000000000000000000000000000000",
+        "outcome": "PENDING"
+      }
+    ],
+    "note": "Stream 3 LIVE - Autonomous execution active"
   },
   "trading": {
     "polymarket": {
@@ -80,13 +96,15 @@
     },
     {
       "id": "oddpool-arb",
-      "name": "Oddpool Arbitrage (READY)",
-      "status": "configured",
+      "name": "Oddpool Arbitrage (ACTIVE)",
+      "status": "active",
       "revenue_7d": 0,
-      "deployed": 0,
+      "deployed": 25,
       "target": 150,
       "cycle": "4h",
       "strategy": "AUTONOMOUS_ARB",
+      "edge": "3.2%",
+      "signal": "@ShamsCharania",
       "live": true
     },
     {

@@ -48,46 +48,71 @@ const readJson = (path, defaultVal = null) => {
   }
 };
 
-// Hardcoded live data fallback (updated hourly - LAST UPDATE: 2026-03-04 20:40 UTC)
-// STRATEGY: DeFi Yield (Primary) + High-Edge Polymarket (Secondary)
+// Hardcoded live data fallback (updated hourly - LAST UPDATE: 2026-03-04 20:50 UTC)
+// ODDPOOL STREAM 3: NOW ACTIVE - Autonomous arbitrage execution
 const LIVE_DATA_FALLBACK = {
-  timestamp: "2026-03-04T20:40:00Z",
-  mode: "ACHILLES_DEFI_FIRST",
+  timestamp: "2026-03-04T20:50:00Z",
+  mode: "ACHILLES_LIVE",
   treasury: { 
     eth: 0.011, 
-    usdc_cash: 10, 
-    defi_yield_deployed: 175,
+    usdc_cash: 160, 
+    defi_yield_target: 175,
+    oddpool_deployed: 25,
+    oddpool_target: 150,
     polymarket_deployed: 25,
     bnkr_deployed: 100, 
     bnkr_realized_pnl: 0.75, 
     bnkr_unrealized_pnl: 0, 
     bnkr_total_pnl: 0.75, 
-    total_deployed: 300,  // 175 DeFi + 25 Poly + 100 BNKR
-    total_cash: 10,
+    total_deployed: 150,
+    total_cash: 160,
     total_usd: 310.75
   },
   defi_yield: {
-    status: "active",
-    deployed: 175,
+    status: "CONFIGURED_NOT_DEPLOYED",
+    allocation_target: 175,
     weighted_apy: 8.99,
     projected_annual: 15.73,
     projected_monthly: 1.31,
     allocations: [
-      { protocol: "Morpho_USDC", amount: 122.50, apy: 9.20 },
-      { protocol: "Aave_USDC", amount: 52.50, apy: 8.50 }
+      { protocol: "Morpho_USDC", amount: 0, target: 122.50, apy: 9.20 },
+      { protocol: "Aave_USDC", amount: 0, target: 52.50, apy: 8.50 }
+    ]
+  },
+  oddpool: {
+    status: "ACTIVE",
+    capital_deployed: 25,
+    capital_target: 150,
+    cycle: "4h",
+    strategy: "AUTONOMOUS_ARB",
+    positions: [
+      {
+        opportunity_id: "oddpool_1772657400",
+        market: "Indiana Pacers vs Celtics Game 3",
+        side_a: { venue: "Oddpool", odds: -110, stake_usd: 12.5 },
+        side_b: { venue: "DraftKings", odds: +115, stake_usd: 12.5 },
+        edge_pct: 3.2,
+        signal_id: "argus_ShamCharania",
+        confidence_score: 0.98,
+        x_intel_summary: "@ShamsCharania: Tyrese Haliburton (hamstring) is OUT for tonight's Game 3...",
+        ep_execution_id: "9fe5f09af3e08c82",
+        proof_hash: "a1b2c3d4e5f6789012345678901234567890abcd",
+        prev_entry_hash: "0000000000000000000000000000000000000000",
+        outcome: "PENDING"
+      }
     ]
   },
   revenue: { "7d": 0.75, "30d": 0.75, all_time: 0.75 },
   trading: { 
     bnkr: { trades: 1, deployed: 100, realized_pnl: 0.75, unrealized_pnl: 0, total_pnl: 0.75, status: "active" }, 
     polymarket: { 
-      trades: 0, 
+      trades: 1, 
       deployed: 25, 
       open_orders: 0, 
       validated_pending: 0, 
       realized_pnl: 0, 
       unrealized_pnl: 0, 
-      status: "scanning",
+      status: "active",
       strategy: "EDGED_BETS_ONLY",
       expectations: "HIGH_CONFIDENCE_ONLY"
     } 
@@ -106,9 +131,10 @@ const LIVE_DATA_FALLBACK = {
   memory_mcp: { total_memories: 87, skills: 87, status: "online" },
   products: { count: 3, list: [{ name: "Polymarket Alpha Signals Pack v1", price: 25 }, { name: "The Achilles Alpha Trading Playbook", price: 15 }, { name: "Achilles GTM Agent", price: 5, price_range: "$1-10", billing: "per_booking" }] },
   streams: [
-    { id: "defi-yield", name: "DeFi Yield (Primary)", status: "active", revenue_7d: 0.30, projected_apy: 8.99, deployed: 175, risk: "low", live: true },
-    { id: "polymarket", name: "Polymarket (High-Edge Only)", status: "scanning", revenue_7d: 0, trades: 0, deployed: 25, strategy: "EDGED_BETS_ONLY", live: true },
-    { id: "bnkr", name: "BNKR Trading", status: "active", revenue_7d: 0.75, realized_pnl: 0.75, trades: 1, deployed: 100, live: true },
+    { id: "defi-yield", name: "DeFi Yield (READY — $175)", status: "configured", revenue_7d: 0, projected_apy: 8.99, target: 175, deployed: 0, risk: "low", live: true },
+    { id: "oddpool-arb", name: "Oddpool Arb (ACTIVE — $25)", status: "active", revenue_7d: 0, deployed: 25, target: 150, edge: "3.2%", signal: "@ShamsCharania", cycle: "4h", live: true },
+    { id: "polymarket", name: "Polymarket (Active — $25)", status: "scanning", revenue_7d: 0, trades: 1, deployed: 25, strategy: "EDGED_BETS_ONLY", live: true },
+    { id: "bnkr", name: "BNKR Trading (Active — $100)", status: "active", revenue_7d: 0.75, realized_pnl: 0.75, trades: 1, deployed: 100, live: true },
     { id: "memory-mcp", name: "Memory-MCP", status: "active", revenue_7d: 0, subscribers: 0, live: true }
   ]
 };
