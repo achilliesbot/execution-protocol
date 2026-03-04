@@ -219,11 +219,11 @@ app.get('/ep/session/:id', authRateLimiter, sessionRoute);
 // Pantheon UI Routes (public dashboard + admin)
 app.use('/pantheon', pantheonRoutes);
 
-// Achilles GTM Agent Routes
-app.use('/gtm', gtmRoutes);
+// Achilles GTM Agent Routes (with rate limiting)
+app.use('/gtm', gtmLimiter, gtmRoutes);
 
-// Agent Spawner Routes
-app.use('/spawner', spawnerRoutes);
+// Agent Spawner Routes (with stricter limits)
+app.use('/spawner', spawnLimiter, spawnerRoutes);
 
 // 404 handler
 app.use((req, res) => {
