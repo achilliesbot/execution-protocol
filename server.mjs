@@ -20,8 +20,8 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { computeRequestId, getBasePayConfig, verifyBasePay } from './src/payments/basePay.js';
 import pantheonRoutes from './src/routes/pantheon-live.js';
-import gtmRoutes from './src/routes/gtm.js';
-import spawnerRoutes from './src/routes/spawner.js';
+import gtmRoutes from './src/routes/gtm-secure.js';
+import spawnerRoutes from './src/routes/spawner-secure.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
