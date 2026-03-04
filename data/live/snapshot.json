@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-04T17:19:28.528137+00:00",
+  "timestamp": "2026-03-04T17:30:00Z",
   "mode": "ACHILLES",
   "data_source": "LIVE_SYNC",
   "treasury": {
@@ -19,7 +19,7 @@
   "trading": {
     "bnkr": {
       "trades": 1,
-      "positions": 0,
+      "positions": 1,
       "realized_pnl": 0.75,
       "unrealized_pnl": 0,
       "total_pnl": 0.75,
@@ -31,48 +31,19 @@
       "validated_pending": 0,
       "realized_pnl": 0,
       "unrealized_pnl": 0,
-      "status": "active"
+      "status": "active",
+      "note": "4 trades executed"
     }
   },
   "sub_agents": {
     "count": 5,
     "total_budget": 100,
     "agents": [
-      {
-        "id": "sub_trading_specialist_001",
-        "name": "Trading Specialist",
-        "role": "trading",
-        "budget": 20,
-        "status": "active"
-      },
-      {
-        "id": "sub_content_specialist_001",
-        "name": "Content Specialist",
-        "role": "content",
-        "budget": 20,
-        "status": "active"
-      },
-      {
-        "id": "sub_sales_closer_001",
-        "name": "Sales Closer",
-        "role": "sales",
-        "budget": 25,
-        "status": "active"
-      },
-      {
-        "id": "sub_viral_content_001",
-        "name": "Viral Content Creator",
-        "role": "marketing",
-        "budget": 20,
-        "status": "active"
-      },
-      {
-        "id": "sub_research_analyst_002",
-        "name": "Crypto Research Analyst",
-        "role": "research",
-        "budget": 15,
-        "status": "active"
-      }
+      {"id": "sub_trading_specialist_001", "name": "Trading Specialist", "role": "trading", "budget": 20, "status": "active"},
+      {"id": "sub_content_specialist_001", "name": "Content Specialist", "role": "content", "budget": 20, "status": "active"},
+      {"id": "sub_sales_closer_001", "name": "Sales Closer", "role": "sales", "budget": 25, "status": "active"},
+      {"id": "sub_viral_content_001", "name": "Viral Content Creator", "role": "marketing", "budget": 20, "status": "active"},
+      {"id": "sub_research_analyst_002", "name": "Crypto Research Analyst", "role": "research", "budget": 15, "status": "active"}
     ]
   },
   "memory_mcp": {
@@ -83,60 +54,15 @@
   "products": {
     "count": 2,
     "list": [
-      {
-        "name": "Polymarket Alpha Signals Pack v1",
-        "price": 25,
-        "sales": 0
-      },
-      {
-        "name": "The Achilles Alpha Trading Playbook",
-        "price": 15,
-        "sales": 0
-      }
+      {"name": "Polymarket Alpha Signals Pack v1", "price": 25},
+      {"name": "The Achilles Alpha Trading Playbook", "price": 15}
     ]
   },
   "streams": [
-    {
-      "id": "execution-protocol",
-      "name": "Execution Protocol",
-      "status": "active",
-      "revenue_7d": 0,
-      "live": true
-    },
-    {
-      "id": "bnkr",
-      "name": "BNKR Trading",
-      "status": "active",
-      "revenue_7d": 0.75,
-      "realized_pnl": 0.75,
-      "unrealized_pnl": 0,
-      "live": true,
-      "trades": 1,
-      "positions": 0
-    },
-    {
-      "id": "polymarket",
-      "name": "Polymarket",
-      "status": "active",
-      "revenue_7d": 0,
-      "live": true,
-      "trades": 4
-    },
-    {
-      "id": "memory-mcp",
-      "name": "Memory-MCP",
-      "status": "active",
-      "revenue_7d": 0,
-      "live": true,
-      "subscribers": 0
-    },
-    {
-      "id": "acp-services",
-      "name": "ACP Services",
-      "status": "active",
-      "revenue_7d": 0,
-      "live": true,
-      "hires": 0
-    }
+    {"id": "execution-protocol", "name": "Execution Protocol", "status": "active", "revenue_7d": 0, "live": true},
+    {"id": "bnkr", "name": "BNKR Trading", "status": "active", "revenue_7d": 0.75, "realized_pnl": 0.75, "live": true, "trades": 1, "positions": 1},
+    {"id": "polymarket", "name": "Polymarket", "status": "active", "revenue_7d": 0, "live": true, "trades": 4},
+    {"id": "memory-mcp", "name": "Memory-MCP", "status": "active", "revenue_7d": 0, "live": true, "subscribers": 0},
+    {"id": "acp-services", "name": "ACP Services", "status": "active", "revenue_7d": 0, "live": true, "hires": 0}
   ]
 }

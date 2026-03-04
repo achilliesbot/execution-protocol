@@ -73,7 +73,7 @@ const LIVE_DATA_FALLBACK = {
   memory_mcp: { total_memories: 87, skills: 87, status: "online" },
   products: { count: 2, list: [{ name: "Polymarket Alpha Signals Pack v1", price: 25 }, { name: "The Achilles Alpha Trading Playbook", price: 15 }] },
   streams: [
-    { id: "execution-protocol", name: "Execution Protocol", status: "active", revenue_7d": 0, live: true },
+    { id: "execution-protocol", name: "Execution Protocol", status: "active", revenue_7d: 0, live: true },
     { id: "bnkr", name: "BNKR Trading", status: "active", revenue_7d: 0.75, realized_pnl: 0.75, live: true, trades: 1, positions: 1 },
     { id: "polymarket", name: "Polymarket", status: "active", revenue_7d: 0, live: true, trades: 4 },
     { id: "memory-mcp", name: "Memory-MCP", status: "active", revenue_7d: 0, live: true, subscribers: 0 },

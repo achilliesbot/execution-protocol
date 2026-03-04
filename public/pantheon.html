@@ -623,12 +623,34 @@
                 // Update legacy streams if element exists
                 const streamRevenue = document.getElementById('stream-revenue');
                 if (streamRevenue && overviewData.streams) {
-                    streamRevenue.innerHTML = overviewData.streams.map(s => `
+                    streamRevenue.innerHTML = overviewData.streams.map(s => {
+                        // Build activity metrics based on stream type
+                        let metrics = '';
+                        if (s.id === 'bnkr' && s.trades) {
+                            metrics = `${s.trades} trade${s.trades !== 1 ? 's' : ''} • $100 deployed`;
+                        } else if (s.id === 'polymarket' && s.trades) {
+                            metrics = `${s.trades} trade${s.trades !== 1 ? 's' : ''} • $100 deployed`;
+                        } else if (s.id === 'memory-mcp' && s.subscribers !== undefined) {
+                            metrics = `${s.subscribers} subscriber${s.subscribers !== 1 ? 's' : ''}`;
+                        } else if (s.id === 'acp-services') {
+                            metrics = `${s.hires || 0} hire${(s.hires || 0) !== 1 ? 's' : ''}`;
+                        }
+                        
+                        return `
                         <div class="stream-item">
-                            <div><span class="stream-status ${s.status === 'locked' ? 'locked' : ''}"></span><span class="stream-name">${s.name}</span></div>
-                            <span class="stream-amount">${formatUSD(s.revenue_7d)}</span>
+                            <div style="flex:1;">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span class="stream-status ${s.status === 'locked' ? 'locked' : ''}"></span>
+                                    <span class="stream-name">${s.name}</span>
+                                </div>
+                                <div style="color:var(--text-muted);font-size:0.75rem;margin-top:4px;font-family:'JetBrains Mono',monospace;">${metrics}</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <span class="stream-amount" style="color:${s.revenue_7d >= 0 ? 'var(--success)' : 'var(--ember)'};">${formatUSD(s.revenue_7d)}</span>
+                                <div style="color:var(--text-muted);font-size:0.7rem;margin-top:2px;">7d PnL</div>
+                            </div>
                         </div>
-                    `).join('');
+                    `}).join('');
                 }
                 
                 if (overviewData.treasury) {
