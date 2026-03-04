@@ -1,37 +1,37 @@
 {
-  "timestamp": "2026-03-04T17:13:12.735784+00:00",
+  "timestamp": "2026-03-04T17:19:28.528137+00:00",
   "mode": "ACHILLES",
   "data_source": "LIVE_SYNC",
   "treasury": {
     "eth": 0.011,
     "usdc": 35,
     "bnkr_deployed": 100,
-    "bnkr_realized_pnl": 0,
-    "bnkr_unrealized_pnl": -16.67,
-    "bnkr_total_pnl": -16.67,
-    "total_usd": 118.33
+    "bnkr_realized_pnl": 0.75,
+    "bnkr_unrealized_pnl": 0,
+    "bnkr_total_pnl": 0.75,
+    "total_usd": 135.75
   },
   "revenue": {
-    "7d": -16.67,
-    "30d": -16.67,
-    "all_time": -16.67
+    "7d": 0.75,
+    "30d": 0.75,
+    "all_time": 0.75
   },
   "trading": {
     "bnkr": {
       "trades": 1,
       "positions": 0,
-      "realized_pnl": 0,
-      "unrealized_pnl": -16.67,
-      "total_pnl": -16.67,
+      "realized_pnl": 0.75,
+      "unrealized_pnl": 0,
+      "total_pnl": 0.75,
       "status": "active"
     },
     "polymarket": {
-      "trades": 0,
+      "trades": 4,
       "open_orders": 0,
-      "validated_pending": 7,
+      "validated_pending": 0,
       "realized_pnl": 0,
       "unrealized_pnl": 0,
-      "status": "scanning"
+      "status": "active"
     }
   },
   "sub_agents": {
@@ -107,9 +107,9 @@
       "id": "bnkr",
       "name": "BNKR Trading",
       "status": "active",
-      "revenue_7d": -16.67,
-      "realized_pnl": 0,
-      "unrealized_pnl": -16.67,
+      "revenue_7d": 0.75,
+      "realized_pnl": 0.75,
+      "unrealized_pnl": 0,
       "live": true,
       "trades": 1,
       "positions": 0
@@ -120,8 +120,7 @@
       "status": "active",
       "revenue_7d": 0,
       "live": true,
-      "trades": 0,
-      "validated_pending": 7
+      "trades": 4
     },
     {
       "id": "memory-mcp",
