@@ -37,6 +37,37 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(join(__dirname, 'public')));
 
+// PUBLIC PAGE ROUTES (before auth middleware)
+// Redirect root to Pantheon UI
+app.get('/', (req, res) => {
+  res.redirect('/pantheon.html');
+});
+
+// Page routes for each tab
+app.get('/overview', (req, res) => {
+  res.redirect('/pantheon.html#overview');
+});
+
+app.get('/trades', (req, res) => {
+  res.redirect('/pantheon.html#trades');
+});
+
+app.get('/streams', (req, res) => {
+  res.redirect('/pantheon.html#streams');
+});
+
+app.get('/income', (req, res) => {
+  res.redirect('/pantheon.html#income');
+});
+
+app.get('/integrate', (req, res) => {
+  res.redirect('/pantheon.html#integrate');
+});
+
+app.get('/vault', (req, res) => {
+  res.redirect('/pantheon.html#vault');
+});
+
 // Rate limiter for public endpoints (health, status, schemas) — 200 req/min per IP
 const publicRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
@@ -185,35 +216,6 @@ app.get('/ep/session/:id', authRateLimiter, sessionRoute);
 
 // Pantheon UI Routes (public dashboard + admin)
 app.use('/pantheon', pantheonRoutes);
-
-// Page routes for each tab
-app.get('/', (req, res) => {
-  res.redirect('/pantheon.html');
-});
-
-app.get('/overview', (req, res) => {
-  res.redirect('/pantheon.html#overview');
-});
-
-app.get('/trades', (req, res) => {
-  res.redirect('/pantheon.html#trades');
-});
-
-app.get('/streams', (req, res) => {
-  res.redirect('/pantheon.html#streams');
-});
-
-app.get('/income', (req, res) => {
-  res.redirect('/pantheon.html#income');
-});
-
-app.get('/integrate', (req, res) => {
-  res.redirect('/pantheon.html#integrate');
-});
-
-app.get('/vault', (req, res) => {
-  res.redirect('/pantheon.html#vault');
-});
 
 // 404 handler
 app.use((req, res) => {
