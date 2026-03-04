@@ -36,6 +36,45 @@
     ],
     "note": "Ready to deploy - awaiting execution"
   },
+  "propinfera": {
+    "status": "AUTONOMOUS_TAKEOVER_ACTIVE",
+    "acquisition_date": "2026-03-04",
+    "original_name": "PropInfera",
+    "llc": "Delaware (maintained)",
+    "bank": "Mercury (maintained)",
+    "deals_analyzed_24h": 0,
+    "deals_analyzed_7d": 0,
+    "deals_analyzed_30d": 0,
+    "mrr_stripe": 0,
+    "mrr_onchain": 0,
+    "total_mrr": 0,
+    "onchain_fees_collected": 0,
+    "treasury_contribution": 0,
+    "active_subscriptions": {
+      "free": 0,
+      "pro": 0,
+      "elite": 0,
+      "agent": 0
+    },
+    "recent_reports": [],
+    "features": [
+      "Smart Import (Redfin/Zillow/Realtor.com)",
+      "Mortgage Calculator",
+      "LTR Cash Flow/ROI",
+      "STR Seasonal Income",
+      "Wholesale MAO",
+      "BRRR Cycle",
+      "AI Deal Insights"
+    ],
+    "new_features_building": [
+      "x402 Micropayments",
+      "Bankr USDC Integration",
+      "Virtuals ACP Hiring",
+      "ERC-8004 Anchored Reports",
+      "Memory-MCP Enhanced Comps"
+    ],
+    "note": "100% autonomous control - ACHILLES MODE"
+  },
   "oddpool": {
     "status": "ACTIVE",
     "capital_deployed": 25,
@@ -84,6 +123,21 @@
   },
   "streams": [
     {
+      "id": "propinfera",
+      "name": "PropInfera Underwriting Hub",
+      "status": "AUTONOMOUS_TAKEOVER_ACTIVE",
+      "revenue_7d": 0,
+      "deals_analyzed": 0,
+      "mrr_total": 0,
+      "mrr_stripe": 0,
+      "mrr_onchain": 0,
+      "onchain_fees": 0,
+      "treasury_contribution": 0,
+      "features": "Smart Import + AI Underwriting + Onchain Reports",
+      "note": "100% autonomous - ACHILLES MODE",
+      "live": true
+    },
+    {
       "id": "defi-yield",
       "name": "DeFi Yield (READY)",
       "status": "configured",
@@ -96,15 +150,12 @@
     },
     {
       "id": "oddpool-arb",
-      "name": "Oddpool Arbitrage (ACTIVE)",
-      "status": "active",
+      "name": "Oddpool Arbitrage (PENDING ACTIVATION)",
+      "status": "pending_activation",
       "revenue_7d": 0,
-      "deployed": 25,
+      "deployed": 0,
       "target": 150,
-      "cycle": "4h",
-      "strategy": "AUTONOMOUS_ARB",
-      "edge": "3.2%",
-      "signal": "@ShamsCharania",
+      "note": "Pro plan required",
       "live": true
     },
     {
