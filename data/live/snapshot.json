@@ -71,5 +71,32 @@
       "hires": 0,
       "live": true
     }
-  ]
+  ],
+  "products": {
+    "count": 3,
+    "list": [
+      {
+        "name": "Polymarket Alpha Signals Pack v1",
+        "price": 25,
+        "billing": "one_time"
+      },
+      {
+        "name": "The Achilles Alpha Trading Playbook",
+        "price": 15,
+        "billing": "one_time"
+      },
+      {
+        "name": "Achilles GTM Agent",
+        "price": 5,
+        "price_range": "$1-10",
+        "billing": "per_booking",
+        "strategy": "undercut_vc_backed"
+      }
+    ]
+  },
+  "pricing_strategy": {
+    "gtm_agent": "$1-10 per booking (vs $50-200 competitors)",
+    "goal": "Capture bot/agent market share",
+    "competitive_position": "Undercut VC-backed ClawGTM"
+  }
 }

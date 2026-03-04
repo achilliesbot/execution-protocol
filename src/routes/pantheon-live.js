@@ -82,7 +82,7 @@ const LIVE_DATA_FALLBACK = {
     ]
   },
   memory_mcp: { total_memories: 87, skills: 87, status: "online" },
-  products: { count: 2, list: [{ name: "Polymarket Alpha Signals Pack v1", price: 25 }, { name: "The Achilles Alpha Trading Playbook", price: 15 }] },
+  products: { count: 3, list: [{ name: "Polymarket Alpha Signals Pack v1", price: 25 }, { name: "The Achilles Alpha Trading Playbook", price: 15 }, { name: "Achilles GTM Agent", price: 5, price_range: "$1-10", billing: "per_booking" }] },
   streams: [
     { id: "polymarket", name: "Polymarket", status: "active", revenue_7d: 0, trades: 6, deployed: 150, live: true },
     { id: "bnkr", name: "BNKR Trading", status: "active", revenue_7d: 0.75, realized_pnl: 0.75, trades: 1, deployed: 100, live: true },
