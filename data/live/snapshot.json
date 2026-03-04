@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-03-04T18:09:25.892667+00:00",
+  "timestamp": "2026-03-04T18:20:08.957958+00:00",
   "mode": "ACHILLES",
   "treasury": {
     "eth": 0.011,
     "usdc_cash": 35,
-    "polymarket_deployed": 300,
+    "polymarket_deployed": 150,
     "bnkr_deployed": 100,
     "bnkr_realized_pnl": 0.75,
     "bnkr_unrealized_pnl": 0,
     "bnkr_total_pnl": 0.75,
-    "total_deployed": 400,
+    "total_deployed": 250,
     "total_cash": 60,
-    "total_usd": 460.75
+    "total_usd": 310.75
   },
   "revenue": {
     "7d": 0.75,
@@ -20,8 +20,8 @@
   },
   "trading": {
     "polymarket": {
-      "trades": 14,
-      "deployed": 300,
+      "trades": 6,
+      "deployed": 150,
       "realized_pnl": 0,
       "unrealized_pnl": 0,
       "status": "active"
@@ -41,8 +41,8 @@
       "name": "Polymarket",
       "status": "active",
       "revenue_7d": 0,
-      "trades": 14,
-      "deployed": 300,
+      "trades": 6,
+      "deployed": 150,
       "live": true
     },
     {
