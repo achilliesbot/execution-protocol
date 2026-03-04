@@ -160,7 +160,7 @@ router.get('/overview', async (req, res) => {
       bnkr_deployed: treasury.bnkr_deployed || 100,
       bnkr_allocation: treasury.bnkr_deployed || 100,
       bnkr_unrealized: treasury.bnkr_unrealized_pnl || 0,
-      bnkr_total_pnl: treasury.bnkr_total_pnl || 0.75,
+      bnkr_total_pnl: treasury.bnkr_total_pnl || treasury.bnkr_realized_pnl || 0.75,
       total_deployed: treasury.total_deployed || 250,
       total_cash: treasury.total_cash || 60,
       last_updated: now.toISOString()
