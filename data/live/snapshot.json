@@ -1,41 +1,80 @@
 {
-  "timestamp": "2026-03-04T16:23:00Z",
+  "timestamp": "2026-03-04T16:55:43.897173+00:00",
   "mode": "ACHILLES",
+  "data_source": "USER_CONFIRMED",
   "treasury": {
     "eth": 0.011,
     "usdc": 35,
     "bnkr_deployed": 100,
-    "bnkr_unrealized_pnl": -16.47,
-    "total_usd": 135
+    "bnkr_realized_pnl": 0.75,
+    "bnkr_unrealized_pnl": 0,
+    "bnkr_total_pnl": 0.75,
+    "total_usd": 135.75
   },
   "revenue": {
-    "7d": 0,
-    "30d": 0,
-    "all_time": 0
+    "7d": 0.75,
+    "30d": 0.75,
+    "all_time": 0.75
   },
   "trading": {
     "bnkr": {
       "trades": 1,
-      "realized_pnl": 0,
-      "unrealized_pnl": -16.47,
-      "positions": 0
+      "positions": 1,
+      "realized_pnl": 0.75,
+      "unrealized_pnl": 0,
+      "total_pnl": 0.75,
+      "status": "active",
+      "note": "USER_CONFIRMED_UP_0.75"
     },
     "polymarket": {
-      "trades": 7,
+      "trades": 0,
+      "open_orders": 0,
+      "validated_pending": 2,
       "realized_pnl": 0,
       "unrealized_pnl": 0,
-      "open_orders": 0
+      "status": "scanning",
+      "note": "SCANNING_FOR_OPPORTUNITIES"
     }
   },
   "sub_agents": {
     "count": 5,
     "total_budget": 100,
     "agents": [
-      {"id": "sub_trading_specialist_001", "name": "Trading Specialist", "role": "trading", "budget": 20, "status": "active"},
-      {"id": "sub_content_specialist_001", "name": "Content Specialist", "role": "content", "budget": 20, "status": "active"},
-      {"id": "sub_sales_closer_001", "name": "Sales Closer", "role": "sales", "budget": 25, "status": "active"},
-      {"id": "sub_viral_content_001", "name": "Viral Content Creator", "role": "marketing", "budget": 20, "status": "active"},
-      {"id": "sub_research_analyst_002", "name": "Crypto Research Analyst", "role": "research", "budget": 15, "status": "active"}
+      {
+        "id": "sub_trading_specialist_001",
+        "name": "Trading Specialist",
+        "role": "trading",
+        "budget": 20,
+        "status": "active"
+      },
+      {
+        "id": "sub_content_specialist_001",
+        "name": "Content Specialist",
+        "role": "content",
+        "budget": 20,
+        "status": "active"
+      },
+      {
+        "id": "sub_sales_closer_001",
+        "name": "Sales Closer",
+        "role": "sales",
+        "budget": 25,
+        "status": "active"
+      },
+      {
+        "id": "sub_viral_content_001",
+        "name": "Viral Content Creator",
+        "role": "marketing",
+        "budget": 20,
+        "status": "active"
+      },
+      {
+        "id": "sub_research_analyst_002",
+        "name": "Crypto Research Analyst",
+        "role": "research",
+        "budget": 15,
+        "status": "active"
+      }
     ]
   },
   "memory_mcp": {
@@ -46,21 +85,60 @@
   "products": {
     "count": 2,
     "list": [
-      {"name": "Polymarket Alpha Signals Pack v1", "price": 25, "status": "live"},
-      {"name": "The Achilles Alpha Trading Playbook", "price": 15, "status": "live"}
+      {
+        "name": "Polymarket Alpha Signals Pack v1",
+        "price": 25,
+        "sales": 0
+      },
+      {
+        "name": "The Achilles Alpha Trading Playbook",
+        "price": 15,
+        "sales": 0
+      }
     ]
   },
-  "targets": {
-    "month_1": 80000,
-    "daily": 2667,
-    "current_run_rate": 0
-  },
   "streams": [
-    {"id": "execution-protocol", "name": "Execution Protocol", "status": "active", "revenue_7d": 0, "live": true},
-    {"id": "bnkr", "name": "BNKR Trading", "status": "active", "revenue_7d": 0, "unrealized": -16.47, "live": true, "trades": 1},
-    {"id": "polymarket", "name": "Polymarket", "status": "active", "revenue_7d": 0, "live": true, "trades": 7},
-    {"id": "memory-mcp", "name": "Memory-MCP", "status": "active", "revenue_7d": 0, "live": true, "subscribers": 0},
-    {"id": "acp-services", "name": "ACP Services", "status": "active", "revenue_7d": 0, "live": true, "hires": 0}
-  ],
-  "updated_at": "2026-03-04T16:23:00Z"
+    {
+      "id": "execution-protocol",
+      "name": "Execution Protocol",
+      "status": "active",
+      "revenue_7d": 0,
+      "live": true
+    },
+    {
+      "id": "bnkr",
+      "name": "BNKR Trading",
+      "status": "active",
+      "revenue_7d": 0.75,
+      "realized_pnl": 0.75,
+      "live": true,
+      "trades": 1,
+      "positions": 1
+    },
+    {
+      "id": "polymarket",
+      "name": "Polymarket",
+      "status": "active",
+      "revenue_7d": 0,
+      "live": true,
+      "trades": 0,
+      "validated_pending": 2
+    },
+    {
+      "id": "memory-mcp",
+      "name": "Memory-MCP",
+      "status": "active",
+      "revenue_7d": 0,
+      "live": true,
+      "subscribers": 0
+    },
+    {
+      "id": "acp-services",
+      "name": "ACP Services",
+      "status": "active",
+      "revenue_7d": 0,
+      "live": true,
+      "hires": 0
+    }
+  ]
 }
