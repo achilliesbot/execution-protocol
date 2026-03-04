@@ -16,33 +16,32 @@ class IncomeCalculator:
     
     def __init__(self):
         self.trades_file = "/home/ubuntu/polymarket-trader/trades.jsonl"
+        self.bnkr_trades_file = "/home/ubuntu/polymarket-trader/bnkr_trades.jsonl"
         self.ledger_dir = "/data/.openclaw/workspace/execution-protocol/data/ledger"
         
     def calculate_bnk_income(self) -> Dict[str, Any]:
         """Calculate BNKR trading income"""
         try:
-            if not Path(self.trades_file).exists():
-                return {"total": 0, "daily": 0, "trades": 0}
+            if not Path(self.bnkr_trades_file).exists():
+                return {"total": 0, "daily": 0, "trades": 0, "unrealized_pnl": 0}
             
-            with open(self.trades_file, 'r') as f:
+            with open(self.bnkr_trades_file, 'r') as f:
                 trades = [json.loads(line) for line in f if line.strip()]
             
-            # Filter BNKR trades
-            bnk_trades = [t for t in trades if 'bnk' in t.get('proposal', {}).get('asset', '').lower()]
+            # Calculate realized and unrealized P&L
+            total_deployed = sum(t.get('amount_usd', 0) for t in trades)
+            total_pnl = sum(t.get('unrealized_pnl_usd', 0) for t in trades)
             
-            total_deployed = sum(t['proposal']['amount_usd'] for t in bnk_trades if 'proposal' in t)
-            
-            # Calculate P&L (simplified - would need actual market data for real P&L)
-            # For now, show deployed capital as "at risk" capital
             return {
                 "total": round(total_deployed, 2),
-                "daily": 0,  # Would calculate from daily changes
-                "trades": len(bnk_trades),
+                "daily": 0,
+                "trades": len(trades),
+                "unrealized_pnl": round(total_pnl, 2),
                 "stream": "BNKR Trading"
             }
         except Exception as e:
             print(f"Error calculating BNK income: {e}")
-            return {"total": 0, "daily": 0, "trades": 0, "stream": "BNKR Trading"}
+            return {"total": 0, "daily": 0, "trades": 0, "unrealized_pnl": 0, "stream": "BNKR Trading"}
     
     def calculate_polymarket_income(self) -> Dict[str, Any]:
         """Calculate Polymarket trading income"""

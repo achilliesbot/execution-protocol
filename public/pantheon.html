@@ -288,19 +288,19 @@
                 <!-- INCOME STREAMS GRID -->
                 <div class="revenue-grid" id="overview-income-streams" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
                     <div class="revenue-card">
-                        <div class="revenue-label">BNKR TRADING</div>
+                        <div class="revenue-label">BNKR P&L</div>
                         <div class="revenue-value" id="income-bnkr">$0.00</div>
-                        <div style="color:var(--success);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;" id="bnkr-count">0 trades</div>
+                        <div style="color:var(--text-muted);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;" id="bnkr-count">0 trades</div>
                     </div>
                     <div class="revenue-card">
-                        <div class="revenue-label">POLYMARKET TRADING</div>
+                        <div class="revenue-label">POLYMARKET P&L</div>
                         <div class="revenue-value" id="income-polymarket">$0.00</div>
-                        <div style="color:var(--success);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;" id="polymarket-count">0 trades</div>
+                        <div style="color:var(--text-muted);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;" id="polymarket-count">0 trades</div>
                     </div>
                     <div class="revenue-card">
-                        <div class="revenue-label">EXECUTION PROTOCOL</div>
+                        <div class="revenue-label">EP FEES EARNED</div>
                         <div class="revenue-value" id="income-ep">$0.00</div>
-                        <div style="color:var(--cyan);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;" id="ep-count">0 validations</div>
+                        <div style="color:var(--text-muted);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;" id="ep-count">0 validations</div>
                     </div>
                     <div class="revenue-card" style="border-color:var(--gold);background:linear-gradient(135deg,rgba(255,176,0,0.05),transparent);">
                         <div class="revenue-label">TOTAL TRANSACTIONS</div>
@@ -308,9 +308,9 @@
                         <div style="color:var(--text-muted);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;">All time</div>
                     </div>
                     <div class="revenue-card" style="border-color:var(--ember);background:linear-gradient(135deg,rgba(255,90,31,0.05),transparent);">
-                        <div class="revenue-label">TOTAL EARNINGS</div>
+                        <div class="revenue-label">TOTAL P&L</div>
                         <div class="revenue-value" id="total-earnings" style="background:linear-gradient(180deg,var(--gold-bright),var(--ember));-webkit-background-clip:text;">$0.00</div>
-                        <div style="color:var(--gold);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;">Combined income</div>
+                        <div style="color:var(--text-muted);font-size:0.85rem;margin-top:8px;font-family:'JetBrains Mono',monospace;">Unrealized</div>
                     </div>
                 </div>
                 
@@ -587,11 +587,21 @@
                 
                 // Update INCOME STREAMS boxes
                 if (incomeData.bnk) {
-                    document.getElementById('income-bnkr').textContent = formatUSD(incomeData.bnk.total || 0);
+                    const bnkPnl = incomeData.bnk.unrealized_pnl || 0;
+                    const bnkEl = document.getElementById('income-bnkr');
+                    if (bnkEl) {
+                        bnkEl.textContent = formatUSD(bnkPnl);
+                        bnkEl.style.color = bnkPnl >= 0 ? 'var(--success)' : 'var(--ember)';
+                    }
                     document.getElementById('bnkr-count').textContent = `${incomeData.bnk.trades || 0} trades`;
                 }
                 if (incomeData.polymarket) {
-                    document.getElementById('income-polymarket').textContent = formatUSD(incomeData.polymarket.total || 0);
+                    const polyPnl = incomeData.polymarket.unrealized_pnl || 0;
+                    const polyEl = document.getElementById('income-polymarket');
+                    if (polyEl) {
+                        polyEl.textContent = formatUSD(polyPnl);
+                        polyEl.style.color = polyPnl >= 0 ? 'var(--success)' : 'var(--ember)';
+                    }
                     document.getElementById('polymarket-count').textContent = `${incomeData.polymarket.trades || 0} trades`;
                 }
                 if (incomeData.ep) {
@@ -601,10 +611,14 @@
                 
                 // Calculate and update TOTALS
                 const totalTrades = (incomeData.bnk?.trades || 0) + (incomeData.polymarket?.trades || 0) + (incomeData.ep?.validations || 0);
-                const totalEarnings = (incomeData.bnk?.total || 0) + (incomeData.polymarket?.total || 0) + (incomeData.ep?.total || 0);
+                const totalPnl = (incomeData.bnk?.unrealized_pnl || 0) + (incomeData.polymarket?.unrealized_pnl || 0) + (incomeData.ep?.total || 0);
                 
                 document.getElementById('total-transactions').textContent = totalTrades.toLocaleString();
-                document.getElementById('total-earnings').textContent = formatUSD(totalEarnings);
+                const totalEl = document.getElementById('total-earnings');
+                if (totalEl) {
+                    totalEl.textContent = formatUSD(totalPnl);
+                    totalEl.style.color = totalPnl >= 0 ? 'var(--success)' : 'var(--ember)';
+                }
                 
                 // Update legacy streams if element exists
                 const streamRevenue = document.getElementById('stream-revenue');
