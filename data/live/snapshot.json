@@ -65,6 +65,17 @@
       "live": true
     },
     {
+      "id": "oddpool-arb",
+      "name": "Oddpool Arbitrage (Stream 3)",
+      "status": "active",
+      "revenue_7d": 0,
+      "deployed": 0,
+      "capital": 150,
+      "cycle": "4h",
+      "strategy": "AUTONOMOUS_ARB",
+      "live": true
+    },
+    {
       "id": "polymarket",
       "name": "Polymarket (High-Edge Only)",
       "status": "scanning",

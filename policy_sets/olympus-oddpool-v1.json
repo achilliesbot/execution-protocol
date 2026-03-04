@@ -1,0 +1,36 @@
+{
+  "policy_set_id": "olympus-oddpool-v1",
+  "version": "1.0.0",
+  "name": "Oddpool Arbitrage Policy",
+  "description": "Autonomous arbitrage execution on Oddpool with X intel cross-reference",
+  "constraints": {
+    "total_capital_usd": 150,
+    "max_position_usd": 30,
+    "max_position_pct": 0.20,
+    "max_daily_loss_usd": 15,
+    "max_daily_loss_pct": 0.10,
+    "max_open_positions": 4,
+    "min_edge_pct": 2.0,
+    "min_confidence_score": 0.75,
+    "autonomy_threshold_usd": 25,
+    "commander_approve_threshold_usd": 50,
+    "execution_window_seconds": 120
+  },
+  "risk_rules": {
+    "max_concentration_per_market": 0.15,
+    "max_correlation_exposure": 0.30,
+    "volatility_adjustment": true,
+    "liquidity_minimum_usd": 10000
+  },
+  "execution_rules": {
+    "validate_before_execute": true,
+    "log_all_attempts": true,
+    "require_intel_confirmation": true,
+    "max_slippage_pct": 0.5
+  },
+  "autonomy_levels": {
+    "full_auto": {"max_usd": 25, "requires_approval": false},
+    "commander_approve": {"max_usd": 50, "requires_approval": true},
+    "prohibited": {"max_usd": 999999, "requires_approval": true}
+  }
+}
