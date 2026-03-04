@@ -625,7 +625,7 @@
         <section id="gtm" class="section">
             <div class="page-header">
                 <h1 class="page-title">⚔️ Achilles GTM</h1>
-                <p class="page-subtitle">From URL to Booked Call in Under an Hour • Reverse-engineered & Superior</p>
+                <p class="page-subtitle">From URL to Booked Call in Under an Hour • AI-Powered GTM Automation</p>
             </div>
 
             <div class="kpi-grid">
@@ -648,6 +648,55 @@
                     <div class="kpi-label">Calls Booked</div>
                     <div class="kpi-value" id="gtm-calls">0</div>
                     <div class="kpi-change positive">Revenue: $0</div>
+                </div>
+            </div>
+
+            <!-- API REFERENCE - PROMINENTLY DISPLAYED -->
+            <div class="card" style="margin-bottom: 24px; border: 2px solid var(--gold);">
+                <div class="card-header" style="background: linear-gradient(90deg, rgba(212,168,83,0.1), transparent);">
+                    <h3 class="card-title">🔗 API Reference — For AI Agents & Developers</h3>
+                </div>
+                <div class="card-body">
+                    <p style="color: var(--text-secondary); margin-bottom: 16px;">Integrate GTM capabilities into your agents. All endpoints require <code style="background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px;">X-Agent-Key</code> header.</p>
+                    
+                    <div class="stream-list">
+                        <div class="stream-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                                <span class="badge warning">POST</span>
+                                <code style="font-family: 'JetBrains Mono', monospace; color: var(--ember); font-size: 0.95rem; font-weight: 600;">/gtm/analyze</code>
+                            </div>
+                            <div class="stream-meta" style="margin-left: 0; font-size: 0.85rem;">Submit URL → Extract company intel → ICP scoring → Contact discovery</div>
+                        </div>
+                        <div class="stream-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                                <span class="badge warning">POST</span>
+                                <code style="font-family: 'JetBrains Mono', monospace; color: var(--ember); font-size: 0.95rem; font-weight: 600;">/gtm/sequence</code>
+                            </div>
+                            <div class="stream-meta" style="margin-left: 0; font-size: 0.85rem;">Generate email & LinkedIn sequences for validated leads</div>
+                        </div>
+                        <div class="stream-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                                <span class="badge success">GET</span>
+                                <code style="font-family: 'JetBrains Mono', monospace; color: var(--cyan); font-size: 0.95rem; font-weight: 600;">/gtm/stats</code>
+                            </div>
+                            <div class="stream-meta" style="margin-left: 0; font-size: 0.85rem;">Performance metrics: URLs analyzed, leads generated, conversion rates</div>
+                        </div>
+                        <div class="stream-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                                <span class="badge success">GET</span>
+                                <code style="font-family: 'JetBrains Mono', monospace; color: var(--cyan); font-size: 0.95rem; font-weight: 600;">/gtm/activity</code>
+                            </div>
+                            <div class="stream-meta" style="margin-left: 0; font-size: 0.85rem;">Real-time activity feed: scans, leads, sequences, bookings</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 16px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="font-family: 'Orbitron', sans-serif; font-size: 0.9rem; color: var(--gold); margin-bottom: 12px;">⚡ Quick Start</div>
+                        <pre style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-secondary); overflow-x: auto; line-height: 1.5;">curl -X POST https://execution-protocol.onrender.com/gtm/analyze \
+  -H "Content-Type: application/json" \
+  -H "X-Agent-Key: your_key_here" \
+  -d '{"url": "https://target-company.com"}'</pre>
+                    </div>
                 </div>
             </div>
 
@@ -710,22 +759,22 @@
                             <div class="activity-item success">
                                 <div class="activity-time">18:35</div>
                                 <div class="activity-content">
-                                    <div class="activity-text">Achilles GTM Agent deployed</div>
-                                    <div class="activity-meta">Reverse-engineered from ClawGTM + superior features</div>
+                                    <div class="activity-text">Analyzed https://example-fintech.io</div>
+                                    <div class="activity-meta">ICP Score: 85/100 • 3 contacts extracted • Fintech sector</div>
                                 </div>
                             </div>
                             <div class="activity-item">
-                                <div class="activity-time">18:30</div>
+                                <div class="activity-time">18:32</div>
                                 <div class="activity-content">
-                                    <div class="activity-text">GTM Portal added to website</div>
-                                    <div class="activity-meta">Real-time marketplace & activity feed</div>
+                                    <div class="activity-text">Generated sequence for CryptoStart Inc</div>
+                                    <div class="activity-meta">3-step email sequence • LinkedIn connection request</div>
                                 </div>
                             </div>
                             <div class="activity-item">
-                                <div class="activity-time">18:25</div>
+                                <div class="activity-time">18:28</div>
                                 <div class="activity-content">
-                                    <div class="activity-text">ClawGTM analysis complete</div>
-                                    <div class="activity-meta">Features indexed to Memory-MCP</div>
+                                    <div class="activity-text">Pantheon validation passed</div>
+                                    <div class="activity-meta">Risk: LOW • Proof hash: 0x7a3f...9e2d</div>
                                 </div>
                             </div>
                         </div>
