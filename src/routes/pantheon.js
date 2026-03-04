@@ -16,6 +16,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { readFileSync, readdirSync } from 'fs';
 import { createHash } from 'crypto';
+import { spawn } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -439,11 +440,8 @@ router.get('/trades', (req, res) => {
 // Income streams endpoint - real-time income calculation from Python
 router.get('/income-streams', (req, res) => {
   try {
-    // Import and run Python income calculator
-    const { spawn } = require('child_process');
-    const path = require('path');
-    
-    const calculatorPath = path.join(__dirname, '../../pantheon/income_calculator.py');
+    // Use already imported spawn
+    const calculatorPath = join(__dirname, '../../pantheon/income_calculator.py');
     
     const python = spawn('python3', [calculatorPath], {
       env: { ...process.env },
