@@ -3,14 +3,14 @@
   "mode": "ACHILLES",
   "treasury": {
     "eth": 0.011,
-    "usdc_cash": 10,
-    "polymarket_deployed": 200,
+    "usdc_cash": 185,
+    "polymarket_deployed": 25,
     "bnkr_deployed": 100,
     "bnkr_realized_pnl": 0.75,
     "bnkr_unrealized_pnl": 0,
     "bnkr_total_pnl": 0.75,
-    "total_deployed": 300,
-    "total_cash": 35,
+    "total_deployed": 125,
+    "total_cash": 185,
     "total_usd": 310.75
   },
   "revenue": {
@@ -20,15 +20,14 @@
   },
   "trading": {
     "polymarket": {
-      "trades": 8,
-      "deployed": 200,
+      "trades": 1,
+      "deployed": 25,
       "realized_pnl": 0,
       "unrealized_pnl": 0,
       "status": "active",
+      "strategy": "LIVE_MARKETS_ONLY",
       "positions": [
-        {"asset": "Bitcoin $100k 2024", "direction": "BUY", "entry": 0.42, "size": 59.5, "value": 25},
-        {"asset": "Ethereum ETF", "direction": "BUY", "entry": 0.22, "size": 113.6, "value": 25},
-        {"asset": "pm540817", "direction": "SELL", "entry": 0.53, "size": 47.2, "value": 25}
+        {"asset": "Indiana Pacers NBA Finals 2026", "direction": "BUY", "entry": 0.50, "score": 85, "value": 25}
       ]
     },
     "bnkr": {
@@ -43,11 +42,12 @@
   "streams": [
     {
       "id": "polymarket",
-      "name": "Polymarket",
+      "name": "Polymarket (Live Markets)",
       "status": "active",
       "revenue_7d": 0,
-      "trades": 8,
-      "deployed": 200,
+      "trades": 1,
+      "deployed": 25,
+      "strategy": "NBA_2026_Finals",
       "live": true
     },
     {
