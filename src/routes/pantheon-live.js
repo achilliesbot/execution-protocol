@@ -78,7 +78,7 @@ const LIVE_DATA_FALLBACK = {
 };
 
 const getSnapshot = () => {
-  const fromFile = getSnapshot();
+  const fromFile = readJson(SNAPSHOT_PATH, null);
   return fromFile || LIVE_DATA_FALLBACK;
 };
 
