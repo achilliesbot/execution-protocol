@@ -436,6 +436,59 @@ router.get('/trades', (req, res) => {
   }
 });
 
+// Income streams endpoint - real-time income calculation from Python
+router.get('/income-streams', (req, res) => {
+  try {
+    // Import and run Python income calculator
+    const { spawn } = require('child_process');
+    const path = require('path');
+    
+    const calculatorPath = path.join(__dirname, '../../pantheon/income_calculator.py');
+    
+    const python = spawn('python3', [calculatorPath], {
+      env: { ...process.env },
+      timeout: 10000
+    });
+    
+    let output = '';
+    let error = '';
+    
+    python.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+    
+    python.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    python.on('close', (code) => {
+      if (code !== 0) {
+        console.error('Income calculator error:', error);
+        // Return fallback data
+        return res.json({
+          bnk: { total: 0, daily: 0, trades: 0, stream: "BNKR Trading" },
+          polymarket: { total: 0, daily: 0, trades: 0, stream: "Polymarket Trading" },
+          ep: { total: 0, validations: 0, stream: "Execution Protocol" },
+          total: 0,
+          timestamp: new Date().toISOString()
+        });
+      }
+      
+      try {
+        const income = JSON.parse(output);
+        res.json(income);
+      } catch (e) {
+        console.error('Failed to parse income data:', e);
+        res.status(500).json({ error: 'Failed to parse income data' });
+      }
+    });
+    
+  } catch (err) {
+    console.error('Income streams error:', err);
+    res.status(500).json({ error: 'Failed to calculate income', message: err.message });
+  }
+});
+
 // Connector status endpoint
 router.get('/status/connectors', (req, res) => {
   const status = {
