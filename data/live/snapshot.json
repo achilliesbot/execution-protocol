@@ -1,18 +1,22 @@
 {
-  "timestamp": "2026-03-04T20:40:00Z",
+  "timestamp": "2026-03-04T20:50:00Z",
   "mode": "ACHILLES_LIVE",
   "strategy": "DEFI_YIELD_FIRST",
   "treasury": {
     "eth": 0.011,
-    "usdc_cash": 10,
-    "defi_yield_deployed": 175,
+    "usdc_cash": 185,
+    "defi_yield_allocated": 0,
+    "defi_yield_target": 175,
+    "oddpool_allocated": 0,
+    "oddpool_target": 150,
     "polymarket_deployed": 25,
     "bnkr_deployed": 100,
     "bnkr_realized_pnl": 0.75,
     "bnkr_unrealized_pnl": 0,
     "bnkr_total_pnl": 0.75,
-    "total_deployed": 300,
-    "total_cash": 10,
+    "total_deployed": 125,
+    "total_allocated": 0,
+    "total_cash": 185,
     "total_usd": 310.75
   },
   "revenue": {
@@ -21,15 +25,24 @@
     "all_time": 0.75
   },
   "defi_yield": {
-    "status": "active",
-    "total_deployed": 175,
+    "status": "CONFIGURED_NOT_DEPLOYED",
+    "allocation_target": 175,
     "weighted_apy": 8.99,
     "projected_annual": 15.73,
     "projected_monthly": 1.31,
     "allocations": [
-      {"protocol": "Morpho_USDC", "amount": 122.50, "apy": 9.20},
-      {"protocol": "Aave_USDC", "amount": 52.50, "apy": 8.50}
-    ]
+      {"protocol": "Morpho_USDC", "amount": 0, "target": 122.50, "apy": 9.20},
+      {"protocol": "Aave_USDC", "amount": 0, "target": 52.50, "apy": 8.50}
+    ],
+    "note": "Ready to deploy - awaiting execution"
+  },
+  "oddpool": {
+    "status": "CONFIGURED_NOT_DEPLOYED",
+    "capital_target": 150,
+    "deployed": 0,
+    "cycle": "4h",
+    "strategy": "AUTONOMOUS_ARB",
+    "note": "Ready to deploy - awaiting execution"
   },
   "trading": {
     "polymarket": {
@@ -56,21 +69,22 @@
   "streams": [
     {
       "id": "defi-yield",
-      "name": "DeFi Yield (Primary)",
-      "status": "active",
-      "revenue_7d": 0.30,
+      "name": "DeFi Yield (READY)",
+      "status": "configured",
+      "revenue_7d": 0,
       "projected_apy": 8.99,
-      "deployed": 175,
+      "target": 175,
+      "deployed": 0,
       "risk": "low",
       "live": true
     },
     {
       "id": "oddpool-arb",
-      "name": "Oddpool Arbitrage (Stream 3)",
-      "status": "active",
+      "name": "Oddpool Arbitrage (READY)",
+      "status": "configured",
       "revenue_7d": 0,
       "deployed": 0,
-      "capital": 150,
+      "target": 150,
       "cycle": "4h",
       "strategy": "AUTONOMOUS_ARB",
       "live": true
