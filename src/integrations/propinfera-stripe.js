@@ -4,7 +4,7 @@
  * Updates execution-protocol dashboard
  */
 
-const STRIPE_API_KEY = process.env.STRIPE_API_KEY;
+const STRIPE_API_KEY = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_API_KEY;
 const STRIPE_API_URL = 'https://api.stripe.com/v1';
 
 export async function fetchStripeMetrics() {
