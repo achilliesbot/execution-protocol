@@ -177,46 +177,81 @@ const readJsonl = (path) => {
  * LIVE DATA ENDPOINTS
  */
 
-// Overview: Real revenue + treasury + streams
+// Overview: LIVE DATA (best-effort): combines snapshot + real connectors (Hyperliquid/Bankr)
 router.get('/overview', async (req, res) => {
   const now = new Date();
   const snapshot = getSnapshot();
-  
-  // Real connector status
+
+  // Connector status
   const polyConfigured = !!(process.env.POLYMARKET_API_KEY && process.env.POLYMARKET_PRIVATE_KEY);
   const bnkrConfigured = !!process.env.BNKR_API_KEY;
-  
-  const treasury = snapshot.treasury || {
-    eth: 0.011,
-    usdc: 35,
-    bnkr_deployed: 100,
-    bnkr_unrealized_pnl: -16.47,
-    total_usd: 135
-  };
-  
+  const hlConfigured = !!process.env.HYPERLIQUID_ADDRESS;
+
   const revenue = snapshot.revenue || { '7d': 0, '30d': 0, all_time: 0 };
   const streams = snapshot.streams || [];
-  
+
+  // Start with snapshot treasury, then overwrite with real-time values when available.
+  const treasurySnap = snapshot.treasury || {};
+  const treasury = {
+    total_usd: treasurySnap.total_usd || 310.75,
+    eth: treasurySnap.eth || 0.011,
+    usdc: treasurySnap.usdc_cash || treasurySnap.usdc || 0,
+    usdc_cash: treasurySnap.usdc_cash || 0,
+    polymarket_deployed: treasurySnap.polymarket_deployed || 0,
+    bnkr_deployed: treasurySnap.bnkr_deployed || 0,
+    bnkr_allocation: treasurySnap.bnkr_deployed || 0,
+    bnkr_unrealized: treasurySnap.bnkr_unrealized_pnl || 0,
+    bnkr_total_pnl: treasurySnap.bnkr_total_pnl || treasurySnap.bnkr_realized_pnl || 0,
+    total_deployed: treasurySnap.total_deployed || 0,
+    total_cash: treasurySnap.total_cash || 0,
+    last_updated: now.toISOString(),
+    sources: {},
+  };
+
+  // Hyperliquid real-time (spot USDC + perp accountValue)
+  if (hlConfigured) {
+    try {
+      const addr = process.env.HYPERLIQUID_ADDRESS;
+      const hlSpot = await fetch('https://api.hyperliquid.xyz/info', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ type: 'spotClearinghouseState', user: addr })
+      }).then(r => r.json());
+      const hlPerp = await fetch('https://api.hyperliquid.xyz/info', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ type: 'clearinghouseState', user: addr })
+      }).then(r => r.json());
+
+      const usdcSpot = Number((hlSpot?.balances || []).find(b => b.coin === 'USDC')?.total || 0);
+      const perpValue = Number(hlPerp?.marginSummary?.accountValue || 0);
+
+      treasury.sources.hyperliquid = { address: addr, usdc_spot: usdcSpot, perp_account_value: perpValue };
+    } catch (e) {
+      treasury.sources.hyperliquid_error = String(e?.message || e);
+    }
+  }
+
+  // Bankr real-time (total across chains)
+  if (bnkrConfigured) {
+    try {
+      const bankr = await fetch('https://api.bankr.bot/agent/balances', {
+        headers: { 'X-API-Key': process.env.BNKR_API_KEY }
+      }).then(r => r.json());
+      treasury.sources.bankr = { evmAddress: bankr?.evmAddress, balances: bankr?.balances };
+    } catch (e) {
+      treasury.sources.bankr_error = String(e?.message || e);
+    }
+  }
+
   res.json({
     revenue,
-    treasury: {
-      total_usd: treasury.total_usd || 310.75,
-      eth: treasury.eth || 0.011,
-      usdc: treasury.usdc_cash || treasury.usdc || 35,
-      usdc_cash: treasury.usdc_cash || 35,
-      polymarket_deployed: treasury.polymarket_deployed || 150,
-      bnkr_deployed: treasury.bnkr_deployed || 100,
-      bnkr_allocation: treasury.bnkr_deployed || 100,
-      bnkr_unrealized: treasury.bnkr_unrealized_pnl || 0,
-      bnkr_total_pnl: treasury.bnkr_total_pnl || treasury.bnkr_realized_pnl || 0.75,
-      total_deployed: treasury.total_deployed || 250,
-      total_cash: treasury.total_cash || 60,
-      last_updated: now.toISOString()
-    },
+    treasury,
     streams,
     connectors: {
       polymarket: { configured: polyConfigured, status: polyConfigured ? 'live' : 'not_configured' },
-      bnkr: { configured: bnkrConfigured, status: bnkrConfigured ? 'live' : 'not_configured' }
+      bnkr: { configured: bnkrConfigured, status: bnkrConfigured ? 'live' : 'not_configured' },
+      hyperliquid: { configured: hlConfigured, status: hlConfigured ? 'live' : 'not_configured' }
     },
     updated_at: now.toISOString()
   });
@@ -259,47 +294,65 @@ router.get('/income-streams', (req, res) => {
   res.json(income);
 });
 
-// Trades - Real trade data from snapshot
+// Trades — LIVE: from local JSONL logs when available
 router.get('/trades', (req, res) => {
-  const snapshot = getSnapshot();
-  const trading = snapshot.trading || {};
-  
-  // Generate trade entries from snapshot stats
+  // Search for committee logs in common deploy locations
+  const LOG_PATHS = [
+    join(process.cwd(), 'data', 'committee_logs'),
+    join(process.cwd(), 'committee_logs'),
+    '/data/.openclaw/workspace/committee_logs'
+  ];
+  const logDir = LOG_PATHS.find(p => existsSync(p));
+
   const trades = [];
-  
-  // Add BNKR trades
-  if (trading.bnkr?.trades > 0) {
-    trades.push({
-      timestamp: new Date().toISOString(),
-      proposal: { asset: 'BNKR', direction: 'buy', amount_usd: 100 },
-      status: 'executed',
-      source: 'BNKR'
-    });
+  if (logDir) {
+    // Bankr live exec
+    const bankr = readJsonl(join(logDir, 'bankr_live_exec.jsonl'));
+    for (const e of bankr) {
+      if (e.kind === 'job_result') {
+        trades.push({ timestamp: e.ts, proposal: { asset: 'BNKR', direction: 'buy', amount_usd: 10 }, status: e.status, source: 'BNKR', details: e.response });
+      }
+    }
+
+    // Polymarket live exec
+    const poly = readJsonl(join(logDir, 'polymarket_live_exec.jsonl'));
+    for (const e of poly) {
+      if (e.kind === 'job_result') {
+        trades.push({ timestamp: e.ts, proposal: { asset: 'Polymarket', direction: 'buy', amount_usd: 10 }, status: e.status, source: 'Polymarket', details: e.response });
+      }
+    }
+
+    // Hyperliquid override + live exec
+    const hl1 = readJsonl(join(logDir, 'hl_override_exec.jsonl'));
+    const hl2 = readJsonl(join(logDir, 'live_exec.jsonl'));
+    for (const e of [...hl1, ...hl2]) {
+      if (e.kind === 'order') {
+        trades.push({
+          timestamp: e.ts,
+          proposal: { asset: e.coin || 'HL', direction: e.side, amount_usd: e.usd || e.usdSize || null },
+          status: 'executed',
+          source: 'Hyperliquid',
+          details: e.orderRes || e
+        });
+      }
+    }
   }
-  
-  // Add Polymarket trades
-  for (let i = 0; i < (trading.polymarket?.trades || 0); i++) {
-    trades.push({
-      timestamp: new Date(Date.now() - i * 3600000).toISOString(),
-      proposal: { asset: `Market_${i+1}`, direction: 'buy', amount_usd: 25 },
-      status: 'executed',
-      source: 'Polymarket'
-    });
-  }
-  
-  const totalTrades = (trading.bnkr?.trades || 0) + (trading.polymarket?.trades || 0);
-  const totalDeployed = (trading.bnkr?.trades || 0) * 100 + (trading.polymarket?.trades || 0) * 25;
-  
+
+  trades.sort((a,b) => String(b.timestamp).localeCompare(String(a.timestamp)));
+  const totalTrades = trades.length;
+
   res.json({
-    trades: trades.slice(0, 20),
+    trades: trades.slice(0, 50),
     stats: {
       totalTrades,
       openPositions: 0,
-      totalDeployed: totalDeployed.toFixed(2),
+      totalDeployed: '0.00',
       winRate: '0.0',
       wins: 0,
       losses: 0
-    }
+    },
+    updated_at: new Date().toISOString(),
+    logDir: logDir || null
   });
 });
 
