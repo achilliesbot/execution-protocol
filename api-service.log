@@ -1,0 +1,17 @@
+
+> execution-acp-service@1.0.0 start
+> node src/index.js
+
+[dotenv@17.3.1] injecting env (6) from .env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+✅ ATTESTRegistry connected: 0xC36E784E1dff616bDae4EAc7B310F0934FaF04a4
+✅ ExecutionFeeCollector connected: 0xFF196F1e3a895404d073b8611252cF97388773A7
+{"level":"info","message":"Execution Protocol ACP Service running on port 3000","timestamp":"2026-03-08T07:20:00.820Z"}
+🚀 Execution Protocol ACP Service
+📡 Port: 3000
+⛓️  ATTEST Contract: 0xC36E784E1dff616bDae4EAc7B310F0934FaF04a4
+💰 Fee: max(0.5%, 0.01 ETH)
+✅ Ready for Virtuals ACP integration
+🔗 ACP Manifest: /VIRTUALS_ACP.md
+{"level":"info","message":"Contract integration initialized","timestamp":"2026-03-08T07:20:00.822Z"}
+{"level":"info","message":"Validation request from dexter-test-001","opportunity":{"asset":"ETH","confidence":0.9,"expected_return":0.05,"max_capital":5000,"type":"hyperliquid_funding"},"timestamp":"2026-03-08T07:20:13.261Z"}
+❌ Attestation creation failed: network does not support ENS (operation="getEnsAddress", info={ "network": { "chainId": "31337", "name": "unknown" } }, code=UNSUPPORTED_OPERATION, version=6.16.0)

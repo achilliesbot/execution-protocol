@@ -11,10 +11,12 @@
     "deploy:testnet": "npx hardhat run scripts/deploy-testnet.js --network baseSepolia"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^5.6.1",
     "axios": "^1.6.2",
     "cors": "^2.8.5",
     "ethers": "^6.9.0",
     "express": "^4.18.2",
+    "express-rate-limit": "^8.3.0",
     "jsonwebtoken": "^9.0.2",
     "rate-limiter-flexible": "^4.0.1",
     "winston": "^3.11.0"

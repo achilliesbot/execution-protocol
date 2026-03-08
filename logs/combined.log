@@ -1,0 +1,3 @@
+{"level":"info","message":"Execution Protocol ACP Service running on port 3000","timestamp":"2026-03-08T07:20:00.820Z"}
+{"level":"info","message":"Contract integration initialized","timestamp":"2026-03-08T07:20:00.822Z"}
+{"level":"info","message":"Validation request from dexter-test-001","opportunity":{"asset":"ETH","confidence":0.9,"expected_return":0.05,"max_capital":5000,"type":"hyperliquid_funding"},"timestamp":"2026-03-08T07:20:13.261Z"}
