@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integration Guide - Execution Protocol</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f23;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(15,15,35,0.95);
+            backdrop-filter: blur(10px);
+        }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #00d4ff; text-decoration: none; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: #a0a0c0; text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #00d4ff; }
+        .content { padding: 60px 0; }
+        h1 { font-size: 3rem; margin-bottom: 20px; background: linear-gradient(135deg, #00d4ff, #7b2cbf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h2 { font-size: 1.8rem; margin: 50px 0 20px; color: #00d4ff; }
+        h3 { font-size: 1.3rem; margin: 30px 0 15px; color: #a0a0c0; }
+        p { margin-bottom: 20px; color: #c0c0d0; }
+        pre {
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #00d4ff;
+        }
+        code { font-family: 'Monaco', 'Menlo', monospace; color: #7ee787; }
+        .language-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 30px 0 0;
+        }
+        .language-tab {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            border: none;
+            color: #a0a0c0;
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+        }
+        .language-tab.active {
+            background: rgba(0,212,255,0.2);
+            color: #00d4ff;
+        }
+        .code-block { display: none; }
+        .code-block.active { display: block; }
+        .step {
+            background: rgba(255,255,255,0.03);
+            border-left: 4px solid #00d4ff;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #00d4ff;
+            color: #000;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .step h3 { margin-top: 0; display: inline; }
+        ul { margin: 15px 0; padding-left: 30px; }
+        li { color: #c0c0d0; margin-bottom: 10px; }
+        .highlight-box {
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.3);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        .mobile-menu-btn { display: none; background: none; border: none; color: #00d4ff; font-size: 1.5rem; cursor: pointer; }
+        @media (max-width: 768px) {
+            .nav-links { display: none; position: absolute; top: 70px; left: 0; right: 0; background: rgba(15,15,35,0.98); flex-direction: column; padding: 20px; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
+            .nav-links.active { display: flex; }
+            .mobile-menu-btn { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+                <a href="/" class="logo">⚡ Execution Protocol</a>
+                <div class="nav-links">
+                    <a href="/">Home</a>
+                    <a href="/docs/">Docs</a>
+                    <a href="/api/">API</a>
+                    <a href="/contracts/">Contracts</a>
+                    <a href="/integration/" class="active">Integration</a>
+                    <a href="/virtuals/">Virtuals ACP</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="container">
+            <h1>Integration Guide</h1>
+            <p>Step-by-step guide to integrating Execution Protocol into your AI agent or application.</p>
+
+            <h2>Quick Start</h2>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <h3>Install Dependencies</h3>
+                <p>Choose your language and install the required packages:</p>
+
+                <div class="language-tabs">
+                    <button class="language-tab active" onclick="showCode('js')">JavaScript</button>
+                    <button class="language-tab" onclick="showCode('py')">Python</button>
+                    <button class="language-tab" onclick="showCode('curl')">cURL</button>
+                </div>
+
+                <div id="js" class="code-block active">
+                    <pre><code>npm install axios</code></pre>
+                </div>
+                <div id="py" class="code-block">
+                    <pre><code>pip install requests</code></pre>
+                </div>
+                <div id="curl" class="code-block">
+                    <pre><code># No installation needed - cURL is built into most systems</code></pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <h3>Configure Client</h3>
+                <p>Set up your API client with the base configuration:</p>
+
+                <pre><code>// JavaScript
+const ExecutionProtocol = {
+  baseURL: 'https://api.execution-protocol.io',
+  apiKey: 'your-api-key', // If required
+  
+  async validate(agentId, opportunity) {
+    const response = await fetch(`${this.baseURL}/api/v1/validate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ agent_id: agentId, opportunity })
+    });
+    return response.json();
+  }
+};
+
+// Python
+import requests
+
+class ExecutionProtocol:
+    def __init__(self, api_key=None):
+        self.base_url = 'https://api.execution-protocol.io'
+        self.api_key = api_key
+    
+    def validate(self, agent_id, opportunity):
+        response = requests.post(
+            f"{self.base_url}/api/v1/validate",
+            json={"agent_id": agent_id, "opportunity": opportunity}
+        )
+        return response.json()</code></pre>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <h3>Validate Opportunity</h3>
+                <p>Send your opportunity for validation before execution:</p>
+
+                <pre><code>const opportunity = {
+  type: "hyperliquid_funding",
+  asset: "ETH",
+  expected_return: 0.05,  // 5%
+  confidence: 0.90,       // 90% confidence
+  max_capital: 5000       // $5,000
+};
+
+const decision = await ExecutionProtocol.validate(
+  "my-agent-001",
+  opportunity
+);
+
+console.log(decision.status);     // "approved" or "rejected"
+console.log(decision.fee.feeEth); // "0.010000"</code></pre>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <h3>Execute Trade</h3>
+                <p>If approved, execute the trade with the approval token:</p>
+
+                <pre><code>if (decision.status === "approved") {
+  const nonce = generateNonce(); // Your nonce generation
+  
+  const execution = await fetch(
+    `${ExecutionProtocol.baseURL}/api/v1/execute`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        decision_id: decision.decision_id,
+        approval_token: `APPROVE:${decision.decision_id}:EXEC:${nonce}`
+      })
+    }
+  );
+  
+  const result = await execution.json();
+  console.log(result.tx_hash); // Transaction hash
+}</code></pre>
+            </div>
+
+            <h2>Complete Example</h2>
+
+            <h3>Trading Bot Integration</h3>
+            <pre><code>class TradingBot {
+  constructor(agentId) {
+    this.agentId = agentId;
+    this.baseURL = 'https://api.execution-protocol.io';
+  }
+
+  async analyzeAndTrade(marketData) {
+    // 1. Analyze opportunity
+    const analysis = this.analyze(marketData);
+    
+    // 2. Validate with Execution Protocol
+    const decision = await this.validateOpportunity(analysis);
+    
+    if (decision.status !== "approved") {
+      console.log("Trade rejected:", decision.reasoning);
+      return null;
+    }
+    
+    // 3. Check if fee is acceptable
+    const feeUsd = parseFloat(decision.fee.feeUsd);
+    const expectedProfit = analysis.expected_return * analysis.max_capital;
+    
+    if (feeUsd > expectedProfit * 0.1) { // Max 10% of profit
+      console.log("Fee too high relative to profit");
+      return null;
+    }
+    
+    // 4. Execute trade
+    const execution = await this.executeTrade(decision);
+    
+    // 5. Log result
+    console.log("Trade executed:", execution.tx_hash);
+    return execution;
+  }
+
+  async validateOpportunity(analysis) {
+    const response = await fetch(`${this.baseURL}/api/v1/validate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        agent_id: this.agentId,
+        opportunity: analysis
+      })
+    });
+    return response.json();
+  }
+
+  async executeTrade(decision) {
+    const nonce = Date.now().toString();
+    
+    const response = await fetch(`${this.baseURL}/api/v1/execute`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        decision_id: decision.decision_id,
+        approval_token: `APPROVE:${decision.decision_id}:EXEC:${nonce}`
+      })
+    });
+    return response.json();
+  }
+}</code></pre>
+
+            <h2>Best Practices</h2>
+
+            <h3>1. Always Validate First</h3>
+            <p>Never execute without validation. The validation step provides:</p>
+            <ul>
+                <li>Risk assessment</li>
+                <li>Fee calculation</li>
+                <li>Maximum allocation limits</li>
+                <li>Onchain attestation</li>
+            </ul>
+
+            <h3>2. Handle Rejection Gracefully</h3>
+            <pre><code>if (decision.status === "rejected") {
+  console.log("Reason:", decision.reasoning);
+  // Adjust strategy based on rejection reason
+  // e.g., increase confidence threshold, reduce allocation
+}</code></pre>
+
+            <h3>3. Check Reputation</h3>
+            <pre><code>const reputation = await fetch(
+  `${baseURL}/api/v1/reputation/${agentAddress}`
+).then(r => r.json());
+
+if (reputation.reputation_score < 5000) {
+  console.log("Low reputation - reducing trade size");
+  opportunity.max_capital *= 0.5;
+}</code></pre>
+
+            <h3>4. Fee Management</h3>
+            <div class="highlight-box">
+                <p><strong>Fee Structure:</strong> max(0.5%, 0.01 ETH)</p>
+                <ul>
+                    <li>Small trades (&lt;$5,000): Flat 0.01 ETH (~$25)</li>
+                    <li>Large trades (&gt;$5,000): 0.5% of value</li>
+                </ul>
+            </div>
+
+            <h2>Error Handling</h2>
+
+            <pre><code>async function safeExecute(agentId, opportunity) {
+  try {
+    const decision = await validate(agentId, opportunity);
+    
+    if (decision.status === "approved") {
+      return await execute(decision);
+    }
+    
+    return { success: false, reason: decision.reasoning };
+    
+  } catch (error) {
+    console.error("Execution Protocol Error:", error);
+    
+    if (error.message.includes("Rate limit")) {
+      await sleep(60000); // Wait 1 minute
+      return safeExecute(agentId, opportunity);
+    }
+    
+    return { success: false, error: error.message };
+  }
+}</code></pre>
+
+            <h2>Rate Limiting</h2>
+            <p>The API has a rate limit of <strong>100 requests per minute</strong>. Implement exponential backoff for retries:</p>
+
+            <pre><code>async function withRetry(fn, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (error.status === 429 && i < maxRetries - 1) {
+        const delay = Math.pow(2, i) * 1000; // Exponential backoff
+        await sleep(delay);
+        continue;
+      }
+      throw error;
+    }
+  }
+}</code></pre>
+
+        </div>
+    </div>
+
+    <script>
+        function showCode(lang) {
+            document.querySelectorAll('.code-block').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.language-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(lang).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+<script>function toggleMenu() { document.querySelector('.nav-links').classList.toggle('.active'); }</script></body>
+</html>
