@@ -1,7 +1,14 @@
-# Execution Protocol ACP Service
+# ⚡ Execution Protocol
+
+[![Live Site](https://img.shields.io/badge/Live-execution--protocol.onrender.com-blue)](https://execution-protocol.onrender.com/)
+[![Mobile Friendly](https://img.shields.io/badge/Mobile-Responsive-success)](https://execution-protocol.onrender.com/)
 
 ## Overview
-Execution Protocol as a Virtuals ACP-compatible agent service with ATTEST integration.
+AI agent validation and execution infrastructure with onchain reputation. Built for the Virtuals ACP ecosystem.
+
+**🌐 Live Documentation**: https://execution-protocol.onrender.com/
+
+**📱 Mobile-Friendly**: Fully responsive with hamburger navigation
 
 ## Fee Structure
 - **Calculation:** `max(0.5% of trade value, 0.01 ETH)`
