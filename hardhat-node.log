@@ -187,3 +187,4 @@ Any funds sent to them on Mainnet or any other live network WILL BE LOST.
 
 [32meth_getTransactionByHash[0m
 [32meth_chainId[0m
+[32meth_chainId (2)[0m
