@@ -4,8 +4,8 @@
   "description": "Execution Protocol as Virtuals ACP Service with ATTEST integration",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "start": "node server.mjs",
+    "dev": "node server.mjs",
     "test": "jest",
     "deploy": "node scripts/deploy.js",
     "deploy:testnet": "npx hardhat run scripts/deploy-testnet.js --network baseSepolia"
