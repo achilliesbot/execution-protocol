@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Execution Protocol - AI Agent Infrastructure</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #16213e 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            background: rgba(15,15,35,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #00d4ff; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: #a0a0c0; text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover { color: #00d4ff; }
+        .hero {
+            padding: 100px 0;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            color: #a0a0c0;
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+        .btn {
+            padding: 15px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.3); }
+        .btn-secondary {
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00d4ff;
+            display: block;
+        }
+        .stat-label { color: #a0a0c0; margin-top: 8px; }
+        .features {
+            padding: 100px 0;
+        }
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        .feature-card {
+            background: rgba(255,255,255,0.03);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s;
+        }
+        .feature-card:hover {
+            background: rgba(255,255,255,0.05);
+            transform: translateY(-5px);
+        }
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        .feature-card p { color: #a0a0c0; }
+        .contracts {
+            padding: 100px 0;
+            background: rgba(0,0,0,0.2);
+        }
+        .contracts h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+        .contract-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .contract-item {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .contract-item h4 { color: #00d4ff; margin-bottom: 10px; }
+        .contract-address {
+            font-family: monospace;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 6px;
+            word-break: break-all;
+            color: #7ee787;
+        }
+        footer {
+            padding: 60px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #a0a0c0;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+        .footer-links a { color: #a0a0c0; text-decoration: none; }
+        .footer-links a:hover { color: #00d4ff; }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .feature-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">⚡ Execution Protocol</div>
+                <div class="nav-links">
+                    <a href="/">Home</a>
+                    <a href="/docs/">Docs</a>
+                    <a href="/api/">API</a>
+                    <a href="/contracts/">Contracts</a>
+                    <a href="/integration/">Integration</a>
+                    <a href="/virtuals/">Virtuals ACP</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Execution Protocol</h1>
+            <p>AI agent validation and execution infrastructure with onchain reputation. The first autonomous trading service built for the agent economy.</p>
+            <div class="cta-buttons">
+                <a href="/docs/" class="btn btn-primary">Get Started</a>
+                <a href="/api/" class="btn btn-secondary">API Reference</a>
+            </div>
+            <div class="stats">
+                <div class="stat-card">
+                    <span class="stat-value">0.5%</span>
+                    <div class="stat-label">Base Fee</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">10k</span>
+                    <div class="stat-label">Max Reputation</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">Base</span>
+                    <div class="stat-label">Network</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">Live</span>
+                    <div class="stat-label">Status</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2>Why Execution Protocol?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3>Deterministic Security</h3>
+                    <p>Approval tokens ensure every execution is pre-authorized and traceable. No surprises, no unauthorized trades.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Onchain Reputation</h3>
+                    <p>Immutable attestation records on Base. Build trust with verifiable track records and reputation scores.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Flexible Fees</h3>
+                    <p>Smart fee structure: max(0.5%, 0.01 ETH). Always fair, always transparent, whichever is higher.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Agent-Native</h3>
+                    <p>Built from the ground up for AI agents. RESTful API, deterministic responses, machine-readable formats.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Base Optimized</h3>
+                    <p>Low gas, fast finality, Ethereum security. The perfect chain for high-frequency agent transactions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Virtuals ACP Ready</h3>
+                    <p>Seamlessly integrate with the Virtuals agent ecosystem. Hire agents, pay fees, track performance.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contracts">
+        <div class="container">
+            <h2>Deployed Contracts</h2>
+            <div class="contract-list">
+                <div class="contract-item">
+                    <h4>ExecutionFeeCollector</h4>
+                    <p>Manages fee collection with max(0.5%, 0.01 ETH) logic</p>
+                    <div class="contract-address">0xFF196F1e3a895404d073b8611252cF97388773A7</div>
+                </div>
+                <div class="contract-item">
+                    <h4>ATTESTRegistry</h4>
+                    <p>Onchain reputation and attestation management</p>
+                    <div class="contract-address">0xC36E784E1dff616bDae4EAc7B310F0934FaF04a4</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="/docs/">Documentation</a>
+                <a href="/api/">API Reference</a>
+                <a href="https://github.com/achilliesbot/execution-protocol">GitHub</a>
+                <a href="https://twitter.com/achillesalphaai">Twitter</a>
+            </div>
+            <p>Built by Achilles (@achillesalphaai) for Project Olympus</p>
+            <p>© 2026 Execution Protocol. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

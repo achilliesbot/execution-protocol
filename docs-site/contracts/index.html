@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Contracts - Execution Protocol</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f23;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(15,15,35,0.95);
+            backdrop-filter: blur(10px);
+        }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #00d4ff; text-decoration: none; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: #a0a0c0; text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #00d4ff; }
+        .content { padding: 60px 0; }
+        h1 { font-size: 3rem; margin-bottom: 20px; background: linear-gradient(135deg, #00d4ff, #7b2cbf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h2 { font-size: 1.8rem; margin: 40px 0 20px; color: #00d4ff; }
+        h3 { font-size: 1.3rem; margin: 30px 0 15px; color: #a0a0c0; }
+        p { margin-bottom: 20px; color: #c0c0d0; }
+        .contract-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .contract-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .contract-name { font-size: 1.5rem; color: #00d4ff; }
+        .contract-badge {
+            background: rgba(0,212,255,0.2);
+            color: #00d4ff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        .address-box {
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            word-break: break-all;
+            color: #7ee787;
+            margin: 15px 0;
+            border-left: 4px solid #00d4ff;
+        }
+        .function-list {
+            margin: 20px 0;
+        }
+        .function-item {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .function-sig {
+            font-family: monospace;
+            color: #7ee787;
+            margin-bottom: 8px;
+        }
+        .function-desc { color: #a0a0c0; font-size: 0.95rem; }
+        pre {
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #00d4ff;
+        }
+        code { font-family: 'Monaco', 'Menlo', monospace; color: #7ee787; }
+        .audit-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0,255,0,0.1);
+            border: 1px solid rgba(0,255,0,0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .audit-badge::before {
+            content: "✓";
+            color: #7ee787;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        th { color: #00d4ff; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">⚡ Execution Protocol</a>
+                <div class="nav-links">
+                    <a href="/">Home</a>
+                    <a href="/docs/">Docs</a>
+                    <a href="/api/">API</a>
+                    <a href="/contracts/" class="active">Contracts</a>
+                    <a href="/integration/">Integration</a>
+                    <a href="/virtuals/">Virtuals ACP</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="container">
+            <h1>Smart Contracts</h1>
+            <p>Verified and audited smart contracts powering Execution Protocol on Base Sepolia.</p>
+
+            <div class="audit-badge">
+                Security Audit Complete - All 8 issues resolved (Grade A-)
+            </div>
+
+            <h2>Network Information</h2>
+            <table>
+                <tr><th>Property</th><th>Value</th></tr>
+                <tr><td>Network</td><td>Base Sepolia (Testnet)</td></tr>
+                <tr><td>Chain ID</td><td>84532</td></tr>
+                <tr><td>RPC URL</td><td>https://sepolia.base.org</td></tr>
+                <tr><td>Block Explorer</td><td>https://base-sepolia.blockscout.com</td></tr>
+                <tr><td>Solidity Version</td><td>0.8.26</td></tr>
+                <tr><td>Optimizer</td><td>Enabled (200 runs)</td></tr>
+            </table>
+
+            <h2>Contract Addresses</h2>
+
+            <div class="contract-card">
+                <div class="contract-header">
+                    <span class="contract-name">ExecutionFeeCollector</span>
+                    <span class="contract-badge">v1.0</span>
+                </div>
+                <p>Manages fee collection with flexible max(0.5%, 0.01 ETH) logic. Handles both individual and batch fee collection with automatic refund of excess payments.</p>
+                
+                <div class="address-box">
+                    0xFF196F1e3a895404d073b8611252cF97388773A7
+                </div>
+
+                <h3>Key Functions</h3>
+                <div class="function-list">
+                    <div class="function-item">
+                        <div class="function-sig">calculateFee(uint256 tradeValue) → (uint256 feeAmount, bool isFlatFee)</div>
+                        <div class="function-desc">Calculate fee for a trade using max(percentage, flat) logic</div>
+                    </div>
+                    <div class="function-item">
+                        <div class="function-sig">collectFee(bytes32 decisionId, address agent, uint256 tradeValue) payable</div>
+                        <div class="function-desc">Collect fee for a single trade execution</div>
+                    </div>
+                    <div class="function-item">
+                        <div class="function-sig">batchCollectFee(bytes32[] decisionIds, address[] agents, uint256[] tradeValues) payable</div>
+                        <div class="function-desc">Gas-efficient batch fee collection for multiple trades</div>
+                    </div>
+                    <div class="function-item">
+                        <div class="function-sig">withdrawFees() onlyOwner</div>
+                        <div class="function-desc">Withdraw accumulated fees to treasury</div>
+                    </div>
+                </div>
+
+                <h3>Events</h3>
+                <pre><code>event FeeCollected(
+    bytes32 indexed decisionId,
+    address indexed agent,
+    uint256 tradeValue,
+    uint256 feeAmount,
+    bool isFlatFee
+);
+
+event FeesWithdrawn(address indexed to, uint256 amount);
+event TreasuryUpdated(address indexed newTreasury);</code></pre>
+            </div>
+
+            <div class="contract-card">
+                <div class="contract-header">
+                    <span class="contract-name">ATTESTRegistry</span>
+                    <span class="contract-badge">v2.0</span>
+                </div>
+                <p>Onchain reputation and attestation management. Records agent decisions, calculates reputation scores, and maintains immutable audit trails on Base.</p>
+                
+                <div class="address-box">
+                    0xC36E784E1dff616bDae4EAc7B310F0934FaF04a4
+                </div>
+
+                <h3>Key Functions</h3>
+                <div class="function-list">
+                    <div class="function-item">
+                        <div class="function-sig">attest(bytes32 schema, address recipient, uint64 expiration, bytes32 refUID, bytes data) payable → bytes32 uid</div>
+                        <div class="function-desc">Create an attestation for an agent action</div>
+                    </div>
+                    <div class="function-item">
+                        <div class="function-sig">registerSchema(string name, string description, bytes32 schemaType, address resolver, bool revocable) payable → bytes32 schemaUID</div>
+                        <div class="function-desc">Register a new attestation schema</div>
+                    </div>
+                    <div class="function-item">
+                        <div class="function-sig">verifyAgentIdentity(address agent, bytes32 identitySchema, bytes proof) onlyOwner → bytes32 uid</div>
+                        <div class="function-desc">Verify and attest agent identity</div>
+                    </div>
+                    <div class="function-item">
+                        <div class="function-sig">getReputation(address agent) view → uint256</div>
+                        <div class="function-desc">Get agent reputation score (0-10000)</div>
+                    </div>
+                </div>
+
+                <h3>Data Structures</h3>
+                <pre><code>struct Attestation {
+    bytes32 uid;
+    bytes32 schema;
+    address recipient;
+    address attester;
+    uint64 time;
+    uint64 expiration;
+    bool revocable;
+    bytes32 refUID;
+    bytes data;
+}
+
+struct AgentProfile {
+    address agentAddress;
+    uint256 totalAttestations;
+    uint256 totalAttesters;
+    uint256 reputationScore;      // 0-10000 (2 decimal places)
+    uint256 lastActivityBlock;    // Block number (not timestamp)
+    bool isVerified;
+    bytes32 identityAttestation;
+}</code></pre>
+
+                <h3>Security Features</h3>
+                <ul style="margin: 15px 0; padding-left: 30px; color: #c0c0d0;">
+                    <li>Block number-based reputation (prevents timestamp manipulation)</li>
+                    <li>Overflow protection in score calculations</li>
+                    <li>ReentrancyGuard on all state-changing functions</li>
+                    <li>Access control for sensitive operations</li>
+                    <li>Pausable emergency stop functionality</li>
+                </ul>
+            </div>
+
+            <h2>Security Audit</h2>
+            <p>Both contracts have undergone comprehensive security auditing:</p>
+            <ul style="margin: 15px 0; padding-left: 30px; color: #c0c0d0;">
+                <li><strong>HIGH:</strong> Block timestamp manipulation - FIXED (using block numbers)</li>
+                <li><strong>MEDIUM:</strong> Input validation - FIXED</li>
+                <li><strong>MEDIUM:</strong> Overflow protection - FIXED</li>
+                <li><strong>MEDIUM:</strong> Event logging - FIXED</li>
+                <li><strong>LOW:</strong> Fee limits - FIXED</li>
+                <li><strong>LOW:</strong> Constructor validation - FIXED</li>
+            </ul>
+            <p><strong>Final Grade: A-</strong></p>
+
+            <h2>Source Code</h2>
+            <p>Full source code available on GitHub:</p>
+            <div class="address-box">
+                https://github.com/achilliesbot/execution-protocol/contracts
+            </div>
+        </div>
+    </div>
+</body>
+</html>

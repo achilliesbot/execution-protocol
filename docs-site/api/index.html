@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - Execution Protocol</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f23;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(15,15,35,0.95);
+            backdrop-filter: blur(10px);
+        }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #00d4ff; text-decoration: none; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: #a0a0c0; text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #00d4ff; }
+        .content { padding: 60px 0; }
+        h1 { font-size: 3rem; margin-bottom: 20px; background: linear-gradient(135deg, #00d4ff, #7b2cbf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h2 { font-size: 1.8rem; margin: 50px 0 20px; color: #00d4ff; border-bottom: 2px solid rgba(0,212,255,0.3); padding-bottom: 10px; }
+        h3 { font-size: 1.3rem; margin: 30px 0 15px; color: #a0a0c0; }
+        .endpoint {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+        .endpoint-header {
+            background: rgba(0,212,255,0.1);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .method {
+            background: #00d4ff;
+            color: #000;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .path {
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+        .endpoint-content { padding: 25px; }
+        pre {
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid #00d4ff;
+        }
+        code {
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: #7ee787;
+        }
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .param-table th, .param-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .param-table th { color: #00d4ff; }
+        .required { color: #ff6b6b; }
+        .optional { color: #a0a0c0; }
+        .response-code {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+        .code-200 { background: rgba(0,255,0,0.2); color: #7ee787; }
+        .code-400 { background: rgba(255,193,7,0.2); color: #ffc107; }
+        .code-500 { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">⚡ Execution Protocol</a>
+                <div class="nav-links">
+                    <a href="/">Home</a>
+                    <a href="/docs/">Docs</a>
+                    <a href="/api/" class="active">API</a>
+                    <a href="/contracts/">Contracts</a>
+                    <a href="/integration/">Integration</a>
+                    <a href="/virtuals/">Virtuals ACP</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="container">
+            <h1>API Reference</h1>
+            <p>Complete API documentation for Execution Protocol. Base URL: <code>https://api.execution-protocol.io</code></p>
+
+            <h2>Endpoints</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method">GET</span>
+                    <span class="path">/health</span>
+                </div>
+                <div class="endpoint-content">
+                    <p>Check API health status.</p>
+                    <h3>Response</h3>
+                    <pre><code>{
+  "status": "healthy",
+  "service": "execution-acp-service",
+  "version": "1.0.0",
+  "timestamp": "2026-03-08T07:20:05.524Z"
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method">POST</span>
+                    <span class="path">/api/v1/validate</span>
+                </div>
+                <div class="endpoint-content">
+                    <p>Validate a trading opportunity and receive an execution decision.</p>
+                    
+                    <h3>Request Body</h3>
+                    <table class="param-table">
+                        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                        <tr><td>agent_id</td><td>string</td><td class="required">Yes</td><td>Unique identifier for the agent</td></tr>
+                        <tr><td>opportunity.type</td><td>string</td><td class="required">Yes</td><td>Type: hyperliquid_funding, polymarket, dex_arbitrage</td></tr>
+                        <tr><td>opportunity.asset</td><td>string</td><td class="required">Yes</td><td>Asset symbol (ETH, BTC, etc.)</td></tr>
+                        <tr><td>opportunity.expected_return</td><td>number</td><td class="required">Yes</td><td>Expected return as decimal (0.05 = 5%)</td></tr>
+                        <tr><td>opportunity.confidence</td><td>number</td><td class="required">Yes</td><td>Confidence score 0.0-1.0</td></tr>
+                        <tr><td>opportunity.max_capital</td><td>number</td><td class="required">Yes</td><td>Maximum capital in USD</td></tr>
+                    </table>
+
+                    <h3>Example Request</h3>
+                    <pre><code>curl -X POST https://api.execution-protocol.io/api/v1/validate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "agent_id": "dexter-research-001",
+    "opportunity": {
+      "type": "hyperliquid_funding",
+      "asset": "ETH",
+      "expected_return": 0.05,
+      "confidence": 0.90,
+      "max_capital": 5000
+    }
+  }'</code></pre>
+
+                    <h3>Response <span class="response-code code-200">200 OK</span></h3>
+                    <pre><code>{
+  "decision_id": "d-1772954413261-dacmr1u5r",
+  "status": "approved",
+  "confidence_score": 0.9,
+  "risk_level": "low",
+  "max_allocation": 5000,
+  "reasoning": ["High confidence score (>= 0.85)"],
+  "fee": {
+    "feeUsd": "25.00",
+    "feeEth": "0.010000",
+    "basisPoints": 50,
+    "method": "percentage"
+  },
+  "attestation_uid": null,
+  "timestamp": "2026-03-08T07:20:13.274Z"
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method">POST</span>
+                    <span class="path">/api/v1/execute</span>
+                </div>
+                <div class="endpoint-content">
+                    <p>Execute an approved trade with fee collection.</p>
+                    
+                    <h3>Request Body</h3>
+                    <table class="param-table">
+                        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                        <tr><td>decision_id</td><td>string</td><td class="required">Yes</td><td>Decision ID from validate endpoint</td></tr>
+                        <tr><td>approval_token</td><td>string</td><td class="required">Yes</td><td>Format: APPROVE:{decision_id}:EXEC:{nonce}</td></tr>
+                    </table>
+
+                    <h3>Example Request</h3>
+                    <pre><code>curl -X POST https://api.execution-protocol.io/api/v1/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "decision_id": "d-1772954413261-dacmr1u5r",
+    "approval_token": "APPROVE:d-1772954413261-dacmr1u5r:EXEC:abc123"
+  }'</code></pre>
+
+                    <h3>Response <span class="response-code code-200">200 OK</span></h3>
+                    <pre><code>{
+  "decision_id": "d-1772954413261-dacmr1u5r",
+  "status": "executed",
+  "tx_hash": "0xe0bd03611de4...",
+  "execution_price": 3200.50,
+  "fee_paid": {
+    "feeUsd": "25.00",
+    "feeEth": "0.010000"
+  },
+  "timestamp": "2026-03-08T07:20:13.274Z"
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method">GET</span>
+                    <span class="path">/api/v1/reputation/:address</span>
+                </div>
+                <div class="endpoint-content">
+                    <p>Get onchain reputation for any agent.</p>
+                    
+                    <h3>Path Parameters</h3>
+                    <table class="param-table">
+                        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                        <tr><td>address</td><td>string</td><td>Ethereum address (0x...)</td></tr>
+                    </table>
+
+                    <h3>Example Request</h3>
+                    <pre><code>curl https://api.execution-protocol.io/api/v1/reputation/0xf1fEF679d32F79EeD780dc460Da3414B1A2e6148</code></pre>
+
+                    <h3>Response <span class="response-code code-200">200 OK</span></h3>
+                    <pre><code>{
+  "address": "0xf1fEF679d32F79EeD780dc460Da3414B1A2e6148",
+  "reputation_score": 5000,
+  "total_attestations": 0,
+  "success_rate": 0,
+  "total_volume": 0,
+  "is_verified": false
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method">GET</span>
+                    <span class="path">/api/v1/stats</span>
+                </div>
+                <div class="endpoint-content">
+                    <p>Get service-wide statistics.</p>
+
+                    <h3>Response <span class="response-code code-200">200 OK</span></h3>
+                    <pre><code>{
+  "total_decisions": 2,
+  "total_executed": 1,
+  "total_volume_usd": 6000,
+  "active_agents": 2,
+  "fee_structure": {
+    "percentage": "0.5%",
+    "flat": "0.01 ETH",
+    "method": "whichever is higher"
+  }
+}</code></pre>
+                </div>
+            </div>
+
+            <h2>Error Codes</h2>
+            <table class="param-table">
+                <tr><th>Code</th><th>Meaning</th><th>Description</th></tr>
+                <tr><td><span class="response-code code-200">200</span></td><td>OK</td><td>Request successful</td></tr>
+                <tr><td><span class="response-code code-400">400</span></td><td>Bad Request</td><td>Missing or invalid parameters</td></tr>
+                <tr><td><span class="response-code code-400">404</span></td><td>Not Found</td><td>Decision or resource not found</td></tr>
+                <tr><td><span class="response-code code-500">500</span></td><td>Server Error</td><td>Internal server error</td></tr>
+            </table>
+
+            <h2>Rate Limits</h2>
+            <p>100 requests per minute per IP address.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - Execution Protocol</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f23;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(15,15,35,0.95);
+            backdrop-filter: blur(10px);
+        }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #00d4ff; text-decoration: none; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: #a0a0c0; text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #00d4ff; }
+        .content { padding: 60px 0; }
+        h1 { font-size: 3rem; margin-bottom: 20px; background: linear-gradient(135deg, #00d4ff, #7b2cbf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h2 { font-size: 1.8rem; margin: 40px 0 20px; color: #00d4ff; }
+        h3 { font-size: 1.3rem; margin: 30px 0 15px; color: #a0a0c0; }
+        p { margin-bottom: 20px; color: #c0c0d0; }
+        code {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: #7ee787;
+        }
+        pre {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #00d4ff;
+        }
+        pre code { background: none; padding: 0; }
+        ul, ol { margin: 20px 0; padding-left: 30px; }
+        li { margin-bottom: 10px; color: #c0c0d0; }
+        .highlight-box {
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.3);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        .warning-box {
+            background: rgba(255,193,7,0.1);
+            border: 1px solid rgba(255,193,7,0.3);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        th { color: #00d4ff; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">⚡ Execution Protocol</a>
+                <div class="nav-links">
+                    <a href="/">Home</a>
+                    <a href="/docs/" class="active">Docs</a>
+                    <a href="/api/">API</a>
+                    <a href="/contracts/">Contracts</a>
+                    <a href="/integration/">Integration</a>
+                    <a href="/virtuals/">Virtuals ACP</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="container">
+            <h1>Documentation</h1>
+            <p>Complete guide to integrating with Execution Protocol for AI agent validation and execution.</p>
+
+            <h2>Overview</h2>
+            <p>Execution Protocol provides infrastructure for AI agents to validate opportunities, execute trades, and build onchain reputation. It's designed specifically for the agent economy with deterministic security, flexible fees, and Base chain optimization.</p>
+
+            <h2>Quick Start</h2>
+            <h3>1. Validate an Opportunity</h3>
+            <pre><code>curl -X POST https://api.execution-protocol.io/api/v1/validate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "agent_id": "my-agent-001",
+    "opportunity": {
+      "type": "hyperliquid_funding",
+      "asset": "ETH",
+      "expected_return": 0.05,
+      "confidence": 0.90,
+      "max_capital": 5000
+    }
+  }'</code></pre>
+
+            <h3>2. Execute Approved Trade</h3>
+            <pre><code>curl -X POST https://api.execution-protocol.io/api/v1/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "decision_id": "d-abc123",
+    "approval_token": "APPROVE:d-abc123:EXEC:nonce123"
+  }'</code></pre>
+
+            <h2>Fee Structure</h2>
+            <p>Execution Protocol uses a smart fee calculation:</p>
+            <div class="highlight-box">
+                <strong>Fee = max(0.5% of trade value, 0.01 ETH)</strong>
+            </div>
+            <table>
+                <tr><th>Trade Value</th><th>0.5% Fee</th><th>Flat Fee</th><th>Actual Fee</th></tr>
+                <tr><td>$1,000</td><td>$5</td><td>~$25</td><td><strong>0.01 ETH (~$25)</strong></td></tr>
+                <tr><td>$10,000</td><td>$50</td><td>~$25</td><td><strong>0.5% ($50)</strong></td></tr>
+                <tr><td>$100,000</td><td>$500</td><td>~$25</td><td><strong>0.5% ($500)</strong></td></tr>
+            </table>
+
+            <h2>Security</h2>
+            <h3>Approval Tokens</h3>
+            <p>Every execution requires a deterministic approval token:</p>
+            <pre><code>Format: APPROVE:{decision_id}:EXEC:{nonce}
+
+Example: APPROVE:d-1772954413261:EXEC:abc123</code></pre>
+
+            <h3>Onchain Attestation</h3>
+            <p>Every decision is recorded on Base Sepolia for immutable audit trails:</p>
+            <ul>
+                <li>Decision ID and timestamp</li>
+                <li>Confidence score</li>
+                <li>Status (approved/rejected)</li>
+                <li>Max allocation</li>
+            </ul>
+
+            <h2>Confidence Thresholds</h2>
+            <table>
+                <tr><th>Confidence</th><th>Status</th><th>Risk Level</th><th>Allocation</th></tr>
+                <tr><td>≥ 0.85</td><td>Approved</td><td>Low</td><td>100%</td></tr>
+                <tr><td>0.70 - 0.84</td><td>Approved</td><td>Medium</td><td>50%</td></tr>
+                <tr><td>< 0.70</td><td>Rejected</td><td>High</td><td>0%</td></tr>
+            </table>
+
+            <h2>Network Information</h2>
+            <ul>
+                <li><strong>Network:</strong> Base Sepolia (Testnet)</li>
+                <li><strong>Chain ID:</strong> 84532</li>
+                <li><strong>RPC:</strong> https://sepolia.base.org</li>
+                <li><strong>Block Explorer:</strong> https://base-sepolia.blockscout.com</li>
+            </ul>
+
+            <h2>Contract Addresses</h2>
+            <div class="highlight-box">
+                <p><strong>ExecutionFeeCollector:</strong><br>
+                <code>0xFF196F1e3a895404d073b8611252cF97388773A7</code></p>
+                <p><strong>ATTESTRegistry:</strong><br>
+                <code>0xC36E784E1dff616bDae4EAc7B310F0934FaF04a4</code></p>
+            </div>
+
+            <h2>Support</h2>
+            <p>For questions or support:</p>
+            <ul>
+                <li>Twitter: <a href="https://twitter.com/achillesalphaai" style="color: #00d4ff;">@achillesalphaai</a></li>
+                <li>GitHub: <a href="https://github.com/achilliesbot/execution-protocol" style="color: #00d4ff;">github.com/achilliesbot/execution-protocol</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
