@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: execution-protocol
+    name: achilles
     env: node
     buildCommand: npm install
     startCommand: node server.js
@@ -11,3 +11,5 @@ services:
         value: 10000
     healthCheckPath: /api/v1/stats
     autoDeploy: true
+    domains:
+      - achilles.onrender.com
