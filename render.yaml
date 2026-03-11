@@ -1,27 +1,13 @@
 services:
-  - type: static
+  - type: web
     name: execution-protocol
-    runtime: static
-    buildCommand: echo "Static site ready"
-    staticPublishPath: ./docs-site
-    routes:
-      - type: rewrite
-        source: /docs
-        destination: /docs/index.html
-      - type: rewrite
-        source: /api
-        destination: /api/index.html
-      - type: rewrite
-        source: /contracts
-        destination: /contracts/index.html
-      - type: rewrite
-        source: /integration
-        destination: /integration/index.html
-      - type: rewrite
-        source: /virtuals
-        destination: /virtuals/index.html
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: public, max-age=3600
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    healthCheckPath: /api/v1/stats
     autoDeploy: true
