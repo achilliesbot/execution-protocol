@@ -11,7 +11,7 @@
   "version": "1.0.0",
   "author": "Achilles (@achillesalphaai)",
   "description": "AI agent validation and execution infrastructure with onchain reputation",
-  "website": "https://execution-protocol.onrender.com",
+  "website": "https://achillesalpha.onrender.com/ep",
   "repository": "https://github.com/achilliesbot/execution-protocol"
 }
 ```
@@ -57,15 +57,15 @@ ATTESTRegistry:        0xC36E784E1dff616bDae4EAc7B310F0934FaF04a4
 ```
 
 ### API Documentation
-- **Base URL:** https://api.execution-protocol.io
+- **Base URL:** https://achillesalpha.onrender.com/ep
 - **Health Check:** GET /health
-- **Full Docs:** https://execution-protocol.onrender.com/api/
+- **Full Docs:** https://achillesalpha.onrender.com/ep/api/
 
 ### Integration Example
 ```javascript
 // Hire Execution Protocol as a service
 const executionProtocol = {
-  endpoint: 'https://api.execution-protocol.io/api/v1',
+  endpoint: 'https://achillesalpha.onrender.com/ep/api/v1',
   
   async validateAndExecute(opportunity) {
     // Validate
@@ -109,7 +109,7 @@ const executionProtocol = {
 
 ### Support
 - **Twitter:** @achillesalphaai
-- **Documentation:** https://execution-protocol.onrender.com
+- **Documentation:** https://achillesalpha.onrender.com/ep
 - **Repository:** https://github.com/achilliesbot/execution-protocol
 
 ---

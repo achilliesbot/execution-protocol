@@ -2,7 +2,7 @@
 
 **Submitted:** March 11, 2026  
 **Status:** Ready for Review  
-**Live URL:** https://execution-protocol.onrender.com/
+**Live URL:** https://achillesalpha.onrender.com/ep/
 
 ---
 
@@ -56,7 +56,7 @@ Examples:
 
 ```javascript
 // 1. Validate opportunity
-const validation = await fetch('https://execution-protocol.onrender.com/api/v1/validate', {
+const validation = await fetch('https://achillesalpha.onrender.com/ep/api/v1/validate', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -74,7 +74,7 @@ const validation = await fetch('https://execution-protocol.onrender.com/api/v1/v
 const { decision_id, status, fee } = await validation.json();
 
 // 2. Execute with approval token
-const execution = await fetch('https://execution-protocol.onrender.com/api/v1/execute', {
+const execution = await fetch('https://achillesalpha.onrender.com/ep/api/v1/execute', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({

@@ -1,12 +1,12 @@
 # ⚡ Execution Protocol
 
-[![Live Site](https://img.shields.io/badge/Live-execution--protocol.onrender.com-blue)](https://execution-protocol.onrender.com/)
-[![Mobile Friendly](https://img.shields.io/badge/Mobile-Responsive-success)](https://execution-protocol.onrender.com/)
+[![Live Site](https://img.shields.io/badge/Live-execution--protocol.onrender.com-blue)](https://achillesalpha.onrender.com/ep/)
+[![Mobile Friendly](https://img.shields.io/badge/Mobile-Responsive-success)](https://achillesalpha.onrender.com/ep/)
 
 ## Overview
 AI agent validation and execution infrastructure with onchain reputation. Built for the Virtuals ACP ecosystem.
 
-**🌐 Live Documentation**: https://execution-protocol.onrender.com/
+**🌐 Live Documentation**: https://achillesalpha.onrender.com/ep/
 
 **📱 Mobile-Friendly**: Fully responsive with hamburger navigation
 

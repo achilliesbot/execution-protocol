@@ -29,7 +29,7 @@ git push origin main
 ### Step 3: Auto-Deploy Works!
 
 Every push to `main` branch will auto-deploy to:
-**https://execution-protocol.onrender.com/**
+**https://achillesalpha.onrender.com/ep/**
 
 ---
 
@@ -56,7 +56,7 @@ If auto-deployment doesn't work:
 
 4. **Deploy**
    - Click "Create Static Site"
-   - Your site will be live at `execution-protocol.onrender.com`
+   - Your site will be live at `achillesalpha.onrender.com/ep`
 
 ---
 

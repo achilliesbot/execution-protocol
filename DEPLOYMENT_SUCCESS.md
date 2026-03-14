@@ -47,7 +47,7 @@ ExecutionFeeCollector: 0xFF196F1e3a895404d073b8611252cF97388773A7
 ATTESTRegistry:        0xC36E784E1dff616bDae4EAc7B310F0934FaF04a4
 Deployer:              0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 RPC Endpoint:          http://localhost:8545
-API Endpoint:          http://localhost:3000
+API Endpoint:          https://achillesalpha.onrender.com/ep
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -78,7 +78,7 @@ API Endpoint:          http://localhost:3000
 
 ### Validation Test
 ```bash
-curl -X POST http://localhost:3000/api/v1/validate \
+curl -X POST https://achillesalpha.onrender.com/ep/api/v1/validate \
   -H "Content-Type: application/json" \
   -d '{
     "agent_id": "dexter-test-001",
@@ -170,7 +170,7 @@ curl http://localhost:8545 -X POST -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
 
 # Check API health:
-curl http://localhost:3000/health
+curl https://achillesalpha.onrender.com/ep/health
 
 # View logs:
 tail -f api-service.log

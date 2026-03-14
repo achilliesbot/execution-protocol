@@ -146,20 +146,20 @@ Total: 6/6 PASSED (100%)
 ### Local Development
 ```
 RPC:    http://localhost:8545
-API:    http://localhost:3000
-Health: http://localhost:3000/health
+API:    https://achillesalpha.onrender.com/ep
+Health: https://achillesalpha.onrender.com/ep/health
 ```
 
 ### Test Commands
 ```bash
 # Check health
-curl http://localhost:3000/health
+curl https://achillesalpha.onrender.com/ep/health
 
 # Get stats
-curl http://localhost:3000/api/v1/stats
+curl https://achillesalpha.onrender.com/ep/api/v1/stats
 
 # Validate opportunity
-curl -X POST http://localhost:3000/api/v1/validate \
+curl -X POST https://achillesalpha.onrender.com/ep/api/v1/validate \
   -H "Content-Type: application/json" \
   -d '{"agent_id":"test","opportunity":{"type":"hyperliquid_funding","asset":"ETH","expected_return":0.05,"confidence":0.90,"max_capital":5000}}'
 ```

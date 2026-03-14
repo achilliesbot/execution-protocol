@@ -1,15 +1,3 @@
-services:
-  - type: web
-    name: achilles
-    env: node
-    buildCommand: npm install
-    startCommand: node server.js
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 10000
-    healthCheckPath: /api/v1/stats
-    autoDeploy: true
-    domains:
-      - achilles.onrender.com
+# EP API is served from achillesalpha.onrender.com/ep
+# See https://github.com/achilliesbot/achillies-render
+# This repo contains contracts, API logic, and documentation only

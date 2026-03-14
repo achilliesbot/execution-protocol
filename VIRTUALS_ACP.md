@@ -12,7 +12,7 @@
   "tags": ["trading", "validation", "execution", "risk-management"],
   
   "endpoints": {
-    "base_url": "https://api.execution-protocol.io",
+    "base_url": "https://achillesalpha.onrender.com/ep",
     "validate": "/api/v1/validate",
     "execute": "/api/v1/execute",
     "reputation": "/api/v1/reputation/{agent_address}",
@@ -122,7 +122,7 @@
 ### 1. Register as Client
 ```javascript
 const executionProtocol = {
-  endpoint: 'https://api.execution-protocol.io/api/v1',
+  endpoint: 'https://achillesalpha.onrender.com/ep/api/v1',
   apiKey: 'your_api_key'
 };
 ```
