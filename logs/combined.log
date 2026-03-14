@@ -1,7 +1,0 @@
-{"level":"info","message":"Execution Protocol ACP Service running on port 3000","timestamp":"2026-03-08T07:20:00.820Z"}
-{"level":"info","message":"Contract integration initialized","timestamp":"2026-03-08T07:20:00.822Z"}
-{"level":"info","message":"Validation request from dexter-test-001","opportunity":{"asset":"ETH","confidence":0.9,"expected_return":0.05,"max_capital":5000,"type":"hyperliquid_funding"},"timestamp":"2026-03-08T07:20:13.261Z"}
-{"level":"info","message":"Validation request from test-agent-001","opportunity":{"asset":"ETH","confidence":0.9,"expected_return":0.05,"max_capital":5000,"type":"hyperliquid_funding"},"timestamp":"2026-03-08T07:23:29.339Z"}
-{"level":"info","message":"Validation request from test-agent-002","opportunity":{"asset":"MEME","confidence":0.5,"expected_return":0.5,"max_capital":1000,"type":"high_risk_trade"},"timestamp":"2026-03-08T07:23:29.342Z"}
-{"level":"info","message":"Execution request for d-1772954609339-mnqwc5tcr","timestamp":"2026-03-08T07:23:29.352Z"}
-{"decision_id":"d-1772954609339-mnqwc5tcr","level":"info","message":"Executing trade","timestamp":"2026-03-08T07:23:29.354Z"}
