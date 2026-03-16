@@ -1,6 +1,6 @@
 # Execution Protocol (EP)
 
-> Universal pre-execution validation middleware for autonomous AI agents.
+> AgentIAM — Identity and Access Management built natively for autonomous AI agents.
 > Every action committed on-chain before execution. Verified after.
 > Framework agnostic. Asset agnostic. No trust required.
 
@@ -8,6 +8,8 @@
 **https://achillesalpha.onrender.com/ep**
 
 Built by [@AchillesAlphaAI](https://twitter.com/AchillesAlphaAI) — Submission for [Synthesis x Bankr Hackathon](https://synthesis.md)
+
+> *EP is AgentIAM — the trust primitive the agent economy has been missing.*
 
 ---
 
