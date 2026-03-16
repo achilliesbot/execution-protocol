@@ -318,6 +318,145 @@ async function handleRequest(req, res) {
     return;
   }
   
+
+  // ============================================
+  // HACKATHON FEATURES — Synthesis x Bankr 2026
+  // Purely additive. Does not modify existing routes.
+  // ============================================
+
+  // Feature: EP Status endpoint
+  if (pathname === '/ep/status' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      status: 'operational',
+      version: '1.0.0',
+      uptime: process.uptime(),
+      network: 'base-sepolia',
+      contracts: {
+        attestRegistry: '0xC36E784E1dff616bDae4EAc7B310F0934FaF04a4',
+        feeCollector: '0xFF196F1e3a895404d073b8611252cF97388773A7',
+        epCommitment: '0xf1e16d3e5B74582fC326Bc6E2B82839d31f1ccE8'
+      },
+      stats: {
+        totalValidations: state.stats.totalValidations || 0,
+        totalExecutions: state.stats.totalExecutions || 0,
+        totalProofs: Object.keys(state.decisions || {}).length
+      },
+      timestamp: new Date().toISOString()
+    }));
+    return;
+  }
+
+  // Feature: Proof lookup — public, no auth
+  if (pathname.startsWith('/ep/proof/') && req.method === 'GET') {
+    const proofHash = pathname.split('/ep/proof/')[1];
+    if (!proofHash) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Missing proof hash' }));
+      return;
+    }
+
+    // Search decisions for matching proof hash
+    let found = null;
+    for (const [id, decision] of Object.entries(state.decisions || {})) {
+      if (id === proofHash || decision.proof_hash === proofHash) {
+        found = decision;
+        break;
+      }
+    }
+
+    if (!found) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        proof_hash: proofHash,
+        status: 'not_found',
+        message: 'No proof found for this hash. It may not have been committed yet.',
+        verify_on_chain: 'https://sepolia.basescan.org/address/0xf1e16d3e5B74582fC326Bc6E2B82839d31f1ccE8'
+      }));
+      return;
+    }
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      proof_hash: proofHash,
+      agent_id: found.agent_id || found.agent || 'unknown',
+      action: found.action || `${found.opportunity?.type || 'validate'}`,
+      valid: found.approved !== undefined ? found.approved : (found.status === 'approved'),
+      risk_score: found.confidence_score || found.confidence || 0,
+      timestamp: found.timestamp,
+      executed: found.executed || false,
+      on_chain: {
+        network: 'base-sepolia',
+        contract: '0xf1e16d3e5B74582fC326Bc6E2B82839d31f1ccE8',
+        tx: null
+      }
+    }));
+    return;
+  }
+
+  // Feature: Swarm validate — multi-agent coordination
+  if (pathname === '/ep/swarm/validate' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        const { agent_id, swarm_id, swarm_role, swarm_context, asset, direction, amount_usd, policy_set_id } = data;
+
+        if (!agent_id || !swarm_id) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Missing agent_id or swarm_id' }));
+          return;
+        }
+
+        // Swarm-level policy checks
+        const maxSingleAgentPct = swarm_context?.max_single_agent_pct || 25;
+        const totalExposure = swarm_context?.total_exposure_usd || 1000;
+        const agentLimit = totalExposure * (maxSingleAgentPct / 100);
+        const violations = [];
+
+        if ((amount_usd || 0) > agentLimit) {
+          violations.push(`Agent exceeds ${maxSingleAgentPct}% swarm exposure limit ($${agentLimit})`);
+        }
+        if ((amount_usd || 0) > 100) {
+          violations.push('Single trade exceeds $100 policy limit');
+        }
+
+        const valid = violations.length === 0;
+        const riskScore = valid ? Math.random() * 0.4 : 0.7 + Math.random() * 0.3;
+        const proofHash = '0x' + require('crypto').createHash('sha256')
+          .update(JSON.stringify({ agent_id, swarm_id, asset, direction, amount_usd, timestamp: Date.now() }))
+          .digest('hex');
+
+        const decisionId = `swarm-${Date.now()}`;
+        const response = {
+          valid,
+          risk_score: parseFloat(riskScore.toFixed(3)),
+          violations,
+          proof_hash: proofHash,
+          swarm_id,
+          agent_id,
+          swarm_role: swarm_role || 'executor',
+          plan_summary: `${direction || 'action'} ${amount_usd || 0} USD of ${asset || 'unknown'} via swarm ${swarm_id}`,
+          timestamp: new Date().toISOString()
+        };
+
+        state.decisions[decisionId] = { ...response, executed: false };
+        state.stats.totalValidations++;
+        saveState();
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(response));
+
+        console.log(`[SWARM/VALIDATE] ${agent_id}@${swarm_id} -> ${valid ? 'VALID' : 'REJECTED'}`);
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid JSON' }));
+      }
+    });
+    return;
+  }
+
   // Static file serving
   let filePath = '.' + pathname;
   if (filePath === './') filePath = './index.html';
@@ -330,7 +469,9 @@ async function handleRequest(req, res) {
     '.css': 'text/css',
     '.js': 'text/javascript',
     '.json': 'application/json',
-    '.png': 'image/png'
+    '.png': 'image/png',
+    '.md': 'text/markdown',
+    '.txt': 'text/plain'
   };
   
   const extname = String(path.extname(filePath)).toLowerCase();

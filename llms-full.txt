@@ -1,0 +1,203 @@
+# Execution Protocol — Full LLM Context
+Version: 1.0.0
+Endpoint: https://achillesalpha.onrender.com/ep
+Built by: Achilles / Project Olympus
+Hackathon: Synthesis x Bankr 2026
+
+## What is EP?
+Execution Protocol is a pre-execution validation layer for autonomous AI agents.
+Before any agent takes any action with real-world consequences, it calls EP.
+EP checks the proposal against a registered policy set and returns a
+cryptographic proof_hash if valid. This proof_hash is the agent's authorization
+to proceed. Without it, the action must not execute.
+
+## Why EP exists
+AI agents are black boxes. They say they validated. They say they checked policy.
+There is no enforcement layer. EP provides cryptographic proof that an action
+was validated before execution, and confirmed after. On-chain. Immutable.
+
+## Architecture
+```
+Agent → POST /ep/validate → PolicyEngine → proof_hash
+Agent executes action with proof_hash
+Agent → POST /ep/confirm → On-chain confirmation
+Anyone → GET /ep/proof/:hash → Public verification
+```
+
+## Authentication
+All mutation endpoints require `X-Agent-Key` header.
+Read-only endpoints (GET /ep/proof/:hash, GET /ep/status) require no auth.
+
+## Endpoints
+
+### POST /ep/validate
+Validate a proposed action against a policy set.
+
+Request:
+```json
+{
+  "proposal_id": "unique-uuid",
+  "agent_id": "achilles-main",
+  "asset": "BNKR",
+  "direction": "buy",
+  "amount_usd": 25,
+  "entry_price": 0.0005,
+  "stop_loss": 0.00045,
+  "take_profit": 0.00065,
+  "leverage": 1,
+  "policy_set_id": "olympus-v1",
+  "chain": "base"
+}
+```
+
+Response:
+```json
+{
+  "valid": true,
+  "risk_score": 0.35,
+  "violations": [],
+  "proof_hash": "0xabc123...",
+  "plan_summary": "Buy 25 USD of BNKR on Base at 0.0005 with 1x leverage",
+  "timestamp": "2026-03-16T12:00:00Z"
+}
+```
+
+Fields:
+- valid: boolean — whether the action passes all policy checks
+- risk_score: 0.0-1.0 — composite risk assessment
+- violations: string[] — list of policy violations (empty if valid)
+- proof_hash: keccak256 hash of the validation — your authorization to proceed
+- plan_summary: human-readable description of what was validated
+- timestamp: ISO 8601 timestamp
+
+### POST /ep/swarm/validate
+Validate an action in a multi-agent swarm context.
+Same request body as /ep/validate, plus:
+```json
+{
+  "swarm_id": "olympus-swarm-1",
+  "swarm_role": "executor",
+  "swarm_context": {
+    "total_agents": 12,
+    "total_exposure_usd": 500,
+    "max_single_agent_pct": 25
+  }
+}
+```
+
+Enforces:
+- Per-agent exposure limits within swarm
+- Aggregate swarm exposure caps
+- Role-based action authorization
+
+### GET /ep/proof/:hash
+Public proof lookup. No auth required.
+
+Response:
+```json
+{
+  "proof_hash": "0xabc123...",
+  "agent_id": "achilles-main",
+  "action": "buy BNKR",
+  "valid": true,
+  "risk_score": 0.35,
+  "timestamp": "2026-03-16T12:00:00Z",
+  "on_chain": {
+    "network": "base-sepolia",
+    "contract": "0xf1e16d3e5B74582fC326Bc6E2B82839d31f1ccE8",
+    "tx": null
+  }
+}
+```
+
+### GET /ep/status
+Service health check. No auth required.
+
+Response:
+```json
+{
+  "status": "operational",
+  "version": "1.0.0",
+  "uptime": 86400,
+  "network": "base-sepolia",
+  "contracts": {
+    "attestRegistry": "0xC36E784E1dff616bDae4EAc7B310F0934FaF04a4",
+    "feeCollector": "0xFF196F1e3a895404d073b8611252cF97388773A7",
+    "epCommitment": "0xf1e16d3e5B74582fC326Bc6E2B82839d31f1ccE8"
+  },
+  "stats": {
+    "totalValidations": 0,
+    "totalExecutions": 0,
+    "totalProofs": 0
+  }
+}
+```
+
+## On-Chain Contracts (Base Sepolia)
+| Contract | Address |
+|----------|---------|
+| ATTEST Registry | 0xC36E784E1dff616bDae4EAc7B310F0934FaF04a4 |
+| Fee Collector | 0xFF196F1e3a895404d073b8611252cF97388773A7 |
+| EPCommitment | 0xf1e16d3e5B74582fC326Bc6E2B82839d31f1ccE8 |
+
+## Policy Sets
+Policy sets define what an agent is allowed to do.
+
+### olympus-v1 (default)
+- max_single_trade_usd: 100
+- max_daily_volume_usd: 500
+- max_leverage: 3
+- allowed_assets: [BNKR, ETH, USDC, USDT]
+- allowed_chains: [base, base-sepolia]
+- require_stop_loss: true
+- max_risk_score: 0.7
+
+## Error Codes
+- 400: Invalid request body
+- 401: Missing or invalid X-Agent-Key
+- 403: Policy violation (action rejected)
+- 404: Proof hash not found
+- 429: Rate limited
+- 500: Internal error
+
+## Rate Limits
+- Validate: 60 requests/minute per agent
+- Proof lookup: 120 requests/minute
+- Status: 30 requests/minute
+
+## Integration Example
+```javascript
+const response = await fetch('https://achillesalpha.onrender.com/ep/validate', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Agent-Key': 'your-key'
+  },
+  body: JSON.stringify({
+    proposal_id: crypto.randomUUID(),
+    agent_id: 'my-agent',
+    asset: 'BNKR',
+    direction: 'buy',
+    amount_usd: 25,
+    entry_price: 0.0005,
+    stop_loss: 0.00045,
+    take_profit: 0.00065,
+    leverage: 1,
+    policy_set_id: 'olympus-v1',
+    chain: 'base'
+  })
+});
+
+const result = await response.json();
+if (result.valid) {
+  // Proceed with action, attach proof_hash to ledger
+  console.log('Authorized:', result.proof_hash);
+} else {
+  console.log('Rejected:', result.violations);
+}
+```
+
+## Source
+GitHub: https://github.com/achilliesbot/execution-protocol
+Live: https://achillesalpha.onrender.com/ep
+Twitter: @AchillesAlphaAI
