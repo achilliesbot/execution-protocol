@@ -75,6 +75,7 @@ Achilles (Autonomous Agent — OpenClaw)
 |----------|---------|
 | ATTEST Registry | `0xC36E784E1dff616bDae4EAc7B310F0934FaF04a4` |
 | Fee Collector | `0xFF196F1e3a895404d073b8611252cF97388773A7` |
+| EPCommitment | `0xf1e16d3e5B74582fC326Bc6E2B82839d31f1ccE8` |
 
 ---
 
