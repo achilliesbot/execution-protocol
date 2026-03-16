@@ -129,12 +129,13 @@ Achilles funds himself. No human intervention required.
 
 ---
 
+
 ## Bankr LLM Gateway Integration
 
 EP uses Bankr as the intelligence layer:
-- **Policy validation** — LLM evaluates whether action fits policy bounds
-- **Risk assessment** — Multi-model consensus before high-value executions
-- **Execution planning** — Breaking complex tasks into verifiable steps
+- **Policy validation** — LLM evaluates whether action fits bounds
+- **Risk assessment** — Multi-model consensus before high-value actions
+- **Swarm coordination** — LLM arbitrates between competing proposals
 
 Single API. 20+ models. Claude, Gemini, GPT, Kimi.
 Inference costs funded autonomously from execution fees.
@@ -146,8 +147,12 @@ Inference costs funded autonomously from execution fees.
 | Tier | Method | Cost |
 |------|--------|------|
 | REST API | Direct HTTP calls | 0.5% per execution |
+| SKILL.md | Auto-discovery by any OpenClaw agent | Free to discover |
+| llms-full.txt | Full context injection | Free to fetch |
 | SDK | `npm install @achilles/ep` (coming soon) | 0.5% per execution |
-| On-chain | Call contracts directly on Base | Gas only |
+| On-chain | Call EPCommitment.sol directly | Gas only |
+
+Works with any agent framework — OpenClaw, Eliza, Virtuals, AutoGPT, or custom. Validates any action type.
 
 ---
 
@@ -155,14 +160,17 @@ Inference costs funded autonomously from execution fees.
 
 **Track:** Best Bankr LLM Gateway Use — $5,000 prize pool
 
-**Why EP wins:**
-- Real execution with real on-chain outcomes
-- Genuine multi-model usage via Bankr Gateway
-- Self-sustaining economics — fees fund inference
-- Agent registered with on-chain identity (ERC-8004)
-- Running in production today
+**What we built:**
+- ✅ Universal pre-execution validation (not just trades)
+- ✅ Swarm validation — multi-agent policy enforcement
+- ✅ SKILL.md — auto-discoverable by any agent framework
+- ✅ llms-full.txt — full context for LLM ingestion
+- ✅ EPCommitment.sol — on-chain proof layer on Base
+- ✅ ERC-8004 on-chain identity (Base Mainnet)
+- ✅ Self-sustaining economics via Bankr LLM Gateway
+- ✅ Running in production today
 
-**Registration TX:** [basescan.org/tx/0xef150662...](https://basescan.org/tx/0xef150662d739bd70adef12bcc1a4c15c31e5526fedbfcd33c6130a8c5e5f40fa)
+**Registration TX:** [0xef150662...](https://basescan.org/tx/0xef150662d739bd70adef12bcc1a4c15c31e5526fedbfcd33c6130a8c5e5f40fa)
 
 ---
 
@@ -170,12 +178,13 @@ Inference costs funded autonomously from execution fees.
 
 EP is the execution layer of Project Olympus — fully autonomous AI agent infrastructure.
 
-| Product | Status |
-|---------|--------|
-| Execution Protocol | Building |
-| PropInfera | Live |
-| $ACHL Token | Planned |
+| Product | Description | Status |
+|---------|-------------|--------|
+| Execution Protocol | Universal agent validation middleware | 🟡 Live (Sepolia) |
+| PropInfera | AI real estate intelligence | 🟢 Live |
+| $ACHL Token | Revenue token | 🔵 Planned |
 
-**Website:** https://achillesalpha.onrender.com
-**Twitter:** [@AchillesAlphaAI](https://twitter.com/AchillesAlphaAI)
-**Email:** achillesalpha@agentmail.to
+- 🌐 [achillesalpha.onrender.com](https://achillesalpha.onrender.com)
+- 🐦 [@AchillesAlphaAI](https://twitter.com/AchillesAlphaAI)
+- 📧 [achillesalpha@agentmail.to](mailto:achillesalpha@agentmail.to)
+- 🔱 Built by Project Olympus
