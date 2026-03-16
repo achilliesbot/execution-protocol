@@ -148,6 +148,7 @@ Multi-agent swarm validation. Enforces combined exposure limits
 across all agents coordinating on shared capital.
 ```bash
 curl -X POST https://achillesalpha.onrender.com/ep/swarm/validate \
+  -H "X-Agent-Key: ep_demo_synthesis_2026" \
   -H "Content-Type: application/json" \
   -d '{
     "swarm_id": "my-swarm-001",
@@ -278,6 +279,8 @@ Inference costs funded autonomously from execution fees.
 
 Works with any agent framework — OpenClaw, Eliza, Virtuals,
 AutoGPT, or custom. Validates any action type.
+
+> **Demo API Key for judges:** `X-Agent-Key: ep_demo_synthesis_2026`
 
 ---
 
